@@ -1,8 +1,7 @@
-CC = g++ -framework GLUT -framework OpenGL -framework Cocoa -Wdeprecated-declarations
-all: program
-program: program.o
-program.o: program.cpp tinyxml/tinyxml.h tinyxml/tinyxml.cpp tinyxml/tinystr.h tinyxml/tinystr.cpp
+all: compile
+compile:
+	g++ -Wno-deprecated-declarations -framework OpenGL -framework GLUT -lm trabalhocg.cpp tinyxml2/tinyxml2.cpp -o trabalhocg
 clean:
-	rm -f program program.o
-run: program
-	./program
+	rm -f trabalhocg
+run: compile
+	./trabalhocg
