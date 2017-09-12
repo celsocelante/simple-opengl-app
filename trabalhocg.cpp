@@ -1,7 +1,10 @@
+#include <iostream>
+#include <string>
 #include <GLUT/glut.h>
 #include <math.h>
 // #include <GL/glut.h>
 #include "tinyxml2/tinyxml2.h"
+using namespace std;
 
 // void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius){
 // 	int i;
@@ -25,13 +28,13 @@ void display(void) {
     /* Limpar todos os pixels */
     glClear (GL_COLOR_BUFFER_BIT);
     /* Desenhar um polígono branco (retângulo) */
-    // glColor3f (1.0, 1.0, 1.0);
-    // glBegin(GL_POLYGON);
-    //     glVertex3f(0.25, 0.25, 0.0);
-    //     glVertex3f(0.75, 0.25, 0.0);
-    //     glVertex3f(0.75, 0.75, 0.0);
-    //     glVertex3f(0.25, 0.75, 0.0);
-    // glEnd();
+    glColor3f (1.0, 1.0, 1.0);
+    glBegin(GL_POLYGON);
+        glVertex3f(0.25, 0.25, 0.0);
+        glVertex3f(0.75, 0.25, 0.0);
+        glVertex3f(0.75, 0.75, 0.0);
+        glVertex3f(0.25, 0.75, 0.0);
+    glEnd();
 
     /* Não esperar! */
     glFlush ();
@@ -46,11 +49,16 @@ void init(void) {
     glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 }
 
-void readConfigFile(char* fileName) {
+void readConfigFile(string fileName) {
     tinyxml2::XMLDocument doc;
+    doc.LoadFile(fileName);
+
+    string title = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("largura")->GetText();
+    cout << title << '\n';
 }
 
 int main(int argc, char** argv) {
+    readConfigFile("config.xml");
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize (250, 250);
