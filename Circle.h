@@ -3,21 +3,25 @@
 
 class Circle {
     private:
-        int x, y, z;
+        double x, y, z;
+        double radius;
         bool displayed;
     
     public:
-        void Circle(int c_x, int c_y, int c_z);
+        Circle(double c_x, double c_y, double c_z, double c_r);
 
-        void setX(int c_x);
-        void setY(int c_y);
-        void setZ(int c_z);
-        void setCoord(int c_x, int c_y, int c_z);
+        void setX(double c_x);
+        void setY(double c_y);
+        void setZ(double c_z);
+        void setCoord(double c_x, double c_y, double c_z);
+        void setRadius(double c_r);
         void setDisplayed(bool d);
+        void draw();
 
-        int getX() { return c_x; }
-        int getY() { return c_y; }
-        int getZ() { return c_z; }
+        double getX() { return x; }
+        double getY() { return y; }
+        double getZ() { return z; }
+        double getRadius() { return radius; }
         bool getDisplayed() { return displayed; }
-}
+};
 #endif
