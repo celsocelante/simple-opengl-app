@@ -5,64 +5,167 @@
 // #include <GL/glut.h>
 #include "tinyxml2/tinyxml2.h"
 #include "Circle.h"
+#include "Window.h"
 using namespace std;
 
+// Initial circle object to be manipulated by the user
 Circle circ = Circle(0.5, 0.5, 0, 0.1);
+// Initial window object
+Window win = Window(500, 500, "hello");
+
+double originalX;
+double originalY;
+
+// If the mouse click was performed once, so do nothing
+bool clicked = false;
+
+// Mouse motion history
+double xHistory[2];
+double yHistory[2];
+
+double convertX(double x, int windowWidth) {
+    return (x * 1.0) / windowWidth;
+}
+
+double convertY(double y, int windowHeight) {
+    return -((y * 1.0) / windowHeight - 1.0);
+}
 
 
 void display(void) {
-    if(circ.getDisplayed()) {
+    // Draw a circle right after the first mouse click
+    if(clicked) {
+        circ.draw();
     }
-
-    GLfloat twicePi = 2.0f * 3.14;
-
-    glEnable(GL_LINE_SMOOTH);
-    glLineWidth(0.001);
-    
-    glClear(GL_COLOR_BUFFER_BIT);
-    glBegin(GL_LINES);
-        glColor4f(1.0, 1, 1, 1.0);
-
-        for(int i = 0; i <= 1000; i++) {
-            glVertex3f(circ.getX(), circ.getY(), 0);
-            glVertex3f(circ.getX() + (circ.getRadius() * cos(i * twicePi / 1000)), circ.getY() + (circ.getRadius() * sin(i * twicePi / 1000)), 0);
-        }
-    glEnd();
 
     glFlush ();
 }
+
+
 
 void onMouseClick(int button, int state, int x, int y) {
     double ox;
     double oy;
 
-    ox = (x * 1.0)/300;
-    oy = -((y * 1.0)/300 - 1.0);
+    cout << button << "\n";
 
-    // printf("%f %f\n", ox, oy);
+    // Circle released
+    if(state == GLUT_UP && circ.getDragState()) {
+        circ.setDragState(false);
+        return;
+    }
 
-    circ.setCoord(ox, oy, 0);
+    // Not being resized anymore
+    if(state == GLUT_UP && circ.getResizeState()) {
+        circ.setResizeState(false);
+        return;
+    }
 
-    glutPostRedisplay();
+    if(state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
+        // If this is the first click...
+        if(!clicked) {
+            originalX = x;
+            originalY = y;
+
+            ox = (x * 1.0)/500;
+            oy = -((y * 1.0)/500 - 1.0);
+
+            circ.setCoord(ox, oy, 0);
+
+            glutPostRedisplay();
+            clicked = true;
+        } else {
+            double dx = x - originalX;
+            double dy = y - originalY;
+            double dist_squared = dx * dx + dy * dy;
+
+            // If clicked inside
+            if( (x - originalX)*(x - originalX) + (y - originalY)*(y - originalY) <= 50*50 ) {
+                cout << "dentro\n";
+                cout << "Mouse: " << x << " " << y << "\n";
+                circ.setDragState(true);
+                
+                // Init coordinates history
+                xHistory[0] = x;
+                yHistory[0] = y;
+
+                xHistory[1] = x;
+                yHistory[1] = y;
+            }
+        }
+        return;
+    }
+
+
+    if(state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON && clicked) {
+        double dx = x - originalX;
+        double dy = y - originalY;
+        double dist_squared = dx * dx + dy * dy;
+
+        // If clicked inside
+        if( (x - originalX)*(x - originalX) + (y - originalY)*(y - originalY) <= 50*50 ) {
+            cout << "dentro (direito)\n";
+            cout << "Mouse (direito): " << x << " " << y << "\n";
+            circ.setResizeState(true);
+            
+            // Init coordinates history
+            xHistory[0] = x;
+            yHistory[0] = y;
+
+            xHistory[1] = x;
+            yHistory[1] = y;
+        }
+    }
 }
 
 void onMouseMove(int x, int y) {
-    double ox;
-    double oy;
+    // cout << "Motion: " << x << " " << y << "\n";
 
-    ox = (x * 1.0)/300;
-    oy = ((y * 1.0)/300 - 1.0);
+    if(circ.getDragState()) {
+        // Update history
+        xHistory[0] = xHistory[1];
+        yHistory[0] = yHistory[1];
 
-    printf("%f %f\n", ox, oy);
+        xHistory[1] = x;
+        yHistory[1] = y;
 
-    circ.setCoord(circ.getX() + ox, circ.getY() + oy, 0);
+        // cout << "Previous: " << xHistory[0] << " " << yHistory[0] << "\n";
+        // cout << "Current: " << xHistory[1] << " " << yHistory[1] << "\n";
 
-    glutPostRedisplay();
+        double deltaX = xHistory[1] - xHistory[0];
+        double deltaY = yHistory[1] - yHistory[0];
+
+        cout << "deltaX: " << deltaX << " ";
+        cout << "deltaY: " << deltaY << "\n";
+
+        circ.setCoord(circ.getX() + (deltaX/500), circ.getY() + (-deltaY/500), 0);
+        glutPostRedisplay();
+    } else if(circ.getResizeState()) {
+        // Update history
+        xHistory[0] = xHistory[1];
+        yHistory[0] = yHistory[1];
+
+        xHistory[1] = x;
+        yHistory[1] = y;
+
+        // cout << "Previous: " << xHistory[0] << " " << yHistory[0] << "\n";
+        // cout << "Current: " << xHistory[1] << " " << yHistory[1] << "\n";
+
+        double deltaX = xHistory[1] - xHistory[0];
+        double deltaY = yHistory[1] - yHistory[0];
+        double distante = deltaX + deltaY;
+
+        cout << "deltaX: " << deltaX << " ";
+        cout << "deltaY: " << deltaY << "\n";
+
+        circ.setRadius(circ.getRadius() + distante/1000);
+        glutPostRedisplay();
+    }
 }
 
 void init(void) {
     /* selecionar cor de fundo (preto) */
-    glClearColor (0.0, 0.0, 0.0, 0.0);
+    glClearColor (win.getRed(), win.getGreen(), win.getBlue(), 0.0);
     /* inicializar sistema de viz. */
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -78,16 +181,17 @@ void readConfigFile(const char* fileName) {
 }
 
 int main(int argc, char** argv) {
-    readConfigFile("config.xml");
+    // win.setRGB(1.0, 1.0, 0.0);
+    // readConfigFile("config.xml");
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
-    glutInitWindowSize (300, 300);
+    glutInitWindowSize (win.getWidth(), win.getHeight());
     glutInitWindowPosition (100, 100);
-    glutCreateWindow ("hello");
+    glutCreateWindow (win.getTitle().c_str());
     init();
     glutDisplayFunc(display);
     glutMouseFunc(onMouseClick);
-    // glutMotionFunc(onMouseMove);
+    glutMotionFunc(onMouseMove);
     glutMainLoop();
     /* C ANSI requer que main retorne um inteiro */
     return 0;
