@@ -15,6 +15,8 @@ class Circle {
         bool displayed;
         bool beingDragged;
         bool beingResized;
+
+        double red, green, blue;
     
     public:
         Circle(double c_x, double c_y, double c_z, double c_r);

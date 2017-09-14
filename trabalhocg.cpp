@@ -10,48 +10,37 @@ using namespace std;
 
 // Initial circle object to be manipulated by the user
 Circle circ = Circle(0.5, 0.5, 0, 0.1);
+
 // Initial window object
 Window win = Window(500, 500, "hello");
 
+// Circle position in pixels
 double originalX;
 double originalY;
-
-// If the mouse click was performed once, so do nothing
-bool clicked = false;
 
 // Mouse motion history
 double xHistory[2];
 double yHistory[2];
 
-double convertX(double x, int windowWidth) {
-    return (x * 1.0) / windowWidth;
-}
-
-double convertY(double y, int windowHeight) {
-    return -((y * 1.0) / windowHeight - 1.0);
-}
-
 
 void display(void) {
     // Draw a circle right after the first mouse click
-    if(clicked) {
+    if(circ.getDisplayed()) {
         circ.draw();
     }
 
     glFlush ();
 }
 
-
-
 void onMouseClick(int button, int state, int x, int y) {
     double ox;
     double oy;
 
-    cout << button << "\n";
-
     // Circle released
     if(state == GLUT_UP && circ.getDragState()) {
         circ.setDragState(false);
+        originalX = x;
+        originalY = y;
         return;
     }
 
@@ -62,27 +51,28 @@ void onMouseClick(int button, int state, int x, int y) {
     }
 
     if(state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
+        cout << button << "\n";
+        cout << "Mouse: " << x << " " << y << "\n";
+        cout << "Ciruclo: " << originalX << " " << originalY << "\n";
+        
         // If this is the first click...
-        if(!clicked) {
+        if( !circ.getDisplayed() ) {
+
             originalX = x;
             originalY = y;
 
-            ox = (x * 1.0)/500;
-            oy = -((y * 1.0)/500 - 1.0);
+            ox = (x * 1.0) / win.getWidth();
+            oy = -((y * 1.0) / win.getWidth() - 1.0);
 
             circ.setCoord(ox, oy, 0);
-
+            circ.setDisplayed(true);
             glutPostRedisplay();
-            clicked = true;
+        
+        // If the circle already exists
         } else {
-            double dx = x - originalX;
-            double dy = y - originalY;
-            double dist_squared = dx * dx + dy * dy;
-
-            // If clicked inside
-            if( (x - originalX)*(x - originalX) + (y - originalY)*(y - originalY) <= 50*50 ) {
+            // If clicked within the circle
+            if( pow(x - originalX, 2) + pow(y - originalY, 2) <= pow(50, 2) ) {
                 cout << "dentro\n";
-                cout << "Mouse: " << x << " " << y << "\n";
                 circ.setDragState(true);
                 
                 // Init coordinates history
@@ -97,30 +87,22 @@ void onMouseClick(int button, int state, int x, int y) {
     }
 
 
-    if(state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON && clicked) {
-        double dx = x - originalX;
-        double dy = y - originalY;
-        double dist_squared = dx * dx + dy * dy;
+    if(state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON && circ.getDisplayed() && pow(x - originalX, 2) + pow(y - originalY, 2) <= pow(50, 2)) {
+        cout << "dentro (direito)\n";
+        cout << "Mouse (direito): " << x << " " << y << "\n";
+        circ.setResizeState(true);
+        
+        // Init coordinates history
+        xHistory[0] = x;
+        yHistory[0] = y;
 
-        // If clicked inside
-        if( (x - originalX)*(x - originalX) + (y - originalY)*(y - originalY) <= 50*50 ) {
-            cout << "dentro (direito)\n";
-            cout << "Mouse (direito): " << x << " " << y << "\n";
-            circ.setResizeState(true);
-            
-            // Init coordinates history
-            xHistory[0] = x;
-            yHistory[0] = y;
-
-            xHistory[1] = x;
-            yHistory[1] = y;
-        }
+        xHistory[1] = x;
+        yHistory[1] = y;
     }
 }
 
 void onMouseMove(int x, int y) {
     // cout << "Motion: " << x << " " << y << "\n";
-
     if(circ.getDragState()) {
         // Update history
         xHistory[0] = xHistory[1];
@@ -135,11 +117,12 @@ void onMouseMove(int x, int y) {
         double deltaX = xHistory[1] - xHistory[0];
         double deltaY = yHistory[1] - yHistory[0];
 
-        cout << "deltaX: " << deltaX << " ";
-        cout << "deltaY: " << deltaY << "\n";
+        // cout << "deltaX: " << deltaX << " ";
+        // cout << "deltaY: " << deltaY << "\n";
 
-        circ.setCoord(circ.getX() + (deltaX/500), circ.getY() + (-deltaY/500), 0);
+        circ.setCoord(circ.getX() + (deltaX / win.getWidth()), circ.getY() + (-deltaY / win.getWidth()), 0);
         glutPostRedisplay();
+
     } else if(circ.getResizeState()) {
         // Update history
         xHistory[0] = xHistory[1];
@@ -155,34 +138,35 @@ void onMouseMove(int x, int y) {
         double deltaY = yHistory[1] - yHistory[0];
         double distante = deltaX + deltaY;
 
-        cout << "deltaX: " << deltaX << " ";
-        cout << "deltaY: " << deltaY << "\n";
+        // cout << "deltaX: " << deltaX << " ";
+        // cout << "deltaY: " << deltaY << "\n";
 
-        circ.setRadius(circ.getRadius() + distante/1000);
+        circ.setRadius(circ.getRadius() + distante / 1000);
         glutPostRedisplay();
     }
 }
 
 void init(void) {
-    /* selecionar cor de fundo (preto) */
     glClearColor (win.getRed(), win.getGreen(), win.getBlue(), 0.0);
-    /* inicializar sistema de viz. */
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 }
 
-void readConfigFile(const char* fileName) {
+void readConfigFile(string fileName) {
     tinyxml2::XMLDocument doc;
-    doc.LoadFile(fileName);
+    doc.LoadFile(fileName.c_str());
 
-    string title = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("largura")->GetText();
-    cout << title << '\n';
+    string largura = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("largura")->GetText();
+    string altura = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("altura")->GetText();
+    string title = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("titulo")->GetText();
+    win.setTitle(title);
+    win.setRGB(0, 0, 0);
+
 }
 
 int main(int argc, char** argv) {
-    // win.setRGB(1.0, 1.0, 0.0);
-    // readConfigFile("config.xml");
+    readConfigFile("config.xml");
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize (win.getWidth(), win.getHeight());
