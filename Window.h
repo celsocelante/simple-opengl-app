@@ -11,6 +11,7 @@ class Window {
 
     public:
         Window(int w, int h, std::string t);
+        Window();
         void setWidth(int w);
         void setHeight(int h);
         void setTitle(std::string t);

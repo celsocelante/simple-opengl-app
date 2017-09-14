@@ -6,7 +6,11 @@ Circle::Circle(double c_x, double c_y, double c_z, double c_r) {
     beingDragged = false;
     beingResized = false;
     radius = c_r;
+
+    red = green = blue = 0;
 }
+
+Circle::Circle() {}
 
 void Circle::setX(double c_x) {
     x = c_x;
@@ -36,19 +40,26 @@ void Circle::setDisplayed(bool c_display) {
 void Circle::draw() {
     glClear(GL_COLOR_BUFFER_BIT);
     GLfloat twicePi = 2.0f * M_PI;
+    int triangles = 1000;
 
     glEnable(GL_LINE_SMOOTH);
     glLineWidth(0.001);
     
     glBegin(GL_LINES);
-        glColor4f(1.0, 1, 1, 1.0);
+        glColor3f(1.0, 1, 0);
 
-        for(int i = 0; i <= 1000; i++) {
+        for(int i = 0; i <= triangles; i++) {
             glVertex3f(x, y, 0);
-            glVertex3f(x + (radius * cos(i * twicePi / 1000)),
-                y + (radius * sin(i * twicePi / 1000)), 0);
+            glVertex3f(x + (radius * cos(i * twicePi / triangles)),
+                y + (radius * sin(i * twicePi / triangles)), 0);
         }
     glEnd();
+}
+
+void Circle::setRGB(double r, double g, double b) {
+    red = r;
+    green = g;
+    blue = b;
 }
 
 void Circle::setDragState(bool bgd) {

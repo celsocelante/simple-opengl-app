@@ -20,6 +20,7 @@ class Circle {
     
     public:
         Circle(double c_x, double c_y, double c_z, double c_r);
+        Circle();
 
         void setX(double c_x);
         void setY(double c_y);
@@ -29,6 +30,7 @@ class Circle {
         void setDisplayed(bool d);
         void setDragState(bool bgd);
         void setResizeState(bool rs);
+        void setRGB(double r, double g, double b);
         void draw();
 
         double getX() { return x; }

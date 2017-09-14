@@ -6,6 +6,8 @@ Window::Window(int w, int h, std::string t) {
     title = t;
 }
 
+Window::Window() {}
+
 void Window::setWidth(int w) {
     width = w;
 }

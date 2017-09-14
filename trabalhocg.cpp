@@ -9,10 +9,10 @@
 using namespace std;
 
 // Initial circle object to be manipulated by the user
-Circle circ = Circle(0.5, 0.5, 0, 0.1);
+Circle circ;
 
 // Initial window object
-Window win = Window(500, 500, "hello");
+Window win;
 
 // Circle position in pixels
 double originalX;
@@ -51,10 +51,6 @@ void onMouseClick(int button, int state, int x, int y) {
     }
 
     if(state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
-        cout << button << "\n";
-        cout << "Mouse: " << x << " " << y << "\n";
-        cout << "Ciruclo: " << originalX << " " << originalY << "\n";
-        
         // If this is the first click...
         if( !circ.getDisplayed() ) {
 
@@ -141,7 +137,7 @@ void onMouseMove(int x, int y) {
         // cout << "deltaX: " << deltaX << " ";
         // cout << "deltaY: " << deltaY << "\n";
 
-        circ.setRadius(circ.getRadius() + distante / 1000);
+        circ.setRadius(circ.getRadius() - distante / 1000);
         glutPostRedisplay();
     }
 }
@@ -157,18 +153,33 @@ void readConfigFile(string fileName) {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(fileName.c_str());
 
-    string largura = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("largura")->GetText();
-    string altura = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("altura")->GetText();
-    string title = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("titulo")->GetText();
-    win.setTitle(title);
-    win.setRGB(0, 0, 0);
 
+    // Window properties
+    int largura = stoi(doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("largura")->GetText());
+    int altura = stoi(doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("altura")->GetText());
+    string titulo = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("titulo")->GetText();
+
+    double corR = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("fundo")->DoubleAttribute("corR");
+    double corG = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("fundo")->DoubleAttribute("corG");
+    double corB = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("fundo")->DoubleAttribute("corB");
+
+    win = Window(largura, altura, titulo);
+    win.setRGB(corR, corG, corB);
+
+    // Circle properties
+    double raio = doc.FirstChildElement("aplicacao")->FirstChildElement("circulo")->DoubleAttribute("raio");
+    corR = doc.FirstChildElement("aplicacao")->FirstChildElement("circulo")->DoubleAttribute("corR");
+    corG = doc.FirstChildElement("aplicacao")->FirstChildElement("circulo")->DoubleAttribute("corG");
+    corB = doc.FirstChildElement("aplicacao")->FirstChildElement("circulo")->DoubleAttribute("corB");
+
+    circ = Circle(0, 0, 0, 0.1);
+    circ.setRGB(corR, corG, corB);
 }
 
 int main(int argc, char** argv) {
-    readConfigFile("config.xml");
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+    readConfigFile("config.xml");
     glutInitWindowSize (win.getWidth(), win.getHeight());
     glutInitWindowPosition (100, 100);
     glutCreateWindow (win.getTitle().c_str());
