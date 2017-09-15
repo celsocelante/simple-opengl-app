@@ -143,9 +143,9 @@ void onMouseMove(int x, int y) {
         // cout << "deltaX: " << deltaX << " ";
         // cout << "deltaY: " << deltaY << "\n";
         if(distance > circ.getRadius() * win.getWidth()) {
-            circ.setRadius(circ.getRadius() + distance);
+            circ.setRadius(circ.getRadius() + distance / 10000);
         } else {
-            circ.setRadius(circ.getRadius() - distance);
+            circ.setRadius(circ.getRadius() - distance / 10000);
         }
         
         glutPostRedisplay();
@@ -210,6 +210,5 @@ int main(int argc, char** argv) {
     glutMouseFunc(onMouseClick);
     glutMotionFunc(onMouseMove);
     glutMainLoop();
-    /* C ANSI requer que main retorne um inteiro */
     return 0;
 }

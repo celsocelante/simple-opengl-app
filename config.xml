@@ -2,7 +2,7 @@
 	<janela>
 		<largura>500</largura>
 		<altura>500</altura>
-		<fundo corR="1" corG="1" corB="1"></fundo>
+		<fundo corR="1" corG="0.6" corB="1"></fundo>
 		<titulo>Meu circulo que arrasta</titulo>
 	</janela>
 	<circulo raio="51" corR="1" corG="1" corB="0"></circulo>
