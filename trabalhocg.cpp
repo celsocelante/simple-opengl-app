@@ -22,14 +22,15 @@ double originalY;
 double xHistory[2];
 double yHistory[2];
 
+bool initDone = false;
+
 
 void display(void) {
     // Draw a circle right after the first mouse click
-    if(circ.getDisplayed()) {
+    if(circ.getDisplayed() && initDone) {
         circ.draw();
+        glFlush();
     }
-
-    glFlush ();
 }
 
 void onMouseClick(int button, int state, int x, int y) {
@@ -67,7 +68,7 @@ void onMouseClick(int button, int state, int x, int y) {
         // If the circle already exists
         } else {
             // If clicked within the circle
-            if( pow(x - originalX, 2) + pow(y - originalY, 2) <= pow(50, 2) ) {
+            if( pow(x - originalX, 2) + pow(y - originalY, 2) <= pow(circ.getRadius() * win.getWidth(), 2) ) {
                 cout << "dentro\n";
                 circ.setDragState(true);
                 
@@ -83,7 +84,7 @@ void onMouseClick(int button, int state, int x, int y) {
     }
 
 
-    if(state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON && circ.getDisplayed() && pow(x - originalX, 2) + pow(y - originalY, 2) <= pow(50, 2)) {
+    if(state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON && circ.getDisplayed() && pow(x - originalX, 2) + pow(y - originalY, 2) <= pow(circ.getRadius() * win.getWidth(), 2)) {
         cout << "dentro (direito)\n";
         cout << "Mouse (direito): " << x << " " << y << "\n";
         circ.setResizeState(true);
@@ -130,29 +131,41 @@ void onMouseMove(int x, int y) {
         // cout << "Previous: " << xHistory[0] << " " << yHistory[0] << "\n";
         // cout << "Current: " << xHistory[1] << " " << yHistory[1] << "\n";
 
-        double deltaX = xHistory[1] - xHistory[0];
-        double deltaY = yHistory[1] - yHistory[0];
-        double distante = deltaX + deltaY;
+        double deltaX = originalX - x;
+        double deltaY = originalY - y;
+
+        double distance = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
+
+        cout << distance<< "\n";
+        cout << circ.getRadius()  * win.getWidth() << "\n";
+
 
         // cout << "deltaX: " << deltaX << " ";
         // cout << "deltaY: " << deltaY << "\n";
-
-        circ.setRadius(circ.getRadius() - distante / 1000);
+        if(distance > circ.getRadius() * win.getWidth()) {
+            circ.setRadius(circ.getRadius() + distance);
+        } else {
+            circ.setRadius(circ.getRadius() - distance);
+        }
+        
         glutPostRedisplay();
     }
 }
 
 void init(void) {
-    glClearColor (win.getRed(), win.getGreen(), win.getBlue(), 0.0);
+    
+    glClearColor (win.getRed(), win.getGreen(), win.getBlue(), 0);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+
+    
+    initDone = true;
 }
 
 void readConfigFile(string fileName) {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(fileName.c_str());
-
 
     // Window properties
     int largura = stoi(doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("largura")->GetText());
@@ -177,13 +190,22 @@ void readConfigFile(string fileName) {
 }
 
 int main(int argc, char** argv) {
+    if(argc == 2) {
+        readConfigFile(argv[1]);
+    } else {
+        cerr << "Numero invalido de argumentos\n";
+        exit(1);
+    }
+
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
-    readConfigFile("config.xml");
+
     glutInitWindowSize (win.getWidth(), win.getHeight());
     glutInitWindowPosition (100, 100);
     glutCreateWindow (win.getTitle().c_str());
+
     init();
+
     glutDisplayFunc(display);
     glutMouseFunc(onMouseClick);
     glutMotionFunc(onMouseMove);
