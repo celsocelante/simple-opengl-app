@@ -2,7 +2,7 @@ UNAME := $(shell uname)
 
 # Linux (default)
 EXE = trabalhocg
-LDFLAGS = -lGL -lGLU -lglut
+LDFLAGS = -lGL -lGLU -lglut 
 
 # OS X
 ifeq ($(UNAME), Darwin)
@@ -12,7 +12,7 @@ endif
 all: compile
 
 compile:
-	g++ $(LDFLAGS) -lm trabalhocg.cpp Circle.cpp Window.cpp tinyxml2/tinyxml2.cpp -o $(EXE)
+	g++ -std=c++11 $(LDFLAGS) -lm trabalhocg.cpp Circle.cpp Window.cpp tinyxml2/tinyxml2.cpp -o $(EXE) $(LDFLAGS)
 
 clean:
 	rm -f trabalhocg
