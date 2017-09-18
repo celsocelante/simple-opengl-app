@@ -1,11 +1,21 @@
 #include <iostream>
 #include <string>
-#include <GLUT/glut.h>
 #include <math.h>
-// #include <GL/glut.h>
 #include "tinyxml2/tinyxml2.h"
 #include "Circle.h"
 #include "Window.h"
+
+#ifdef __APPLE__
+#  include <OpenGL/gl.h>
+#  include <OpenGL/glu.h>
+#  include <GLUT/glut.h>
+#else
+#  include <GL/gl.h>
+#  include <GL/glu.h>
+#  include <GL/glut.h>
+#endif
+
+
 using namespace std;
 
 // Initial circle object to be manipulated by the user
@@ -26,11 +36,23 @@ bool initDone = false;
 
 
 void display(void) {
+    glClear(GL_COLOR_BUFFER_BIT);     
+    glPushMatrix(); 
+    glClearColor (win.getRed(), win.getGreen(), win.getBlue(), 0);
+
     // Draw a circle right after the first mouse click
     if(circ.getDisplayed() && initDone) {
         circ.draw();
-        glFlush();
     }
+    glFlush();
+}
+
+void init(void) {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+    glFlush();
+    initDone = true;
 }
 
 void onMouseClick(int button, int state, int x, int y) {
@@ -54,7 +76,6 @@ void onMouseClick(int button, int state, int x, int y) {
     if(state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
         // If this is the first click...
         if( !circ.getDisplayed() ) {
-
             originalX = x;
             originalY = y;
 
@@ -68,8 +89,7 @@ void onMouseClick(int button, int state, int x, int y) {
         // If the circle already exists
         } else {
             // If clicked within the circle
-            if( pow(x - originalX, 2) + pow(y - originalY, 2) <= pow(circ.getRadius() * win.getWidth(), 2) ) {
-                cout << "dentro\n";
+            if( sqrt(pow(x - originalX, 2) + pow(y - originalY, 2)) <= (circ.getRadius() * win.getWidth()) ) {
                 circ.setDragState(true);
                 
                 // Init coordinates history
@@ -84,9 +104,9 @@ void onMouseClick(int button, int state, int x, int y) {
     }
 
 
-    if(state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON && circ.getDisplayed() && pow(x - originalX, 2) + pow(y - originalY, 2) <= pow(circ.getRadius() * win.getWidth(), 2)) {
-        cout << "dentro (direito)\n";
-        cout << "Mouse (direito): " << x << " " << y << "\n";
+    if(state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON && circ.getDisplayed() &&
+            sqrt(pow(x - originalX, 2) + pow(y - originalY, 2)) <= (circ.getRadius() * win.getWidth()) ) {
+                
         circ.setResizeState(true);
         
         // Init coordinates history
@@ -99,8 +119,7 @@ void onMouseClick(int button, int state, int x, int y) {
 }
 
 void onMouseMove(int x, int y) {
-    // cout << "Motion: " << x << " " << y << "\n";
-    if(circ.getDragState()) {
+    if( circ.getDragState() ) {
         // Update history
         xHistory[0] = xHistory[1];
         yHistory[0] = yHistory[1];
@@ -108,14 +127,8 @@ void onMouseMove(int x, int y) {
         xHistory[1] = x;
         yHistory[1] = y;
 
-        // cout << "Previous: " << xHistory[0] << " " << yHistory[0] << "\n";
-        // cout << "Current: " << xHistory[1] << " " << yHistory[1] << "\n";
-
         double deltaX = xHistory[1] - xHistory[0];
         double deltaY = yHistory[1] - yHistory[0];
-
-        // cout << "deltaX: " << deltaX << " ";
-        // cout << "deltaY: " << deltaY << "\n";
 
         circ.setCoord(circ.getX() + (deltaX / win.getWidth()), circ.getY() + (-deltaY / win.getWidth()), 0);
         glutPostRedisplay();
@@ -128,20 +141,12 @@ void onMouseMove(int x, int y) {
         xHistory[1] = x;
         yHistory[1] = y;
 
-        // cout << "Previous: " << xHistory[0] << " " << yHistory[0] << "\n";
-        // cout << "Current: " << xHistory[1] << " " << yHistory[1] << "\n";
-
+        // Distance to resize the circle
         double deltaX = originalX - x;
         double deltaY = originalY - y;
 
         double distance = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
 
-        cout << distance<< "\n";
-        cout << circ.getRadius()  * win.getWidth() << "\n";
-
-
-        // cout << "deltaX: " << deltaX << " ";
-        // cout << "deltaY: " << deltaY << "\n";
         if(distance > circ.getRadius() * win.getWidth()) {
             circ.setRadius(circ.getRadius() + distance / 10000);
         } else {
@@ -152,15 +157,9 @@ void onMouseMove(int x, int y) {
     }
 }
 
-void init(void) {
-    
-    glClearColor (win.getRed(), win.getGreen(), win.getBlue(), 0);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-
-    
-    initDone = true;
+void idle(void)
+{   
+    glutPostRedisplay();
 }
 
 void readConfigFile(string fileName) {
@@ -209,6 +208,9 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display);
     glutMouseFunc(onMouseClick);
     glutMotionFunc(onMouseMove);
+    glutIdleFunc(idle);
+
     glutMainLoop();
+
     return 0;
 }
