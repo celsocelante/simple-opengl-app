@@ -24,10 +24,6 @@ Circle circ;
 // Initial window object
 Window win;
 
-// Circle position in pixels
-double originalX;
-double originalY;
-
 // Mouse motion history
 double xHistory[2];
 double yHistory[2];
@@ -50,46 +46,38 @@ void display(void) {
 void init(void) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+    glOrtho(0.0, win.getWidth(), win.getHeight(), 0.0, -1.0, 1.0);
     glFlush();
     initDone = true;
 }
 
 void onMouseClick(int button, int state, int x, int y) {
-    double ox;
-    double oy;
-
     // Circle released
     if(state == GLUT_UP && circ.getDragState()) {
         circ.setDragState(false);
-        originalX = x;
-        originalY = y;
+        circ.setResizeState(false);
+
         return;
     }
 
     // Not being resized anymore
     if(state == GLUT_UP && circ.getResizeState()) {
         circ.setResizeState(false);
+        circ.setDragState(false);
         return;
     }
 
     if(state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
         // If this is the first click...
         if( !circ.getDisplayed() ) {
-            originalX = x;
-            originalY = y;
 
-            ox = (x * 1.0) / win.getWidth();
-            oy = -((y * 1.0) / win.getWidth() - 1.0);
-
-            circ.setCoord(ox, oy, 0);
+            circ.setCoord(x, y, 0);
             circ.setDisplayed(true);
-            glutPostRedisplay();
         
         // If the circle already exists
         } else {
             // If clicked within the circle
-            if( sqrt(pow(x - originalX, 2) + pow(y - originalY, 2)) <= (circ.getRadius() * win.getWidth()) ) {
+            if( sqrt(pow(x - circ.getX(), 2) + pow(y - circ.getY(), 2)) <= (circ.getRadius()) ) {
                 circ.setDragState(true);
                 
                 // Init coordinates history
@@ -105,7 +93,7 @@ void onMouseClick(int button, int state, int x, int y) {
 
 
     if(state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON && circ.getDisplayed() &&
-            sqrt(pow(x - originalX, 2) + pow(y - originalY, 2)) <= (circ.getRadius() * win.getWidth()) ) {
+            sqrt(pow(x - circ.getX(), 2) + pow(y - circ.getY(), 2)) <= (circ.getRadius()) ) {
                 
         circ.setResizeState(true);
         
@@ -130,7 +118,8 @@ void onMouseMove(int x, int y) {
         double deltaX = xHistory[1] - xHistory[0];
         double deltaY = yHistory[1] - yHistory[0];
 
-        circ.setCoord(circ.getX() + (deltaX / win.getWidth()), circ.getY() + (-deltaY / win.getWidth()), 0);
+        circ.setCoord(circ.getX() + (deltaX), circ.getY() + (deltaY), 0);
+
         glutPostRedisplay();
 
     } else if(circ.getResizeState()) {
@@ -142,19 +131,20 @@ void onMouseMove(int x, int y) {
         yHistory[1] = y;
 
         // Distance to resize the circle
-        double deltaX = originalX - x;
-        double deltaY = originalY - y;
+        double deltaX = circ.getX() - x;
+        double deltaY = circ.getY() - y;
 
         double distance = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
 
-        if(distance > circ.getRadius() * win.getWidth()) {
-            circ.setRadius(circ.getRadius() + distance / 10000);
+        if(distance > circ.getRadius()) {
+            circ.setRadius(circ.getRadius() + distance / 5);
         } else {
-            circ.setRadius(circ.getRadius() - distance / 10000);
+            circ.setRadius(circ.getRadius() - distance / 5);
         }
-        
+
         glutPostRedisplay();
     }
+    glutPostRedisplay();
 }
 
 void idle(void)
@@ -184,7 +174,7 @@ void readConfigFile(string fileName) {
     corG = doc.FirstChildElement("aplicacao")->FirstChildElement("circulo")->DoubleAttribute("corG");
     corB = doc.FirstChildElement("aplicacao")->FirstChildElement("circulo")->DoubleAttribute("corB");
 
-    circ = Circle(0, 0, 0, 0.1);
+    circ = Circle(0, 0, 0, raio);
     circ.setRGB(corR, corG, corB);
 }
 
