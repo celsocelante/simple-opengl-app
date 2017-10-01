@@ -153,8 +153,12 @@ void idle(void)
 }
 
 void readConfigFile(string fileName) {
+    char path[200];
+    strcpy(path, fileName.c_str());
+    strcat(path, "config.xml");
+
     tinyxml2::XMLDocument doc;
-    doc.LoadFile(fileName.c_str());
+    doc.LoadFile(path);
 
     // Window properties
     int largura = stoi(doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("largura")->GetText());
