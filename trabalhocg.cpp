@@ -160,24 +160,16 @@ void readConfigFile(string fileName) {
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
 
+    XMLElement* app = doc.FirstChildElement("aplicacao");
+
+    string nomeArquivo = app->FirstChildElement("arquivoDaArena")->Attribute("nome");
+    string tipoArquivo = app->FirstChildElement("arquivoDaArena")->Attribute("tipo"));
+    string caminhoArquivo = app->FirstChildElement("arquivoDaArena")->Attribute("caminho");
+
+
+
     // Window properties
-    int largura = stoi(doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("largura")->GetText());
-    int altura = stoi(doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("altura")->GetText());
-    string titulo = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("titulo")->GetText();
-
-    double corR = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("fundo")->DoubleAttribute("corR");
-    double corG = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("fundo")->DoubleAttribute("corG");
-    double corB = doc.FirstChildElement("aplicacao")->FirstChildElement("janela")->FirstChildElement("fundo")->DoubleAttribute("corB");
-
-    win = Window(largura, altura, titulo);
-    win.setRGB(corR, corG, corB);
-
-    // Circle properties
-    double raio = doc.FirstChildElement("aplicacao")->FirstChildElement("circulo")->DoubleAttribute("raio");
-    corR = doc.FirstChildElement("aplicacao")->FirstChildElement("circulo")->DoubleAttribute("corR");
-    corG = doc.FirstChildElement("aplicacao")->FirstChildElement("circulo")->DoubleAttribute("corG");
-    corB = doc.FirstChildElement("aplicacao")->FirstChildElement("circulo")->DoubleAttribute("corB");
-
+    
     circ = Circle(0, 0, 0, raio);
     circ.setRGB(corR, corG, corB);
 }

@@ -15,6 +15,7 @@
         "memory": "cpp",
         "new": "cpp",
         "ostream": "cpp",
-        "iterator": "cpp"
+        "iterator": "cpp",
+        "ios": "cpp"
     }
 }
