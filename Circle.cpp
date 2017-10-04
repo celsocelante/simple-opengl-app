@@ -38,22 +38,20 @@ void Circle::setDisplayed(bool c_display) {
 
 
 void Circle::draw() {
-    glClear(GL_COLOR_BUFFER_BIT);
-    GLfloat twicePi = 2.0f * M_PI;
-    int triangles = 1000;
-
-    glEnable(GL_LINE_SMOOTH);
-    glLineWidth(0.001);
+    int i;
     
-    glBegin(GL_LINES);
-        glColor3f(red, green, blue);
-
-        for(int i = 0; i <= triangles; i++) {
-            glVertex3f(x, y, 0);
-            glVertex3f(x + (radius * cos(i * twicePi / triangles)),
-                y + (radius * sin(i * twicePi / triangles)), 0);
-        }
-    glEnd();
+        glColor3dv(red, green, blue);
+        glBegin(GL_TRIANGLE_FAN);
+            glVertex3d(x, y, z);
+            
+            for(i = 0; i <= 1000; ++i) {
+                glVertex3d(
+                    x + (radius * cos(i * M_PI / 1000)), 
+                    y + (radius * sin(i * M_PI / 1000)),
+                    z
+                );
+            }
+        glEnd();
 }
 
 void Circle::setRGB(double r, double g, double b) {

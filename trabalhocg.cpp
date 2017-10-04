@@ -25,16 +25,23 @@ Circle player;
 // Obstacles
 list<Circle> obstacles;
 
+Circle arena = Circle();
+
 // Initial window object
-Window win;
+Window win = Window();
 
 
 void display(void) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(200, 800, 800, 200, -1.0, 1.0);
+    glOrtho(arena.getX() - arena.getRadius(),
+        arena.getX() - arena.getRadius() + win.getWidth(),
+        arena.getY() - arena.getRadius(),
+        arena.getY() - arena.getRadius() + win.getHeight(), -1.0, 1.0
+    );
     
     player.draw();
+    arena.draw();
 
     // Draw all the obstacles
     for (Circle e : obstacles) {
@@ -95,30 +102,35 @@ void readConfigFile(string fileName) {
     {
         double cx = e->DoubleAttribute("cx");
         double cy = e->DoubleAttribute("cy");
-        double r = e->DoubleAttribute("r");
+        double radius = e->DoubleAttribute("r");
         string fill = e->Attribute("fill");
 
         // cout << cx << ", " << cy << endl;
 
         // Icone do jogador
-        if(fill == "green") {
-            cout << "jogador" << endl;
-            player.setCoord(cx, cy, 0);
-            player.setRadius(r);
+        if (fill == "green") {
+            player = Circle(cx, cy, 0, radius);
             player.setRGB(0, 1, 0);
+
+            continue;
+
+        } else if (fill == "blue") {
+            arena.setCoord(cx, cy, 0);
+            arena.setRGB(0, 0, 1);
+
+            win.setWidth(2 * radius);
+            win.setHeight(2 * radius);
+            win.setTitle("Arena");
 
             continue;
         }
 
 
-        Circle temp = Circle(cx, cy, 0, r);
-        temp.setRGB(0, 0, 1);
+        Circle temp = Circle(cx, cy, 0, radius);
+        temp.setRGB(0, 0, 0);
 
         obstacles.push_back(temp);
     }
-
-    // Window properties
-    win = Window(500, 500, "arena");
     
     // circ = Circle(0, 0, 0, raio);
     // circ.setRGB(corR, corG, corB);
