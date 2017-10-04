@@ -46,7 +46,7 @@ void Circle::draw() {
     glLineWidth(0.001);
     
     glBegin(GL_LINES);
-        glColor3f(1.0, 1, 0);
+        glColor3f(red, green, blue);
 
         for(int i = 0; i <= triangles; i++) {
             glVertex3f(x, y, 0);

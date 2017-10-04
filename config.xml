@@ -1,3 +1,3 @@
 <aplicacao>
-	<arquivoDaArena nome="arena" tipo="svg" caminho="coloque o seu caminho aqui para testar"></arquivoDaArena>
+	<arquivoDaArena nome="arena" tipo="svg" caminho="./"></arquivoDaArena>
 </aplicacao>

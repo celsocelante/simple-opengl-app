@@ -5,9 +5,9 @@ class Window {
         int width;
         int height;
         std::string title;
-        double red;
-        double green;
-        double blue;
+        double red = 1;
+        double green = 0;
+        double blue = 0;
 
     public:
         Window(int w, int h, std::string t);

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <math.h>
+#include <list>
 #include "tinyxml2/tinyxml2.h"
 #include "Circle.h"
 #include "Window.h"
@@ -15,163 +16,112 @@
 #  include <GL/glut.h>
 #endif
 
-
 using namespace std;
+using namespace tinyxml2;
 
-// Initial circle object to be manipulated by the user
-Circle circ;
+// Player
+Circle player;
+
+// Obstacles
+list<Circle> obstacles;
 
 // Initial window object
 Window win;
 
-// Mouse motion history
-double xHistory[2];
-double yHistory[2];
-
-bool initDone = false;
-
 
 void display(void) {
-    glClear(GL_COLOR_BUFFER_BIT);     
-    glPushMatrix(); 
-    glClearColor (win.getRed(), win.getGreen(), win.getBlue(), 0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(200, 800, 800, 200, -1.0, 1.0);
+    
+    player.draw();
 
-    // Draw a circle right after the first mouse click
-    if(circ.getDisplayed() && initDone) {
-        circ.draw();
+    // Draw all the obstacles
+    for (Circle e : obstacles) {
+        e.draw();
     }
+
     glFlush();
 }
 
 void init(void) {
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, win.getWidth(), win.getHeight(), 0.0, -1.0, 1.0);
+    
+
+    glClear(GL_COLOR_BUFFER_BIT);     
+    glPushMatrix(); 
+    glClearColor (win.getRed(), win.getGreen(), win.getBlue(), 0);
+
     glFlush();
-    initDone = true;
 }
 
-void onMouseClick(int button, int state, int x, int y) {
-    // Circle released
-    if(state == GLUT_UP && circ.getDragState()) {
-        circ.setDragState(false);
-        circ.setResizeState(false);
-
-        return;
-    }
-
-    // Not being resized anymore
-    if(state == GLUT_UP && circ.getResizeState()) {
-        circ.setResizeState(false);
-        circ.setDragState(false);
-        return;
-    }
-
-    if(state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
-        // If this is the first click...
-        if( !circ.getDisplayed() ) {
-
-            circ.setCoord(x, y, 0);
-            circ.setDisplayed(true);
-        
-        // If the circle already exists
-        } else {
-            // If clicked within the circle
-            if( sqrt(pow(x - circ.getX(), 2) + pow(y - circ.getY(), 2)) <= (circ.getRadius()) ) {
-                circ.setDragState(true);
-                
-                // Init coordinates history
-                xHistory[0] = x;
-                yHistory[0] = y;
-
-                xHistory[1] = x;
-                yHistory[1] = y;
-            }
-        }
-        return;
-    }
-
-
-    if(state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON && circ.getDisplayed() &&
-            sqrt(pow(x - circ.getX(), 2) + pow(y - circ.getY(), 2)) <= (circ.getRadius()) ) {
-                
-        circ.setResizeState(true);
-        
-        // Init coordinates history
-        xHistory[0] = x;
-        yHistory[0] = y;
-
-        xHistory[1] = x;
-        yHistory[1] = y;
-    }
-}
-
-void onMouseMove(int x, int y) {
-    if( circ.getDragState() ) {
-        // Update history
-        xHistory[0] = xHistory[1];
-        yHistory[0] = yHistory[1];
-
-        xHistory[1] = x;
-        yHistory[1] = y;
-
-        double deltaX = xHistory[1] - xHistory[0];
-        double deltaY = yHistory[1] - yHistory[0];
-
-        circ.setCoord(circ.getX() + (deltaX), circ.getY() + (deltaY), 0);
-
-        glutPostRedisplay();
-
-    } else if(circ.getResizeState()) {
-        // Update history
-        xHistory[0] = xHistory[1];
-        yHistory[0] = yHistory[1];
-
-        xHistory[1] = x;
-        yHistory[1] = y;
-
-        // Distance to resize the circle
-        double deltaX = circ.getX() - x;
-        double deltaY = circ.getY() - y;
-
-        double distance = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
-
-        if(distance > circ.getRadius()) {
-            circ.setRadius(circ.getRadius() + distance / 5);
-        } else {
-            circ.setRadius(circ.getRadius() - distance / 5);
-        }
-
-        glutPostRedisplay();
-    }
-    glutPostRedisplay();
-}
 
 void idle(void)
 {   
     glutPostRedisplay();
 }
 
+void onMouseClick(int button, int state, int x, int y) {
+    cout << x << ", " << y << endl;
+}
+
 void readConfigFile(string fileName) {
     char path[200];
+    char path2[200];
+
     strcpy(path, fileName.c_str());
     strcat(path, "config.xml");
 
     tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
 
+    cout << path << endl;
+
     XMLElement* app = doc.FirstChildElement("aplicacao");
 
     string nomeArquivo = app->FirstChildElement("arquivoDaArena")->Attribute("nome");
-    string tipoArquivo = app->FirstChildElement("arquivoDaArena")->Attribute("tipo"));
+    string tipoArquivo = app->FirstChildElement("arquivoDaArena")->Attribute("tipo");
     string caminhoArquivo = app->FirstChildElement("arquivoDaArena")->Attribute("caminho");
 
+    strcpy(path, "");
+    strcpy(path, caminhoArquivo.c_str());
+    strcat(path, "arena.svg");
 
+    cout << path2 << endl;
+
+    doc.LoadFile(path);
+    XMLElement* svg = doc.FirstChildElement("svg");
+
+    for(XMLElement* e = svg->FirstChildElement("circle"); e != NULL; e = e->NextSiblingElement("circle"))
+    {
+        double cx = e->DoubleAttribute("cx");
+        double cy = e->DoubleAttribute("cy");
+        double r = e->DoubleAttribute("r");
+        string fill = e->Attribute("fill");
+
+        // cout << cx << ", " << cy << endl;
+
+        // Icone do jogador
+        if(fill == "green") {
+            cout << "jogador" << endl;
+            player.setCoord(cx, cy, 0);
+            player.setRadius(r);
+            player.setRGB(0, 1, 0);
+
+            continue;
+        }
+
+
+        Circle temp = Circle(cx, cy, 0, r);
+        temp.setRGB(0, 0, 1);
+
+        obstacles.push_back(temp);
+    }
 
     // Window properties
+    win = Window(500, 500, "arena");
     
-    circ = Circle(0, 0, 0, raio);
-    circ.setRGB(corR, corG, corB);
+    // circ = Circle(0, 0, 0, raio);
+    // circ.setRGB(corR, corG, corB);
 }
 
 int main(int argc, char** argv) {
@@ -185,16 +135,15 @@ int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
 
-    glutInitWindowSize (win.getWidth(), win.getHeight());
+    glutInitWindowSize(win.getWidth(), win.getHeight());
     glutInitWindowPosition (100, 100);
-    glutCreateWindow (win.getTitle().c_str());
+    glutCreateWindow(win.getTitle().c_str());
 
     init();
 
     glutDisplayFunc(display);
-    glutMouseFunc(onMouseClick);
-    glutMotionFunc(onMouseMove);
     glutIdleFunc(idle);
+    glutMouseFunc(onMouseClick);
 
     glutMainLoop();
 
