@@ -66,3 +66,19 @@ void Circle::setDragState(bool bgd) {
 void Circle::setResizeState(bool rs) {
     beingResized = rs;
 }
+
+void Circle::forwardMoveX() {
+    x += 1;
+}
+
+void Circle::forwardMoveY() {
+    y -= 4;
+}
+
+void Circle::backwardMoveX() {
+    x -= 1;
+}
+
+void Circle::backwardMoveY() {
+    y += 4;
+}

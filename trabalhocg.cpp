@@ -29,8 +29,11 @@ list<Circle> obstacles;
 // Low Obstacles (black ones)
 list<Circle> lowObstacles;
 
-// Initial window object
-Window win = Window();
+// Window object
+Window win;
+
+// Key status
+int keyStatus[256];
 
 
 void display(void) {
@@ -67,14 +70,49 @@ void init(void) {
     );
 }
 
-
-void idle(void)
-{   
+void onKeyUp(unsigned char key, int x, int y)
+{
+    keyStatus[(int)(key)] = 0;
     glutPostRedisplay();
 }
 
-void onMouseClick(int button, int state, int x, int y) {
-    cout << x << ", " << y << endl;
+void onKeyDown(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+        case 'w':
+        case 'W':
+            player.forwardMoveY();
+            break;
+        case 's':
+        case 'S':
+             player.backwardMoveY();
+             break;
+        case 'a':
+        case 'A':
+             keyStatus[(int)('a')] = 1;
+             break;
+        case 'd':
+        case 'D':
+             keyStatus[(int)('d')] = 1;
+             break;
+        case 27 :
+             exit(0);
+    }
+    glutPostRedisplay();
+}
+
+void idle(void)
+{
+    if (keyStatus[(int)('a')]) {
+        player.backwardMoveX();
+    }
+
+    if(keyStatus[(int)('d')]) {
+        player.forwardMoveX();
+    }
+    
+    glutPostRedisplay();
 }
 
 void readConfigFile(string fileName) {
@@ -144,6 +182,8 @@ void readConfigFile(string fileName) {
 }
 
 int main(int argc, char** argv) {
+    win = Window();
+
     if(argc == 2) {
         readConfigFile(argv[1]);
     } else {
@@ -160,9 +200,10 @@ int main(int argc, char** argv) {
 
     init();
 
+    glutKeyboardFunc(onKeyDown);
+    glutKeyboardUpFunc(onKeyUp);
     glutDisplayFunc(display);
     glutIdleFunc(idle);
-    glutMouseFunc(onMouseClick);
 
     glutMainLoop();
 

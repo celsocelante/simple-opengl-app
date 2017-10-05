@@ -49,5 +49,9 @@ class Circle {
         bool getDisplayed() { return displayed; }
         bool getDragState() { return beingDragged; }
         bool getResizeState() { return beingResized; }
+        void forwardMoveX();
+        void forwardMoveY();
+        void backwardMoveX();
+        void backwardMoveY();
 };
 #endif
