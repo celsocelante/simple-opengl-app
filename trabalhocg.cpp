@@ -33,12 +33,13 @@ list<Circle> lowObstacles;
 Window win;
 
 // Key status
-int keyStatus[256];
+bool keyStatus[256] = { false };
 
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT);    
     
+    // Fixed elements
     arena.draw();
     center.draw();
     player.draw();
@@ -72,7 +73,7 @@ void init(void) {
 
 void onKeyUp(unsigned char key, int x, int y)
 {
-    keyStatus[(int)(key)] = 0;
+    keyStatus[ (int) (key) ] = false;
     glutPostRedisplay();
 }
 
@@ -82,34 +83,32 @@ void onKeyDown(unsigned char key, int x, int y)
     {
         case 'w':
         case 'W':
-            player.forwardMoveY();
+            player.move(0, -5);
             break;
         case 's':
         case 'S':
-             player.backwardMoveY();
+             player.move(0, 5);
              break;
         case 'a':
         case 'A':
-             keyStatus[(int)('a')] = 1;
+             keyStatus[ (int) ('a') ] = true;
              break;
         case 'd':
         case 'D':
-             keyStatus[(int)('d')] = 1;
+             keyStatus[ (int) ('d') ] = true;
              break;
-        case 27 :
-             exit(0);
     }
     glutPostRedisplay();
 }
 
 void idle(void)
 {
-    if (keyStatus[(int)('a')]) {
-        player.backwardMoveX();
+    if (keyStatus[ (int) ('a') ]) {
+        player.move(-1, 0);
     }
 
-    if(keyStatus[(int)('d')]) {
-        player.forwardMoveX();
+    if(keyStatus[ (int) ('d') ]) {
+        player.move(1, 0);
     }
     
     glutPostRedisplay();

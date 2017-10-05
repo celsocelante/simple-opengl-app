@@ -5,7 +5,10 @@ Circle::Circle(double c_x, double c_y, double c_z, double c_r) {
     displayed = false;
     beingDragged = false;
     beingResized = false;
+    jumping = false;
+    flying = false;
     radius = c_r;
+    previousRadius = radius;
 
     red = green = blue = 0;
 }
@@ -67,18 +70,21 @@ void Circle::setResizeState(bool rs) {
     beingResized = rs;
 }
 
-void Circle::forwardMoveX() {
-    x += 1;
+void Circle::move(double x, double y) {
+    this->x += x;
+    this->y += y;
 }
 
-void Circle::forwardMoveY() {
-    y -= 4;
+bool Circle::collision(Circle *c) {
+    double temp = sqrt(pow(c->getX() - x, 2) + 
+                            pow(c->getY() - y, 2));
+
+	return temp <= (c->getRadius() + radius);
 }
 
-void Circle::backwardMoveX() {
-    x -= 1;
-}
+bool Circle::collision(double x, double y, double r) {
+	double temp = sqrt(pow(this->x - x, 2) + 
+                            pow(this->y - y, 2));
 
-void Circle::backwardMoveY() {
-    y += 4;
+    return temp <= (this->radius + r);
 }

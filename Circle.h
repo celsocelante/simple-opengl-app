@@ -17,6 +17,7 @@ class Circle {
     private:
         double x, y, z;
         double radius;
+        double previousRadius;
 
         double px, py, pz;
         double pradius;
@@ -24,6 +25,8 @@ class Circle {
         bool displayed;
         bool beingDragged;
         bool beingResized;
+
+        bool jumping, flying;
 
         double red, green, blue;
     
@@ -49,9 +52,8 @@ class Circle {
         bool getDisplayed() { return displayed; }
         bool getDragState() { return beingDragged; }
         bool getResizeState() { return beingResized; }
-        void forwardMoveX();
-        void forwardMoveY();
-        void backwardMoveX();
-        void backwardMoveY();
+        void move(double x, double y);
+        bool collision(Circle *c);
+        bool collision(double x, double y, double radius);
 };
 #endif
