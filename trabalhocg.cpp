@@ -19,46 +19,52 @@
 using namespace std;
 using namespace tinyxml2;
 
-// Player
+Circle arena;
+Circle center;
 Circle player;
 
-// Obstacles
+// Obstacles (red ones)
 list<Circle> obstacles;
 
-Circle arena = Circle();
+// Low Obstacles (black ones)
+list<Circle> lowObstacles;
 
 // Initial window object
 Window win = Window();
 
 
 void display(void) {
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(arena.getX() - arena.getRadius(),
-        arena.getX() - arena.getRadius() + win.getWidth(),
-        arena.getY() - arena.getRadius(),
-        arena.getY() - arena.getRadius() + win.getHeight(), -1.0, 1.0
-    );
+    glClear(GL_COLOR_BUFFER_BIT);    
     
-    player.draw();
     arena.draw();
+    center.draw();
+    player.draw();
 
     // Draw all the obstacles
-    for (Circle e : obstacles) {
-        e.draw();
+    for (Circle o : obstacles) {
+        o.draw();
+    }
+
+    for (Circle lo : lowObstacles) {
+        lo.draw();
     }
 
     glFlush();
 }
 
 void init(void) {
-    
+    glClearColor(1, 1, 1, 0.0f);
+    glViewport (0, 0, win.getWidth(), win.getHeight());
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
 
-    glClear(GL_COLOR_BUFFER_BIT);     
-    glPushMatrix(); 
-    glClearColor (win.getRed(), win.getGreen(), win.getBlue(), 0);
-
-    glFlush();
+    glOrtho(
+        (arena.getX() - arena.getRadius()),
+        (arena.getX() + arena.getRadius()),
+        (arena.getY() + arena.getRadius()),
+        (arena.getY() - arena.getRadius()),
+        -1.0, 1.0
+    );
 }
 
 
@@ -105,35 +111,36 @@ void readConfigFile(string fileName) {
         double radius = e->DoubleAttribute("r");
         string fill = e->Attribute("fill");
 
-        // cout << cx << ", " << cy << endl;
-
         // Icone do jogador
         if (fill == "green") {
             player = Circle(cx, cy, 0, radius);
             player.setRGB(0, 1, 0);
 
-            continue;
-
         } else if (fill == "blue") {
-            arena.setCoord(cx, cy, 0);
+            arena = Circle(cx, cy, 0, radius);
             arena.setRGB(0, 0, 1);
 
-            win.setWidth(2 * radius);
-            win.setHeight(2 * radius);
+            win.setWidth((int) 2 * radius);
+            win.setHeight((int) 2 * radius);
             win.setTitle("Arena");
 
-            continue;
-        }
+        } else if (fill == "white") {
+            center = Circle(cx, cy, 0, radius);
+            center.setRGB(1, 1, 1);
 
-
-        Circle temp = Circle(cx, cy, 0, radius);
-        temp.setRGB(0, 0, 0);
-
-        obstacles.push_back(temp);
-    }
+        } else if (fill == "red") {
+            Circle temp = Circle(cx, cy, 0, radius);
+            temp.setRGB(1, 0, 0);
     
-    // circ = Circle(0, 0, 0, raio);
-    // circ.setRGB(corR, corG, corB);
+            obstacles.push_back(temp);
+
+        } else if (fill == "black") {
+            Circle temp = Circle(cx, cy, 0, radius);
+            temp.setRGB(0, 0, 0);
+    
+            lowObstacles.push_back(temp);
+        }
+    }
 }
 
 int main(int argc, char** argv) {
@@ -146,9 +153,9 @@ int main(int argc, char** argv) {
 
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
-
     glutInitWindowSize(win.getWidth(), win.getHeight());
     glutInitWindowPosition (100, 100);
+
     glutCreateWindow(win.getTitle().c_str());
 
     init();
