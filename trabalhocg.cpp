@@ -17,6 +17,8 @@
 #endif
 
 #define MOVEMENT 1
+#define ANIMATION_FRAMES 30
+#define ANIMATION_TIME 2000
 
 using namespace std;
 using namespace tinyxml2;
@@ -103,11 +105,12 @@ void ableToMove(double dx, double dy, double dz) {
 }
 
 void jumpStart(int value) {
-    player.setRadius(player.getRadius() + player.getRadius() * (0.5/30));
+    player.setJumping(true);
+    player.setRadius(player.getRadius() + player.getRadius() * (0.5/ANIMATION_FRAMES));
 }
 
 void jumpEnd(int value) {
-    player.setRadius(player.getRadius() - player.getRadius() * (0.5/30)); 
+    player.setRadius(player.getRadius() - player.getRadius() * (0.5/ANIMATION_FRAMES)); 
 }
 
 void onKeyDown(unsigned char key, int x, int y)
@@ -132,16 +135,17 @@ void onKeyDown(unsigned char key, int x, int y)
         case 'p':
         case 'P':
             if (!player.getJumping()) {
-                for (int i = 1; i <= 30; ++i) {
-                    glutTimerFunc((1000/30) * i, jumpStart, 0);
+
+                for (int i = 1; i <= ANIMATION_FRAMES; i++) {
+                    glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpStart, 0);
                 }
         
-                for (int i = 1; i <= 30; ++i) {
-                    glutTimerFunc(1000 + (1000/30) * i, jumpEnd, 0);
+                for (int i = 1; i <= ANIMATION_FRAMES; i++) {
+                    glutTimerFunc(ANIMATION_TIME/2 + ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpEnd, 0);
                 }
 
                 // Hold on for 2 seconds
-                glutTimerFunc(2 * 1000, [](int val) { player.setJumping(false); }, 0);
+                glutTimerFunc(ANIMATION_TIME, [](int val) { player.setJumping(false); }, 0);
             }
             break;
     }
