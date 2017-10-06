@@ -82,24 +82,21 @@ void ableToMove(double dx, double dy, double dz) {
         return;
     }
 
-    // Draw all the obstacles
+    if (!player.collision(&arena, 0, 0)) {
+        return;
+    }
+
     for (Circle o : obstacles) {
         if (player.collision(&o, dx/2, dy)) {
-            // cout << "collison" << endl;
             return;
         }
     }
 
     for (Circle lo : lowObstacles) {
         if (player.collision(&lo, dx/2, dy)  && !player.getJumping()) {
-            // cout << "collison" << endl;
             return;
         }
     }
-
-    // if (player.inside(&arena, dx/2, dy)) {
-    //     player.move(dx, dy);
-    // }
 
     player.move(dx, dy, dz);
 }
