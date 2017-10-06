@@ -16,6 +16,10 @@
         "new": "cpp",
         "ostream": "cpp",
         "iterator": "cpp",
-        "ios": "cpp"
+        "ios": "cpp",
+        "__bit_reference": "cpp",
+        "algorithm": "cpp",
+        "string": "cpp",
+        "type_traits": "cpp"
     }
 }
