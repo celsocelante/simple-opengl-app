@@ -16,8 +16,7 @@
 #  include <GL/glut.h>
 #endif
 
-#define MOVEMENT_X 2
-#define MOVEMENT_Y 5
+#define MOVEMENT 1
 
 using namespace std;
 using namespace tinyxml2;
@@ -45,7 +44,6 @@ void display(void) {
     // Fixed elements
     arena.draw();
     center.draw();
-    player.draw();
 
     // Draw all the obstacles
     for (Circle o : obstacles) {
@@ -55,6 +53,8 @@ void display(void) {
     for (Circle lo : lowObstacles) {
         lo.draw();
     }
+
+    player.draw();
 
     glFlush();
 }
@@ -74,13 +74,7 @@ void init(void) {
     );
 }
 
-void onKeyUp(unsigned char key, int x, int y)
-{
-    keyStatus[ (int) (key) ] = false;
-    glutPostRedisplay();
-}
-
-void ableToMove(double dx, double dy) {
+void ableToMove(double dx, double dy, double dz) {
     if (player.collision(&center, dx/2, dy)) {
         // cout << "collison" << endl;
         return;
@@ -95,7 +89,7 @@ void ableToMove(double dx, double dy) {
     }
 
     for (Circle lo : lowObstacles) {
-        if (player.collision(&lo, dx/2, dy)) {
+        if (player.collision(&lo, dx/2, dy)  && !player.getJumping()) {
             // cout << "collison" << endl;
             return;
         }
@@ -105,7 +99,15 @@ void ableToMove(double dx, double dy) {
     //     player.move(dx, dy);
     // }
 
-    player.move(dx, dy);
+    player.move(dx, dy, dz);
+}
+
+void jumpStart(int value) {
+    player.setRadius(player.getRadius() + player.getRadius() * (0.5/30));
+}
+
+void jumpEnd(int value) {
+    player.setRadius(player.getRadius() - player.getRadius() * (0.5/30)); 
 }
 
 void onKeyDown(unsigned char key, int x, int y)
@@ -113,32 +115,59 @@ void onKeyDown(unsigned char key, int x, int y)
     switch (key) {
         case 'w':
         case 'W':
-            ableToMove(0, - MOVEMENT_Y);
+            keyStatus[(int) ('w')] = true;
             break;
         case 's':
         case 'S':
-            ableToMove(0, MOVEMENT_Y);
+            keyStatus[(int) ('s')] = true;
             break;
         case 'a':
         case 'A':
-             keyStatus[ (int) ('a') ] = true;
+             keyStatus[(int) ('a')] = true;
              break;
         case 'd':
         case 'D':
-             keyStatus[ (int) ('d') ] = true;
+             keyStatus[(int) ('d')] = true;
              break;
+        case 'p':
+        case 'P':
+            if (!player.getJumping()) {
+                for (int i = 1; i <= 30; ++i) {
+                    glutTimerFunc((1000/30) * i, jumpStart, 0);
+                }
+        
+                for (int i = 1; i <= 30; ++i) {
+                    glutTimerFunc(1000 + (1000/30) * i, jumpEnd, 0);
+                }
+
+                // Hold on for 2 seconds
+                glutTimerFunc(2 * 1000, [](int val) { player.setJumping(false); }, 0);
+            }
+            break;
     }
-    glutPostRedisplay();
+
+}
+
+void onKeyUp(unsigned char key, int x, int y) {
+    keyStatus[(int) key] = false;
 }
 
 void idle(void)
 {
     if (keyStatus[ (int) ('a') ]) {
-        ableToMove(- MOVEMENT_X, 0);
+        ableToMove(- MOVEMENT, 0, 0);
     }
 
     if (keyStatus[ (int) ('d') ]) {
-        ableToMove(MOVEMENT_X, 0);
+        ableToMove(MOVEMENT, 0, 0);
+    }
+
+    if (keyStatus[ (int) ('s') ]) {
+        ableToMove(0, MOVEMENT, 0);
+    }
+
+    if (keyStatus[ (int) ('w') ]) {
+        ableToMove(0, - MOVEMENT, 0);
     }
     
     glutPostRedisplay();

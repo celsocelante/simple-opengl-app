@@ -42,7 +42,7 @@ void Circle::setDisplayed(bool c_display) {
 
 void Circle::draw() {
     GLfloat twicePi = 2.0f * M_PI;
-    int triangles = 1000;
+    int triangles = 3000;
 	
     glBegin(GL_TRIANGLE_FAN);
     glColor3f(red, green, blue);
@@ -70,9 +70,10 @@ void Circle::setResizeState(bool rs) {
     beingResized = rs;
 }
 
-void Circle::move(double x, double y) {
+void Circle::move(double x, double y, double z) {
     this->x += x;
     this->y += y;
+    this->z += z;
 }
 
 bool Circle::collision(Circle *c, double dx, double dy) {
@@ -94,4 +95,12 @@ bool Circle::collision(double x, double y, double r) {
                             pow(this->y - y, 2));
 
     return temp <= (this->radius + r);
+}
+
+void Circle::setJumping(bool value) {
+    jumping = value;
+}
+
+bool Circle::getJumping() {
+    return jumping;
 }

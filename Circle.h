@@ -52,9 +52,12 @@ class Circle {
         bool getDisplayed() { return displayed; }
         bool getDragState() { return beingDragged; }
         bool getResizeState() { return beingResized; }
-        void move(double x, double y);
+        void move(double x, double y, double z);
         bool collision(Circle *c, double dx, double dy);
         bool collision(double x, double y, double radius);
         bool inside(Circle *c, double dx, double dy);
+        void setJumping(bool value);
+        bool getJumping();
+
 };
 #endif
