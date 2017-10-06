@@ -16,6 +16,9 @@
 #  include <GL/glut.h>
 #endif
 
+#define MOVEMENT_X 2
+#define MOVEMENT_Y 5
+
 using namespace std;
 using namespace tinyxml2;
 
@@ -77,18 +80,45 @@ void onKeyUp(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
+void ableToMove(double dx, double dy) {
+    if (player.collision(&center, dx/2, dy)) {
+        // cout << "collison" << endl;
+        return;
+    }
+
+    // Draw all the obstacles
+    for (Circle o : obstacles) {
+        if (player.collision(&o, dx/2, dy)) {
+            // cout << "collison" << endl;
+            return;
+        }
+    }
+
+    for (Circle lo : lowObstacles) {
+        if (player.collision(&lo, dx/2, dy)) {
+            // cout << "collison" << endl;
+            return;
+        }
+    }
+
+    // if (player.inside(&arena, dx/2, dy)) {
+    //     player.move(dx, dy);
+    // }
+
+    player.move(dx, dy);
+}
+
 void onKeyDown(unsigned char key, int x, int y)
 {
-    switch (key)
-    {
+    switch (key) {
         case 'w':
         case 'W':
-            player.move(0, -5);
+            ableToMove(0, - MOVEMENT_Y);
             break;
         case 's':
         case 'S':
-             player.move(0, 5);
-             break;
+            ableToMove(0, MOVEMENT_Y);
+            break;
         case 'a':
         case 'A':
              keyStatus[ (int) ('a') ] = true;
@@ -104,11 +134,11 @@ void onKeyDown(unsigned char key, int x, int y)
 void idle(void)
 {
     if (keyStatus[ (int) ('a') ]) {
-        player.move(-1, 0);
+        ableToMove(- MOVEMENT_X, 0);
     }
 
-    if(keyStatus[ (int) ('d') ]) {
-        player.move(1, 0);
+    if (keyStatus[ (int) ('d') ]) {
+        ableToMove(MOVEMENT_X, 0);
     }
     
     glutPostRedisplay();

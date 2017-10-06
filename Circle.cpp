@@ -75,11 +75,18 @@ void Circle::move(double x, double y) {
     this->y += y;
 }
 
-bool Circle::collision(Circle *c) {
-    double temp = sqrt(pow(c->getX() - x, 2) + 
-                            pow(c->getY() - y, 2));
+bool Circle::collision(Circle *c, double dx, double dy) {
+    double temp = sqrt(pow(c->getX() - (x + dx), 2) + 
+                            pow(c->getY() - (y + dy), 2));
 
 	return temp <= (c->getRadius() + radius);
+}
+
+bool Circle::inside(Circle *c, double dx, double dy) {
+    double temp = sqrt(pow(c->getX() - (x + dx), 2) + 
+                            pow(c->getY() - (y + dy), 2));
+
+	return temp > (c->getRadius() + radius);
 }
 
 bool Circle::collision(double x, double y, double r) {

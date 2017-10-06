@@ -53,7 +53,8 @@ class Circle {
         bool getDragState() { return beingDragged; }
         bool getResizeState() { return beingResized; }
         void move(double x, double y);
-        bool collision(Circle *c);
+        bool collision(Circle *c, double dx, double dy);
         bool collision(double x, double y, double radius);
+        bool inside(Circle *c, double dx, double dy);
 };
 #endif
