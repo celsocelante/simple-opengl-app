@@ -6,7 +6,6 @@ Circle::Circle(double c_x, double c_y, double c_z, double c_r) {
     beingDragged = false;
     beingResized = false;
     jumping = false;
-    flying = false;
     radius = c_r;
     previousRadius = radius;
 
@@ -83,24 +82,6 @@ bool Circle::collision(Circle *c, double dx, double dy) {
 	return temp <= (c->getRadius() + radius);
 }
 
-bool Circle::inside(Circle *c, double dx, double dy) {
-    double temp = sqrt(pow(c->getX() - (x + dx), 2) + 
-                            pow(c->getY() - (y + dy), 2));
-
-	return temp > (c->getRadius() + radius);
-}
-
-bool Circle::collision(double x, double y, double r) {
-	double temp = sqrt(pow(this->x - x, 2) + 
-                            pow(this->y - y, 2));
-
-    return temp <= (this->radius + r);
-}
-
 void Circle::setJumping(bool value) {
     jumping = value;
-}
-
-bool Circle::getJumping() {
-    return jumping;
 }

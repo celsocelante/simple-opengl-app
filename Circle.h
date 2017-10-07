@@ -20,13 +20,12 @@ class Circle {
         double previousRadius;
 
         double px, py, pz;
-        double pradius;
         
         bool displayed;
         bool beingDragged;
         bool beingResized;
 
-        bool jumping, flying;
+        bool jumping;
 
         double red, green, blue;
     
@@ -52,12 +51,11 @@ class Circle {
         bool getDisplayed() { return displayed; }
         bool getDragState() { return beingDragged; }
         bool getResizeState() { return beingResized; }
+        bool isJumping() { return jumping; }
+
         void move(double x, double y, double z);
         bool collision(Circle *c, double dx, double dy);
-        bool collision(double x, double y, double radius);
-        bool inside(Circle *c, double dx, double dy);
         void setJumping(bool value);
-        bool getJumping();
 
 };
 #endif

@@ -19,6 +19,7 @@
 #define MOVEMENT 2
 #define ANIMATION_FRAMES 30
 #define ANIMATION_TIME 2000
+#define FACTOR 0.5
 
 using namespace std;
 using namespace tinyxml2;
@@ -47,15 +48,17 @@ void display(void) {
     arena.draw();
     center.draw();
 
-    // Draw all the obstacles
+    // Tall obstacles
     for (Circle o : obstacles) {
         o.draw();
     }
 
+    // Short obstacles
     for (Circle lo : lowObstacles) {
         lo.draw();
     }
 
+    // The player
     player.draw();
 
     glFlush();
@@ -83,7 +86,8 @@ void ableToMove(double dx, double dy, double dz) {
     }
 
     // Arena
-    if( (sqrt(pow(arena.getX() - (player.getX() + dx), 2) + pow(arena.getY() - (player.getY() + dy), 2)) + player.getRadius()) >= arena.getRadius()) {
+    if( (sqrt(pow(arena.getX() - (player.getX() + dx), 2) + pow(arena.getY() - (player.getY() + dy), 2))
+                                                             + player.getRadius()) >= arena.getRadius()) {
         return;
     }
 
@@ -96,7 +100,7 @@ void ableToMove(double dx, double dy, double dz) {
 
     // Black obstacles
     for (Circle lo : lowObstacles) {
-        if (player.collision(&lo, dx/2, dy)  && !player.getJumping()) {
+        if (player.collision(&lo, dx/2, dy)  && !player.isJumping()) {
             return;
         }
     }
@@ -107,11 +111,11 @@ void ableToMove(double dx, double dy, double dz) {
 
 void jumpStart(int value) {
     player.setJumping(true);
-    player.setRadius(player.getRadius() + player.getRadius() * (0.5/ANIMATION_FRAMES));
+    player.setRadius(player.getRadius() + player.getRadius() * (FACTOR/ANIMATION_FRAMES));
 }
 
 void jumpEnd(int value) {
-    player.setRadius(player.getRadius() - player.getRadius() * (0.5/ANIMATION_FRAMES)); 
+    player.setRadius(player.getRadius() - player.getRadius() * (FACTOR/ANIMATION_FRAMES)); 
 }
 
 void onKeyDown(unsigned char key, int x, int y)
@@ -135,12 +139,12 @@ void onKeyDown(unsigned char key, int x, int y)
              break;
         case 'p':
         case 'P':
-            if (!player.getJumping()) {
+            if (!player.isJumping()) {
 
                 for (int i = 1; i <= ANIMATION_FRAMES; i++) {
                     glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpStart, 0);
                 }
-        
+
                 for (int i = 1; i <= ANIMATION_FRAMES; i++) {
                     glutTimerFunc(ANIMATION_TIME/2 + ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpEnd, 0);
                 }
@@ -205,7 +209,7 @@ void readConfigFile(string fileName) {
     doc.LoadFile(path);
     XMLElement* svg = doc.FirstChildElement("svg");
 
-    for(XMLElement* e = svg->FirstChildElement("circle"); e != NULL; e = e->NextSiblingElement("circle"))
+    for (XMLElement* e = svg->FirstChildElement("circle"); e != NULL; e = e->NextSiblingElement("circle"))
     {
         double cx = e->DoubleAttribute("cx");
         double cy = e->DoubleAttribute("cy");
