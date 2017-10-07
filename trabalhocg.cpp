@@ -16,7 +16,7 @@
 #  include <GL/glut.h>
 #endif
 
-#define MOVEMENT 1
+#define MOVEMENT 2
 #define ANIMATION_FRAMES 30
 #define ANIMATION_TIME 2000
 
@@ -77,27 +77,31 @@ void init(void) {
 }
 
 void ableToMove(double dx, double dy, double dz) {
+    // Center collision
     if (player.collision(&center, dx/2, dy)) {
-        // cout << "collison" << endl;
         return;
     }
 
-    if (!player.collision(&arena, 0, 0)) {
+    // Arena
+    if( (sqrt(pow(arena.getX() - (player.getX() + dx), 2) + pow(arena.getY() - (player.getY() + dy), 2)) + player.getRadius()) >= arena.getRadius()) {
         return;
     }
 
+    // Red obstacles
     for (Circle o : obstacles) {
         if (player.collision(&o, dx/2, dy)) {
             return;
         }
     }
 
+    // Black obstacles
     for (Circle lo : lowObstacles) {
         if (player.collision(&lo, dx/2, dy)  && !player.getJumping()) {
             return;
         }
     }
 
+    // If passes the previous filters, the player will actually move
     player.move(dx, dy, dz);
 }
 
