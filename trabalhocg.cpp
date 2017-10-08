@@ -43,7 +43,7 @@ bool keyStatus[256] = { false };
 // If the player can walk on the low obstacles
 bool canMoveFreely = false;
 
-Circle* disabledLowObstacle;
+Circle disabledLowObstacle;
 
 
 void display(void) {
@@ -105,11 +105,22 @@ void ableToMove(double dx, double dy, double dz) {
     }
 
     // Black obstacles
+    int count = 0;
+
+    if (!player.isJumping() && disabledLowObstacle.getId() != -1 && sqrt(pow(disabledLowObstacle.getX() - (player.getX() + dx), 2) + 
+                                    pow(disabledLowObstacle.getY() - (player.getY() + dy), 2)) > (disabledLowObstacle.getRadius() + player.getRadius()) ) {
+        canMoveFreely = false;
+    }
+
     for (Circle lo : lowObstacles) {
-        if(player.collision(&lo, dx, dy) && player.isJumping()) {
+        if (player.collision(&lo, dx, dy) && player.isJumping()) {
             canMoveFreely = true;
-            disabledLowObstacle = &lo;
-            cout << lo.getId() << endl;
+
+            // Last unlocked lowObstacle info
+            disabledLowObstacle.setRadius(lo.getRadius());
+            disabledLowObstacle.setX(lo.getX());
+            disabledLowObstacle.setY(lo.getY());
+            disabledLowObstacle.setId(lo.getId());
         }
 
         if (player.collision(&lo, dx, dy) && !player.isJumping() && !canMoveFreely) {
@@ -198,15 +209,11 @@ void idle(void)
 
 void readConfigFile(string fileName) {
     char path[200];
-    char path2[200];
+    tinyxml2::XMLDocument doc;
 
     strcpy(path, fileName.c_str());
     strcat(path, "config.xml");
-
-    tinyxml2::XMLDocument doc;
     doc.LoadFile(path);
-
-    cout << path << endl;
 
     XMLElement* app = doc.FirstChildElement("aplicacao");
 
@@ -216,11 +223,11 @@ void readConfigFile(string fileName) {
 
     strcpy(path, "");
     strcpy(path, caminhoArquivo.c_str());
-    strcat(path, "arena.svg");
-
-    cout << path2 << endl;
-
+    strcat(path, nomeArquivo.c_str());
+    strcat(path, ".");
+    strcat(path, tipoArquivo.c_str());
     doc.LoadFile(path);
+
     XMLElement* svg = doc.FirstChildElement("svg");
 
     for (XMLElement* e = svg->FirstChildElement("circle"); e != NULL; e = e->NextSiblingElement("circle"))

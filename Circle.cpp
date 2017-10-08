@@ -2,7 +2,7 @@
 
 Circle::Circle(double c_x, double c_y, double c_z, double c_r) {
     setCoord(c_x, c_y, c_z);
-    displayed = false;
+    displayed = true;
     beingDragged = false;
     beingResized = false;
     jumping = false;
@@ -13,7 +13,18 @@ Circle::Circle(double c_x, double c_y, double c_z, double c_r) {
     id = -1;
 }
 
-Circle::Circle() {}
+Circle::Circle() {
+    displayed = false;
+    beingDragged = false;
+    beingResized = false;
+    x = y = z = 0;
+    jumping = false;
+    radius = 0;
+    previousRadius = radius;
+
+    red = green = blue = 0;
+    id = -1;
+}
 
 void Circle::setX(double c_x) {
     x = c_x;
