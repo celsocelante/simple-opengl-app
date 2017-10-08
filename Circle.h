@@ -28,6 +28,8 @@ class Circle {
         bool jumping;
 
         double red, green, blue;
+
+        int id;
     
     public:
         Circle(double c_x, double c_y, double c_z, double c_r);
@@ -52,10 +54,14 @@ class Circle {
         bool getDragState() { return beingDragged; }
         bool getResizeState() { return beingResized; }
         bool isJumping() { return jumping; }
+        int getId() { return id; }
 
         void move(double x, double y, double z);
         bool collision(Circle *c, double dx, double dy);
         void setJumping(bool value);
+        void setId(int id);
+        void changeRadius(double i);
+        void restoreRadius();
 
 };
 #endif

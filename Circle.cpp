@@ -10,6 +10,7 @@ Circle::Circle(double c_x, double c_y, double c_z, double c_r) {
     previousRadius = radius;
 
     red = green = blue = 0;
+    id = -1;
 }
 
 Circle::Circle() {}
@@ -84,4 +85,20 @@ bool Circle::collision(Circle *c, double dx, double dy) {
 
 void Circle::setJumping(bool value) {
     jumping = value;
+}
+
+void Circle::setId(int id) {
+    this->id = id;
+}
+
+void Circle::changeRadius(double i) {
+    radius += i;
+
+    if (radius < 0) {
+        radius *= -1;
+    }
+}
+
+void Circle::restoreRadius() {
+    radius = previousRadius;
 }

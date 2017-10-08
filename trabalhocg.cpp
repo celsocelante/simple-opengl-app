@@ -40,6 +40,11 @@ Window win;
 // Key status
 bool keyStatus[256] = { false };
 
+// If the player can walk on the low obstacles
+bool canMoveFreely = false;
+
+Circle* disabledLowObstacle;
+
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT);    
@@ -80,8 +85,9 @@ void init(void) {
 }
 
 void ableToMove(double dx, double dy, double dz) {
+
     // Center collision
-    if (player.collision(&center, dx/2, dy)) {
+    if (player.collision(&center, dx, dy)) {
         return;
     }
 
@@ -93,14 +99,20 @@ void ableToMove(double dx, double dy, double dz) {
 
     // Red obstacles
     for (Circle o : obstacles) {
-        if (player.collision(&o, dx/2, dy)) {
+        if (player.collision(&o, dx, dy)) {
             return;
         }
     }
 
     // Black obstacles
     for (Circle lo : lowObstacles) {
-        if (player.collision(&lo, dx/2, dy)  && !player.isJumping()) {
+        if(player.collision(&lo, dx, dy) && player.isJumping()) {
+            canMoveFreely = true;
+            disabledLowObstacle = &lo;
+            cout << lo.getId() << endl;
+        }
+
+        if (player.collision(&lo, dx, dy) && !player.isJumping() && !canMoveFreely) {
             return;
         }
     }
@@ -111,11 +123,13 @@ void ableToMove(double dx, double dy, double dz) {
 
 void jumpStart(int value) {
     player.setJumping(true);
-    player.setRadius(player.getRadius() + player.getRadius() * (FACTOR/ANIMATION_FRAMES));
+    double radius = player.getRadius();
+    player.changeRadius(radius * (FACTOR/ANIMATION_FRAMES));
 }
 
 void jumpEnd(int value) {
-    player.setRadius(player.getRadius() - player.getRadius() * (FACTOR/ANIMATION_FRAMES)); 
+    double radius = player.getRadius();
+    player.changeRadius( -(radius * (FACTOR/ANIMATION_FRAMES)) ); 
 }
 
 void onKeyDown(unsigned char key, int x, int y)
@@ -150,7 +164,7 @@ void onKeyDown(unsigned char key, int x, int y)
                 }
 
                 // Hold on for 2 seconds
-                glutTimerFunc(ANIMATION_TIME, [](int val) { player.setJumping(false); }, 0);
+                glutTimerFunc(ANIMATION_TIME, [](int val) { player.setJumping(false); player.restoreRadius(); }, 0);
             }
             break;
     }
@@ -214,16 +228,19 @@ void readConfigFile(string fileName) {
         double cx = e->DoubleAttribute("cx");
         double cy = e->DoubleAttribute("cy");
         double radius = e->DoubleAttribute("r");
+        int id = e->DoubleAttribute("id");
         string fill = e->Attribute("fill");
 
         // Icone do jogador
         if (fill == "green") {
             player = Circle(cx, cy, 0, radius);
             player.setRGB(0, 1, 0);
+            player.setId(id);
 
         } else if (fill == "blue") {
             arena = Circle(cx, cy, 0, radius);
             arena.setRGB(0, 0, 1);
+            arena.setId(id);
 
             win.setWidth((int) 2 * radius);
             win.setHeight((int) 2 * radius);
@@ -232,16 +249,19 @@ void readConfigFile(string fileName) {
         } else if (fill == "white") {
             center = Circle(cx, cy, 0, radius);
             center.setRGB(1, 1, 1);
+            center.setId(id);
 
         } else if (fill == "red") {
             Circle temp = Circle(cx, cy, 0, radius);
             temp.setRGB(1, 0, 0);
+            temp.setId(id);
     
             obstacles.push_back(temp);
 
         } else if (fill == "black") {
             Circle temp = Circle(cx, cy, 0, radius);
             temp.setRGB(0, 0, 0);
+            temp.setId(id);
     
             lowObstacles.push_back(temp);
         }
