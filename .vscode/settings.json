@@ -1,4 +1,5 @@
 {
+    "window.nativeTabs": false,
     "files.associations": {
         "*.tcc": "cpp",
         "cctype": "cpp",
