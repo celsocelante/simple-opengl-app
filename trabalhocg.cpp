@@ -221,6 +221,11 @@ void readConfigFile(string fileName) {
     string tipoArquivo = app->FirstChildElement("arquivoDaArena")->Attribute("tipo");
     string caminhoArquivo = app->FirstChildElement("arquivoDaArena")->Attribute("caminho");
 
+    double velTiro = app->FirstChildElement("jogador")->DoubleAttribute("velTiro");
+    double vel = app->FirstChildElement("jogador")->DoubleAttribute("vel");
+
+    // criar player
+
     strcpy(path, "");
     strcpy(path, caminhoArquivo.c_str());
     strcat(path, nomeArquivo.c_str());
