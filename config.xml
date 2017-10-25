@@ -1,3 +1,4 @@
 <aplicacao>
-	<arquivoDaArena nome="arena" tipo="svg" caminho="./"></arquivoDaArena>
+	<arquivoDaArena nome="arena" tipo="svg" caminho="coloque o seu caminho aqui para testar"></arquivoDaArena>
+	<jogador velTiro="0.2" vel="0.1"></jogador>
 </aplicacao>
