@@ -21,7 +21,7 @@ void Robot::drawRectangle(double width, double height, double R, double G, doubl
 
 void Robot::drawCircle(double radius, double R, double G, double B) {
     GLfloat twicePi = 2.0f * M_PI;
-    int triangles = 3000;
+    int triangles = 300;
 
     glBegin(GL_TRIANGLE_FAN);
     glColor3f(R, G, B);
@@ -40,21 +40,36 @@ void Robot::drawEllipse() {
 }
 
 void Robot::rotateRight() {
-
+    this->theta += 2;
 }
 
 void Robot::rotateLeft() {
-
+    this->theta -= 2;
 }
 
 void Robot::moveForward() {
-
+    this->x -= sin(-theta);
+    this->y -= cos(-theta);
 }
 
 void Robot::moveBackward() {
-
+    this->x += cos(theta);
+    this->y += sin(theta);
 }
 
 void Robot::draw() {
-
+    glPushMatrix();
+        //Desenha braco da base
+        glPushMatrix();
+            glTranslatef(x, y, 0);
+            glRotatef(this->theta, 0, 0, 1);
+            drawRectangle(40, 15, 0, 1, 0);
+            glPushMatrix();
+                glTranslatef(30, 0, 0);
+                glRotatef(this->thetaArm, 0, 0, 1);
+                drawRectangle(10, 30, 0, 1, 0);
+            glPopMatrix();
+        glPopMatrix();
+        drawCircle(15, 0, 1, 0);
+    glPopMatrix();
 }

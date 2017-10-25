@@ -5,6 +5,7 @@
 #include "tinyxml2/tinyxml2.h"
 #include "Circle.h"
 #include "Window.h"
+#include "Robot.h"
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
@@ -37,6 +38,9 @@ list<Circle> lowObstacles;
 // Window object
 Window win;
 
+// Robot object
+Robot bot;
+
 // Key status
 bool keyStatus[256] = { false };
 
@@ -64,7 +68,9 @@ void display(void) {
     }
 
     // The player
-    player.draw();
+    // player.draw();
+
+    bot.draw();
 
     glFlush();
 }
@@ -190,18 +196,22 @@ void idle(void)
 {
     if (keyStatus[ (int) ('a') ]) {
         ableToMove(- MOVEMENT, 0, 0);
+        bot.rotateLeft();
     }
 
     if (keyStatus[ (int) ('d') ]) {
         ableToMove(MOVEMENT, 0, 0);
+        bot.rotateRight();
     }
 
     if (keyStatus[ (int) ('s') ]) {
         ableToMove(0, MOVEMENT, 0);
+        bot.moveBackward();
     }
 
     if (keyStatus[ (int) ('w') ]) {
         ableToMove(0, - MOVEMENT, 0);
+        bot.moveForward();
     }
     
     glutPostRedisplay();
@@ -223,8 +233,6 @@ void readConfigFile(string fileName) {
 
     double velTiro = app->FirstChildElement("jogador")->DoubleAttribute("velTiro");
     double vel = app->FirstChildElement("jogador")->DoubleAttribute("vel");
-
-    // Criar objeto do jogador
 
     strcpy(path, "");
     strcpy(path, caminhoArquivo.c_str());
@@ -248,6 +256,9 @@ void readConfigFile(string fileName) {
             player = Circle(cx, cy, 0, radius);
             player.setRGB(0, 1, 0);
             player.setId(id);
+
+            // Criar objeto do jogador
+            bot = Robot(cx, cy, 0);
 
         } else if (fill == "blue") {
             arena = Circle(cx, cy, 0, radius);

@@ -16,15 +16,17 @@
 class Robot {
     private:
         double x, y, z;
-        double radius; // Raio do circulo virtual em torno do robo 
+        double radius = 20; // Raio do circulo virtual em torno do robo 
+        double thetaArm = 0;
+        double theta = 0;
 
-        Robot();
-        Robot(double x, double y, double z);
         void drawRectangle(double width, double height, double R, double G, double B);
         void drawCircle(double radius, double R, double G, double B);
         void drawEllipse();
 
     public:
+        Robot();
+        Robot(double x, double y, double z);
         void rotateRight();
         void rotateLeft();
         void moveForward();
