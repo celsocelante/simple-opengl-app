@@ -9,6 +9,9 @@
 #endif
 
 #include <math.h>
+#include <iostream>
+#include <string>
+using namespace std;
 
 #ifndef ROBOT_H
 #define ROBOT_H
@@ -19,10 +22,11 @@ class Robot {
         double radius = 20; // Raio do circulo virtual em torno do robo 
         double thetaArm = 0;
         double theta = 0;
+        double i;
 
         void drawRectangle(double width, double height, double R, double G, double B);
         void drawCircle(double radius, double R, double G, double B);
-        void drawEllipse();
+        void drawEllipse(double xRadius, double YRadius);
 
     public:
         Robot();

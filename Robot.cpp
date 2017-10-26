@@ -6,6 +6,8 @@ Robot::Robot(double x, double y, double z) {
     this->x = x;
     this->y = y;
     this->z = z;
+    this->radius = 20;
+    this->i = 1;
 }
 
 void Robot::drawRectangle(double width, double height, double R, double G, double B) {
@@ -35,41 +37,91 @@ void Robot::drawCircle(double radius, double R, double G, double B) {
 	glEnd();
 }
 
-void Robot::drawEllipse() {
+void Robot::drawEllipse(double xRadius, double YRadius) {
+    int i;
 
+    glBegin(GL_TRIANGLE_FAN);
+    // glBegin(GL_LINE_LOOP);
+    glColor3f(0, 1, 0);
+    for (i = 0; i < 360; i++) {
+        double rad = i * (M_PI/180);
+        glVertex2f(cos(rad) * xRadius, sin(rad) * YRadius);
+    }
+    glEnd();
 }
 
+// void Robot::rotateArmRight() {
+//     if (this->thetaArm < 45) {
+//         this->thetaArm += 1;
+//     }
+// }
+
+// void Robot::rotateArmLeft() {
+//     if (this->thetaArm > 0) {
+//         this->thetaArm -= 1;
+//     }
+// }
+
 void Robot::rotateRight() {
-    this->theta += 2;
+    this->theta += 1;
+
+    if (theta >= 360) {
+        theta = 0;
+    }
+
+    cout << theta << endl;
 }
 
 void Robot::rotateLeft() {
-    this->theta -= 2;
+    this->theta -= 1;
+
+    if (theta <= 0) {
+        theta = 360;
+    }
+
+    cout << theta << endl;
 }
 
 void Robot::moveForward() {
-    this->x -= sin(-theta);
-    this->y -= cos(-theta);
+    y -= abs(sin(theta));
+    x -= abs(cos(theta));
 }
 
 void Robot::moveBackward() {
-    this->x += cos(theta);
-    this->y += sin(theta);
+    this->y += 2;
+    this->i += 1;
 }
 
 void Robot::draw() {
     glPushMatrix();
-        //Desenha braco da base
+    glTranslatef(0 + i, 0 + i, 0);
         glPushMatrix();
             glTranslatef(x, y, 0);
             glRotatef(this->theta, 0, 0, 1);
-            drawRectangle(40, 15, 0, 1, 0);
+
+            drawEllipse(this->radius, this->radius/4);
+
+            // Perna direita
             glPushMatrix();
-                glTranslatef(30, 0, 0);
+            glTranslatef(-this->radius/3, this->radius/5, 0);
+            drawRectangle(this->radius/3, this->radius/2, 0, 0, 0);
+            glPopMatrix();
+
+            // Perna esquerda
+            glPushMatrix();
+                glTranslatef(this->radius/3, -this->radius/1.4, 0);
+                drawRectangle(this->radius/3, this->radius/2, 0, 0, 0);
+            glPopMatrix();
+
+            // Braco
+            glPushMatrix();
                 glRotatef(this->thetaArm, 0, 0, 1);
-                drawRectangle(10, 30, 0, 1, 0);
+                glTranslatef(-(this->radius - 0.4), 0, 0);
+                drawRectangle(this->radius/3, this->radius, 0, 1, 0);
+                glTranslatef(0, this->radius, 0);
             glPopMatrix();
         glPopMatrix();
-        drawCircle(15, 0, 1, 0);
+
+        drawCircle(this->radius/2, 0, 1, 0);
     glPopMatrix();
 }

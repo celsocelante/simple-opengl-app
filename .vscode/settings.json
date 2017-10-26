@@ -21,6 +21,10 @@
         "__bit_reference": "cpp",
         "algorithm": "cpp",
         "string": "cpp",
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "bitset": "cpp",
+        "functional": "cpp",
+        "list": "cpp",
+        "tuple": "cpp"
     }
 }
