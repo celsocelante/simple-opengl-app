@@ -90,7 +90,7 @@ void init(void) {
     );
 }
 
-void ableToMove(double dx, double dy, double dz) {
+void ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
 
     // Center collision
     if (player.collision(&center, dx, dy)) {
@@ -111,7 +111,7 @@ void ableToMove(double dx, double dy, double dz) {
     }
 
     // Black obstacles
-    int count = 0;
+    GLint count = 0;
 
     if (!player.isJumping() && disabledLowObstacle.getId() != -1 && sqrt(pow(disabledLowObstacle.getX() - (player.getX() + dx), 2) + 
                                     pow(disabledLowObstacle.getY() - (player.getY() + dy), 2)) > (disabledLowObstacle.getRadius() + player.getRadius()) ) {
@@ -138,83 +138,89 @@ void ableToMove(double dx, double dy, double dz) {
     player.move(dx, dy, dz);
 }
 
-void jumpStart(int value) {
+void jumpStart(GLint value) {
     player.setJumping(true);
-    double radius = player.getRadius();
+    GLfloat radius = player.getRadius();
     player.changeRadius(radius * (FACTOR/ANIMATION_FRAMES));
 }
 
-void jumpEnd(int value) {
-    double radius = player.getRadius();
+void jumpEnd(GLint value) {
+    GLfloat radius = player.getRadius();
     player.changeRadius( -(radius * (FACTOR/ANIMATION_FRAMES)) ); 
 }
 
-void onKeyDown(unsigned char key, int x, int y)
+void onKeyDown(unsigned char key, GLint x, GLint y)
 {
     switch (key) {
         case 'w':
         case 'W':
-            keyStatus[(int) ('w')] = true;
+            keyStatus[(GLint) ('w')] = true;
             break;
         case 's':
         case 'S':
-            keyStatus[(int) ('s')] = true;
+            keyStatus[(GLint) ('s')] = true;
             break;
         case 'a':
         case 'A':
-             keyStatus[(int) ('a')] = true;
+             keyStatus[(GLint) ('a')] = true;
              break;
         case 'd':
         case 'D':
-             keyStatus[(int) ('d')] = true;
+             keyStatus[(GLint) ('d')] = true;
              break;
         case 'p':
         case 'P':
             if (!player.isJumping()) {
 
-                for (int i = 1; i <= ANIMATION_FRAMES; i++) {
+                for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
                     glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpStart, 0);
                 }
 
-                for (int i = 1; i <= ANIMATION_FRAMES; i++) {
+                for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
                     glutTimerFunc(ANIMATION_TIME/2 + ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpEnd, 0);
                 }
 
                 // Hold on for 2 seconds
-                glutTimerFunc(ANIMATION_TIME, [](int val) { player.setJumping(false); player.restoreRadius(); }, 0);
+                glutTimerFunc(ANIMATION_TIME, [](GLint val) { player.setJumping(false); player.restoreRadius(); }, 0);
             }
             break;
     }
 
 }
 
-void onKeyUp(unsigned char key, int x, int y) {
-    keyStatus[(int) key] = false;
+void onKeyUp(unsigned char key, GLint x, GLint y) {
+    keyStatus[(GLint) key] = false;
 }
 
 void idle(void)
 {
-    if (keyStatus[ (int) ('a') ]) {
+    if (keyStatus[ (GLint) ('a') ]) {
         ableToMove(- MOVEMENT, 0, 0);
         bot.rotateLeft();
     }
 
-    if (keyStatus[ (int) ('d') ]) {
+    if (keyStatus[ (GLint) ('d') ]) {
         ableToMove(MOVEMENT, 0, 0);
         bot.rotateRight();
     }
 
-    if (keyStatus[ (int) ('s') ]) {
+    if (keyStatus[ (GLint) ('s') ]) {
         ableToMove(0, MOVEMENT, 0);
         bot.moveBackward();
     }
 
-    if (keyStatus[ (int) ('w') ]) {
+    if (keyStatus[ (GLint) ('w') ]) {
         ableToMove(0, - MOVEMENT, 0);
         bot.moveForward();
     }
     
     glutPostRedisplay();
+}
+
+void onPassiveMouseMotion(GLint x, GLint y) {
+    if ((x >= 0 && x <= win.getWidth()) && (y >= 0 && y <= win.getHeight())) {
+        cout << x << " " << y << endl;
+    }
 }
 
 void readConfigFile(string fileName) {
@@ -231,8 +237,8 @@ void readConfigFile(string fileName) {
     string tipoArquivo = app->FirstChildElement("arquivoDaArena")->Attribute("tipo");
     string caminhoArquivo = app->FirstChildElement("arquivoDaArena")->Attribute("caminho");
 
-    double velTiro = app->FirstChildElement("jogador")->DoubleAttribute("velTiro");
-    double vel = app->FirstChildElement("jogador")->DoubleAttribute("vel");
+    GLfloat velTiro = app->FirstChildElement("jogador")->DoubleAttribute("velTiro");
+    GLfloat vel = app->FirstChildElement("jogador")->DoubleAttribute("vel");
 
     strcpy(path, "");
     strcpy(path, caminhoArquivo.c_str());
@@ -245,10 +251,10 @@ void readConfigFile(string fileName) {
 
     for (XMLElement* e = svg->FirstChildElement("circle"); e != NULL; e = e->NextSiblingElement("circle"))
     {
-        double cx = e->DoubleAttribute("cx");
-        double cy = e->DoubleAttribute("cy");
-        double radius = e->DoubleAttribute("r");
-        int id = e->DoubleAttribute("id");
+        GLfloat cx = e->DoubleAttribute("cx");
+        GLfloat cy = e->DoubleAttribute("cy");
+        GLfloat radius = e->DoubleAttribute("r");
+        GLint id = e->DoubleAttribute("id");
         string fill = e->Attribute("fill");
 
         // Icone do jogador
@@ -265,8 +271,8 @@ void readConfigFile(string fileName) {
             arena.setRGB(0, 0, 1);
             arena.setId(id);
 
-            win.setWidth((int) 2 * radius);
-            win.setHeight((int) 2 * radius);
+            win.setWidth((GLint) 2 * radius);
+            win.setHeight((GLint) 2 * radius);
             win.setTitle("Arena");
 
         } else if (fill == "white") {
@@ -291,7 +297,7 @@ void readConfigFile(string fileName) {
     }
 }
 
-int main(int argc, char** argv) {
+GLint main(GLint argc, char** argv) {
     win = Window();
 
     if(argc == 2) {
@@ -313,6 +319,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(onKeyDown);
     glutKeyboardUpFunc(onKeyUp);
     glutDisplayFunc(display);
+    glutPassiveMotionFunc(onPassiveMouseMotion);
     glutIdleFunc(idle);
 
     glutMainLoop();

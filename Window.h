@@ -1,27 +1,37 @@
 #include <string>
 
+#ifdef __APPLE__
+#  include <OpenGL/gl.h>
+#  include <OpenGL/glu.h>
+#  include <GLUT/glut.h>
+#else
+#  include <GL/gl.h>
+#  include <GL/glu.h>
+#  include <GL/glut.h>
+#endif
+
 class Window {
     private:
-        int width;
-        int height;
+        GLint width;
+        GLint height;
         std::string title;
-        double red = 1;
-        double green = 0;
-        double blue = 0;
+        GLfloat red = 1;
+        GLfloat green = 0;
+        GLfloat blue = 0;
 
     public:
-        Window(int w, int h, std::string t);
+        Window(GLint w, GLint h, std::string t);
         Window();
-        void setWidth(int w);
-        void setHeight(int h);
+        void setWidth(GLint w);
+        void setHeight(GLint h);
         void setTitle(std::string t);
-        void setRGB(double r, double g, double b);
+        void setRGB(GLfloat r, GLfloat g, GLfloat b);
 
-        int getWidth() { return width; }
-        int getHeight() { return height; }
+        GLint getWidth() { return width; }
+        GLint getHeight() { return height; }
         std::string getTitle() { return title; }
 
-        double getRed() { return red; }
-        double getGreen() { return green; }
-        double getBlue() { return blue; }
+        GLfloat getRed() { return red; }
+        GLfloat getGreen() { return green; }
+        GLfloat getBlue() { return blue; }
 };

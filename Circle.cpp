@@ -1,6 +1,6 @@
 #include "Circle.h"
 
-Circle::Circle(double c_x, double c_y, double c_z, double c_r) {
+Circle::Circle(GLfloat c_x, GLfloat c_y, GLfloat c_z, GLfloat c_r) {
     setCoord(c_x, c_y, c_z);
     displayed = true;
     beingDragged = false;
@@ -26,23 +26,23 @@ Circle::Circle() {
     id = -1;
 }
 
-void Circle::setX(double c_x) {
+void Circle::setX(GLfloat c_x) {
     x = c_x;
 }
 
-void Circle::setY(double c_y) {
+void Circle::setY(GLfloat c_y) {
     y = c_y;
 }
-void Circle::setZ(double c_z) {
+void Circle::setZ(GLfloat c_z) {
     z = c_z;
 }
-void Circle::setCoord(double c_x, double c_y, double c_z) {
+void Circle::setCoord(GLfloat c_x, GLfloat c_y, GLfloat c_z) {
     x = c_x;
     y = c_y;
     z = c_z;
 }
 
-void Circle::setRadius(double c_r) {
+void Circle::setRadius(GLfloat c_r) {
     radius = c_r;
 }
 
@@ -53,12 +53,12 @@ void Circle::setDisplayed(bool c_display) {
 
 void Circle::draw() {
     GLfloat twicePi = 2.0f * M_PI;
-    int triangles = 3000;
+    GLint triangles = 3000;
 	
     glBegin(GL_TRIANGLE_FAN);
     glColor3f(red, green, blue);
 		glVertex3f(x, y, 0); // center of circle
-		for(int i = 0; i <= triangles; i ++) { 
+		for(GLint i = 0; i <= triangles; i ++) { 
 			glVertex3f(
 		            x + (radius * cos(i *  twicePi / triangles)), 
 			    y + (radius * sin(i * twicePi / triangles)), 0
@@ -67,7 +67,7 @@ void Circle::draw() {
 	glEnd();
 }
 
-void Circle::setRGB(double r, double g, double b) {
+void Circle::setRGB(GLfloat r, GLfloat g, GLfloat b) {
     red = r;
     green = g;
     blue = b;
@@ -81,14 +81,14 @@ void Circle::setResizeState(bool rs) {
     beingResized = rs;
 }
 
-void Circle::move(double x, double y, double z) {
+void Circle::move(GLfloat x, GLfloat y, GLfloat z) {
     this->x += x;
     this->y += y;
     this->z += z;
 }
 
-bool Circle::collision(Circle *c, double dx, double dy) {
-    double temp = sqrt(pow(c->getX() - (x + dx), 2) + 
+bool Circle::collision(Circle *c, GLfloat dx, GLfloat dy) {
+    GLfloat temp = sqrt(pow(c->getX() - (x + dx), 2) + 
                             pow(c->getY() - (y + dy), 2));
 
 	return temp <= (c->getRadius() + radius);
@@ -98,11 +98,11 @@ void Circle::setJumping(bool value) {
     jumping = value;
 }
 
-void Circle::setId(int id) {
+void Circle::setId(GLint id) {
     this->id = id;
 }
 
-void Circle::changeRadius(double i) {
+void Circle::changeRadius(GLfloat i) {
     radius += i;
 
     if (radius < 0) {

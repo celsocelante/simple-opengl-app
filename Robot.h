@@ -18,21 +18,26 @@ using namespace std;
 
 class Robot {
     private:
-        double x, y, z;
-        double radius = 20; // Raio do circulo virtual em torno do robo 
-        double thetaArm = 0;
-        double theta = 0;
-        double i;
+        GLfloat x, y, z;
+        GLfloat radius = 20; // Raio do circulo virtual em torno do robo 
+        GLfloat thetaArm = 0;
+        GLfloat theta = 0;
+        GLfloat i;
 
-        void drawRectangle(double width, double height, double R, double G, double B);
-        void drawCircle(double radius, double R, double G, double B);
-        void drawEllipse(double xRadius, double YRadius);
+        void drawRectangle(GLfloat width, GLfloat height, GLfloat R, GLfloat G, GLfloat B);
+        void drawRectangleLine(GLfloat width, GLfloat height, GLfloat R, GLfloat G, GLfloat B);
+        void drawCircle(GLfloat radius, GLfloat R, GLfloat G, GLfloat B);
+        void drawCircleLine(GLfloat radius, GLfloat R, GLfloat G, GLfloat B);
+        void drawEllipse(GLfloat xRadius, GLfloat YRadius, GLfloat R, GLfloat G, GLfloat B);
+        void drawEllipseLine(GLfloat xRadius, GLfloat YRadius, GLfloat R, GLfloat G, GLfloat B);
 
     public:
         Robot();
-        Robot(double x, double y, double z);
+        Robot(GLfloat x, GLfloat y, GLfloat z);
         void rotateRight();
         void rotateLeft();
+        void rotateArmLeft();
+        void rotateArmRight();
         void moveForward();
         void moveBackward();
         void draw();

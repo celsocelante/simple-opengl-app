@@ -15,11 +15,11 @@
 
 class Circle {
     private:
-        double x, y, z;
-        double radius;
-        double previousRadius;
+        GLfloat x, y, z;
+        GLfloat radius;
+        GLfloat previousRadius;
 
-        double px, py, pz;
+        GLfloat px, py, pz;
         
         bool displayed;
         bool beingDragged;
@@ -27,40 +27,40 @@ class Circle {
 
         bool jumping;
 
-        double red, green, blue;
+        GLfloat red, green, blue;
 
-        int id;
+        GLint id;
     
     public:
-        Circle(double c_x, double c_y, double c_z, double c_r);
+        Circle(GLfloat c_x, GLfloat c_y, GLfloat c_z, GLfloat c_r);
         Circle();
 
-        void setX(double c_x);
-        void setY(double c_y);
-        void setZ(double c_z);
-        void setCoord(double c_x, double c_y, double c_z);
-        void setRadius(double c_r);
+        void setX(GLfloat c_x);
+        void setY(GLfloat c_y);
+        void setZ(GLfloat c_z);
+        void setCoord(GLfloat c_x, GLfloat c_y, GLfloat c_z);
+        void setRadius(GLfloat c_r);
         void setDisplayed(bool d);
         void setDragState(bool bgd);
         void setResizeState(bool rs);
-        void setRGB(double r, double g, double b);
+        void setRGB(GLfloat r, GLfloat g, GLfloat b);
         void draw();
 
-        double getX() { return x; }
-        double getY() { return y; }
-        double getZ() { return z; }
-        double getRadius() { return radius; }
+        GLfloat getX() { return x; }
+        GLfloat getY() { return y; }
+        GLfloat getZ() { return z; }
+        GLfloat getRadius() { return radius; }
         bool getDisplayed() { return displayed; }
         bool getDragState() { return beingDragged; }
         bool getResizeState() { return beingResized; }
         bool isJumping() { return jumping; }
-        int getId() { return id; }
+        GLint getId() { return id; }
 
-        void move(double x, double y, double z);
-        bool collision(Circle *c, double dx, double dy);
+        void move(GLfloat x, GLfloat y, GLfloat z);
+        bool collision(Circle *c, GLfloat dx, GLfloat dy);
         void setJumping(bool value);
-        void setId(int id);
-        void changeRadius(double i);
+        void setId(GLint id);
+        void changeRadius(GLfloat i);
         void restoreRadius();
 
 };
