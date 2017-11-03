@@ -43,11 +43,11 @@ void Robot::drawCircle(GLfloat radius, GLfloat R, GLfloat G, GLfloat B) {
 
     glBegin(GL_TRIANGLE_FAN);
     glColor3f(R, G, B);
-		glVertex3f(x, y, 0); // center of circle
+		glVertex3f(this->x, this->y, 0); // center of circle
 		for(GLint i = 0; i <= triangles; i ++) { 
 			glVertex3f(
-		            x + (radius * cos(i *  twicePi / triangles)), 
-			    y + (radius * sin(i * twicePi / triangles)), 0
+                this->x + (radius * cos(i *  twicePi / triangles)), 
+			    this->y + (radius * sin(i * twicePi / triangles)), 0
 			);
 		}
 	glEnd();
@@ -64,8 +64,8 @@ void Robot::drawCircleLine(GLfloat radius, GLfloat R, GLfloat G, GLfloat B) {
 		glVertex3f(x, y, 0); // center of circle
 		for(GLint i = 0; i <= triangles; i ++) { 
 			glVertex3f(
-		            x + (radius * cos(i *  twicePi / triangles)), 
-			    y + (radius * sin(i * twicePi / triangles)), 0
+		            this->x + (radius * cos(i *  twicePi / triangles)), 
+			    this->y + (radius * sin(i * twicePi / triangles)), 0
 			);
 		}
 	glEnd();
@@ -111,34 +111,20 @@ void Robot::rotateArmLeft() {
 
 void Robot::rotateRight() {
     this->theta += 1;
-
-    if (theta >= 360) {
-        theta = 0;
-    }
-
-    cout << theta << endl;
 }
 
 void Robot::rotateLeft() {
     this->theta -= 1;
-
-    if (theta <= 0) {
-        theta = 360;
-    }
-
-    cout << theta << endl;
 }
 
 void Robot::moveForward() {
-    cout << "Theta: " << theta << endl;
-    x += 2 * sin(theta);
-    y += 2 * cos(theta);
+    x -= cos((theta - 90) * M_PI / 180);
+    y -= sin((theta - 90) * M_PI / 180);
 }
 
 void Robot::moveBackward() {
-    cout << "Theta: " << theta << endl;
-    x -= 2 * sin(theta);
-    y -= 2 * sin(theta);
+    x += cos((theta - 90) * M_PI / 180);
+    y += sin((theta - 90) * M_PI / 180);
 }
 
 void Robot::draw() {
