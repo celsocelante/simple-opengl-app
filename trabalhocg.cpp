@@ -47,6 +47,8 @@ bool keyStatus[256] = { false };
 // If the player can walk on the low obstacles
 bool canMoveFreely = false;
 
+GLfloat mouseX = 0;
+
 Circle disabledLowObstacle;
 
 
@@ -219,7 +221,18 @@ void idle(void)
 
 void onPassiveMouseMotion(GLint x, GLint y) {
     if ((x >= 0 && x <= win.getWidth()) && (y >= 0 && y <= win.getHeight())) {
-        cout << x << " " << y << endl;
+
+        GLfloat dx = x - mouseX;
+
+        if (dx > 0) {
+            bot.rotateArmRight();
+            // cout << "Clockwise: " << dx << endl;
+        } else if (dx < 0) {
+            // cout << "Anti-Clockwise: " << dx << endl;
+            bot.rotateArmLeft();
+        }
+
+        mouseX = x;
     }
 }
 

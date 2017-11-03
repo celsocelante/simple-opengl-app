@@ -36,8 +36,8 @@ class Robot {
         Robot(GLfloat x, GLfloat y, GLfloat z);
         void rotateRight();
         void rotateLeft();
-        void rotateArmLeft();
         void rotateArmRight();
+        void rotateArmLeft();
         void moveForward();
         void moveBackward();
         void draw();

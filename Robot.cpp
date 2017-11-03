@@ -1,4 +1,6 @@
 #include "Robot.h"
+#define ARM_MOVEMENT 2.5
+#define ARM_ANGLE 45
 
 Robot::Robot() {}
 
@@ -96,14 +98,14 @@ void Robot::drawEllipseLine(GLfloat xRadius, GLfloat YRadius, GLfloat R, GLfloat
 }
 
 void Robot::rotateArmRight() {
-    if (this->thetaArm < 45) {
-        this->thetaArm += 1;
+    if (this->thetaArm < ARM_ANGLE) {
+        this->thetaArm += ARM_MOVEMENT;
     }
 }
 
 void Robot::rotateArmLeft() {
-    if (this->thetaArm > 0) {
-        this->thetaArm -= 1;
+    if (this->thetaArm > -ARM_ANGLE) {
+        this->thetaArm -= ARM_MOVEMENT;
     }
 }
 
@@ -162,8 +164,8 @@ void Robot::draw() {
 
                 // Braco
                 glPushMatrix();
-                    glRotatef(this->thetaArm, 0, 0, 1);
                     glTranslatef(-(this->radius - 2), 0, 0);
+                    glRotatef(this->thetaArm, 0, 0, 1);
 
                     drawRectangleLine(this->radius/4, this->radius, 0, 0, 0);
                     drawRectangle(this->radius/4, this->radius, 0, 1, 0);
