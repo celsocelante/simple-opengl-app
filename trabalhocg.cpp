@@ -29,6 +29,7 @@ using namespace tinyxml2;
 Circle arena;
 Circle center;
 Circle player;
+Circle disabledLowObstacle;
 
 // Obstacles (red ones)
 list<Circle> obstacles;
@@ -52,9 +53,6 @@ bool keyStatus[256] = { false };
 bool canMoveFreely = false;
 
 GLfloat mouseX = 0;
-
-Circle disabledLowObstacle;
-
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT);    
@@ -101,37 +99,36 @@ void init(void) {
     );
 }
 
-void ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
-    bot.moveForward();
+bool ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
 
     // Center collision
     if (bot.collision(&center, dx, dy)) {
-        return;
+        return false;
     }
 
     // Arena
     if( (sqrt(pow(arena.getX() - (bot.getX() + dx), 2) + pow(arena.getY() - (bot.getY() + dy), 2))
                                                              + bot.getRadius()) >= arena.getRadius()) {
-        return;
+        return false;
     }
 
     // Red obstacles
     for (Circle o : obstacles) {
-        if (player.collision(&o, dx, dy)) {
-            return;
+        if (bot.collision(&o, dx, dy)) {
+            return false;
         }
     }
 
     // Black obstacles
     GLint count = 0;
 
-    if (!player.isJumping() && disabledLowObstacle.getId() != -1 && sqrt(pow(disabledLowObstacle.getX() - (player.getX() + dx), 2) + 
-                                    pow(disabledLowObstacle.getY() - (player.getY() + dy), 2)) > (disabledLowObstacle.getRadius() + player.getRadius()) ) {
+    if (!bot.isJumping() && disabledLowObstacle.getId() != -1 && sqrt(pow(disabledLowObstacle.getX() - (bot.getX() + dx), 2) + 
+                                    pow(disabledLowObstacle.getY() - (bot.getY() + dy), 2)) > (disabledLowObstacle.getRadius() + bot.getRadius()) ) {
         canMoveFreely = false;
     }
 
     for (Circle lo : lowObstacles) {
-        if (player.collision(&lo, dx, dy) && player.isJumping()) {
+        if (bot.collision(&lo, dx, dy) && bot.isJumping()) {
             canMoveFreely = true;
 
             // Last unlocked lowObstacle info
@@ -141,30 +138,12 @@ void ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
             disabledLowObstacle.setId(lo.getId());
         }
 
-        if (player.collision(&lo, dx, dy) && !player.isJumping() && !canMoveFreely) {
-            return;
+        if (bot.collision(&lo, dx, dy) && !bot.isJumping() && !canMoveFreely) {
+            return false;
         }
     }
 
-    // If passes the previous filters, the player will actually move
-    player.move(dx, dy, dz);
-}
-
-void jumpStart(GLint value) {
-    bot.setJumping(true);
-    GLfloat radius = bot.getRadius();
-    GLfloat scale = bot.getScale();
-
-    bot.changeRadius(radius * (FACTOR/ANIMATION_FRAMES));
-    bot.changeScale(scale * (FACTOR/ANIMATION_FRAMES));
-}
-
-void jumpEnd(GLint value) {
-    GLfloat radius = bot.getRadius();
-    GLfloat scale = bot.getScale();
-
-    bot.changeRadius( -(radius * (FACTOR/ANIMATION_FRAMES)) ); 
-    bot.changeScale(-(scale * (FACTOR/ANIMATION_FRAMES)));
+    return true;
 }
 
 void onKeyDown(unsigned char key, GLint x, GLint y)
@@ -191,15 +170,32 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
             if (!bot.isJumping()) {
 
                 for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
-                    glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpStart, 0);
+                    glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
+                        bot.setJumping(true);
+                        GLfloat radius = bot.getRadius();
+                        GLfloat scale = bot.getScale();
+                    
+                        bot.changeRadius(radius * (FACTOR/ANIMATION_FRAMES));
+                        bot.changeScale(scale * (FACTOR/ANIMATION_FRAMES));
+                    }, 0);
                 }
 
                 for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
-                    glutTimerFunc(ANIMATION_TIME/2 + ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpEnd, 0);
+                    glutTimerFunc(ANIMATION_TIME/2 + ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
+                        GLfloat radius = bot.getRadius();
+                        GLfloat scale = bot.getScale();
+                    
+                        bot.changeRadius( -(radius * (FACTOR/ANIMATION_FRAMES)) ); 
+                        bot.changeScale(-(scale * (FACTOR/ANIMATION_FRAMES)));
+                    }, 0);
                 }
 
                 // Hold on for 2 seconds
-                glutTimerFunc(ANIMATION_TIME, [](GLint val) { bot.setJumping(false); bot.restoreRadius(); bot.setScale(1); }, 0);
+                glutTimerFunc(ANIMATION_TIME, [](GLint v) {
+                    bot.setJumping(false);
+                    //bot.restoreRadius();
+                    bot.setScale(1);
+                }, 0);
             }
             break;
     }
@@ -213,22 +209,23 @@ void onKeyUp(unsigned char key, GLint x, GLint y) {
 void idle(void)
 {
     if (keyStatus[ (GLint) ('a') ]) {
-        ableToMove(- MOVEMENT, 0, 0);
         bot.rotateLeft();
     }
 
     if (keyStatus[ (GLint) ('d') ]) {
-        ableToMove(MOVEMENT, 0, 0);
         bot.rotateRight();
     }
 
     if (keyStatus[ (GLint) ('s') ]) {
-        ableToMove(0, MOVEMENT, 0);
-        bot.moveBackward();
+        if (ableToMove(0, MOVEMENT, 0)) {
+            bot.moveBackward();
+        }
     }
 
     if (keyStatus[ (GLint) ('w') ]) {
-        ableToMove(0, - MOVEMENT, 0);
+        if (ableToMove(0, - MOVEMENT, 0)) {
+            bot.moveForward();
+        }
     }
 
     for (Bullet b : bullets) {
@@ -300,11 +297,12 @@ void readConfigFile(string fileName) {
         // Icone do jogador
         if (fill == "green") {
             player = Circle(cx, cy, 0, radius);
-            player.setRGB(0, 1, 0);
             player.setId(id);
 
             // Criar objeto do jogador
             bot = Robot(cx, cy, 0);
+            bot.setRadius(radius);
+            bot.setId(id);
 
         } else if (fill == "blue") {
             arena = Circle(cx, cy, 0, radius);

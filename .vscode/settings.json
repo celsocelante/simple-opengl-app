@@ -25,6 +25,13 @@
         "bitset": "cpp",
         "functional": "cpp",
         "list": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "__locale": "cpp",
+        "locale": "cpp",
+        "__functional_base": "cpp",
+        "atomic": "cpp",
+        "chrono": "cpp",
+        "ratio": "cpp",
+        "system_error": "cpp"
     }
 }

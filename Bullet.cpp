@@ -71,8 +71,6 @@ void Bullet::draw(){
     glPopMatrix();
     update();
 
-    x = x + 1;
-    y = y + 1;
-
-    cout << this->x << " " << this->y << endl;
+    this->x = this->x + 1;
+    this->y = this->y + 1;
 }

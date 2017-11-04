@@ -128,8 +128,10 @@ void Robot::moveBackward() {
 }
 
 void Robot::shoot(list<Bullet>& bullets) {
-    Bullet b = Bullet(0, 0, theta, theta, 0.1, 5);
-    bullets.push_back(b);
+    if (!isJumping()) {
+        Bullet b = Bullet(0, 0, theta, theta, 0.1, 5);
+        bullets.push_back(b);
+    }
 }
 
 void Robot::setScale(GLfloat scale) {
@@ -170,8 +172,8 @@ void Robot::draw() {
                     glTranslatef(-(this->radius - 2), 0, 0);
                     glRotatef(this->thetaArm, 0, 0, 1);
 
-                    drawRectangleLine(this->radius/4, this->radius, 0, 0, 0);
-                    drawRectangle(this->radius/4, this->radius, 0, 1, 0);
+                    drawRectangleLine(this->radius/5, this->radius, 0, 0, 0);
+                    drawRectangle(this->radius/5, this->radius, 0, 1, 0);
 
                     glTranslatef(0, this->radius, 0);
                 glPopMatrix();

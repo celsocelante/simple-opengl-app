@@ -20,8 +20,6 @@ using namespace std;
 
 class Robot: public Circle {
     private:
-        GLfloat x, y, z;
-        GLfloat radius = 20; // Raio do circulo virtual em torno do robo 
         GLfloat thetaArm = 0;
         GLfloat theta = 0;
         GLfloat scale;

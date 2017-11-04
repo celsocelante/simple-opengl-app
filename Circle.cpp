@@ -1,59 +1,59 @@
 #include "Circle.h"
 
-Circle::Circle(GLfloat c_x, GLfloat c_y, GLfloat c_z, GLfloat c_r) {
-    setCoord(c_x, c_y, c_z);
-    displayed = true;
-    beingDragged = false;
-    beingResized = false;
-    jumping = false;
-    radius = c_r;
-    previousRadius = radius;
+Circle::Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius) {
+    setCoord(x, y, z);
+    this->displayed = true;
+    this->beingDragged = false;
+    this->beingResized = false;
+    this->jumping = false;
+    this->radius = radius;
+    this->previousRadius = radius;
 
-    red = green = blue = 0;
-    id = -1;
+    this->red = this->green = this->blue = 0;
+    this->id = -1;
 }
 
 Circle::Circle() {
-    displayed = false;
-    beingDragged = false;
-    beingResized = false;
-    x = y = z = 0;
-    jumping = false;
-    radius = 0;
-    previousRadius = radius;
+    this->displayed = false;
+    this->beingDragged = false;
+    this->beingResized = false;
+    this->x = this->y = this->z = 0;
+    this->jumping = false;
+    this->radius = 0;
+    this->previousRadius = this->radius;
 
-    red = green = blue = 0;
-    id = -1;
-}
-
-void Circle::setX(GLfloat c_x) {
-    x = c_x;
+    this->red = this->green = this->blue = 0;
+    this->id = -1;
 }
 
-void Circle::setY(GLfloat c_y) {
-    y = c_y;
-}
-void Circle::setZ(GLfloat c_z) {
-    z = c_z;
-}
-void Circle::setCoord(GLfloat c_x, GLfloat c_y, GLfloat c_z) {
-    x = c_x;
-    y = c_y;
-    z = c_z;
+void Circle::setX(GLfloat x) {
+    this->x = x;
 }
 
-void Circle::setRadius(GLfloat c_r) {
-    radius = c_r;
+void Circle::setY(GLfloat y) {
+    this->y = y;
+}
+void Circle::setZ(GLfloat z) {
+    this->z = z;
+}
+void Circle::setCoord(GLfloat x, GLfloat y, GLfloat z) {
+    this->x = x;
+    this->y = y;
+    this->z = z;
 }
 
-void Circle::setDisplayed(bool c_display) {
-    displayed = c_display;
+void Circle::setRadius(GLfloat radius) {
+    this->radius = radius;
+}
+
+void Circle::setDisplayed(bool display) {
+    this->displayed = display;
 }
 
 
 void Circle::draw() {
     GLfloat twicePi = 2.0f * M_PI;
-    GLint triangles = 3000;
+    GLint triangles = 100;
 	
     glBegin(GL_TRIANGLE_FAN);
     glColor3f(red, green, blue);
@@ -67,18 +67,18 @@ void Circle::draw() {
 	glEnd();
 }
 
-void Circle::setRGB(GLfloat r, GLfloat g, GLfloat b) {
-    red = r;
-    green = g;
-    blue = b;
+void Circle::setRGB(GLfloat red, GLfloat green, GLfloat blue) {
+    this->red = red;
+    this->green = green;
+    this->blue = blue;
 }
 
 void Circle::setDragState(bool bgd) {
-    beingDragged = bgd;
+    this->beingDragged = bgd;
 }
 
 void Circle::setResizeState(bool rs) {
-    beingResized = rs;
+    this->beingResized = rs;
 }
 
 void Circle::move(GLfloat x, GLfloat y, GLfloat z) {
@@ -88,14 +88,14 @@ void Circle::move(GLfloat x, GLfloat y, GLfloat z) {
 }
 
 bool Circle::collision(Circle *c, GLfloat dx, GLfloat dy) {
-    GLfloat temp = sqrt(pow(c->getX() - (x + dx), 2) + 
-                            pow(c->getY() - (y + dy), 2));
+    GLfloat temp = sqrt(pow(c->getX() - (this->x + dx), 2) + 
+                            pow(c->getY() - (this->y + dy), 2));
 
-	return temp <= (c->getRadius() + radius);
+	return temp <= (c->getRadius() + this->radius);
 }
 
 void Circle::setJumping(bool value) {
-    jumping = value;
+    this->jumping = value;
 }
 
 void Circle::setId(GLint id) {
@@ -103,13 +103,13 @@ void Circle::setId(GLint id) {
 }
 
 void Circle::changeRadius(GLfloat i) {
-    radius += i;
+    this->radius += i;
 
-    if (radius < 0) {
-        radius *= -1;
+    if (this->radius < 0) {
+        this->radius *= -1;
     }
 }
 
 void Circle::restoreRadius() {
-    radius = previousRadius;
+    this->radius = this->previousRadius;
 }

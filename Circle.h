@@ -32,14 +32,14 @@ class Circle {
         GLint id;
     
     public:
-        Circle(GLfloat c_x, GLfloat c_y, GLfloat c_z, GLfloat c_r);
+        Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius);
         Circle();
 
-        void setX(GLfloat c_x);
-        void setY(GLfloat c_y);
-        void setZ(GLfloat c_z);
-        void setCoord(GLfloat c_x, GLfloat c_y, GLfloat c_z);
-        void setRadius(GLfloat c_r);
+        void setX(GLfloat x);
+        void setY(GLfloat y);
+        void setZ(GLfloat z);
+        void setCoord(GLfloat x, GLfloat y, GLfloat z);
+        void setRadius(GLfloat radius);
         void setDisplayed(bool d);
         void setDragState(bool bgd);
         void setResizeState(bool rs);
