@@ -1,5 +1,5 @@
 #include "Robot.h"
-#define ARM_MOVEMENT 2.5
+#define ARM_MOVEMENT 3
 #define ARM_ANGLE 45
 
 Robot::Robot() {}
@@ -9,7 +9,7 @@ Robot::Robot(GLfloat x, GLfloat y, GLfloat z) {
     this->y = y;
     this->z = z;
     this->radius = 20;
-    this->i = 1;
+    this->scale = 1;
 }
 
 void Robot::drawRectangle(GLfloat width, GLfloat height, GLfloat R, GLfloat G, GLfloat B) {
@@ -43,11 +43,11 @@ void Robot::drawCircle(GLfloat radius, GLfloat R, GLfloat G, GLfloat B) {
 
     glBegin(GL_TRIANGLE_FAN);
     glColor3f(R, G, B);
-		glVertex3f(this->x, this->y, 0); // center of circle
+		glVertex3f(0, 0, 0); // center of circle
 		for(GLint i = 0; i <= triangles; i ++) { 
 			glVertex3f(
-                this->x + (radius * cos(i *  twicePi / triangles)), 
-			    this->y + (radius * sin(i * twicePi / triangles)), 0
+                0 + (radius * cos(i *  twicePi / triangles)), 
+			    0 + (radius * sin(i * twicePi / triangles)), 0
 			);
 		}
 	glEnd();
@@ -61,11 +61,11 @@ void Robot::drawCircleLine(GLfloat radius, GLfloat R, GLfloat G, GLfloat B) {
     glLineWidth(lineWidth);
     glBegin(GL_LINE_LOOP);
     glColor3f(R, G, B);
-		glVertex3f(x, y, 0); // center of circle
+		glVertex3f(0, 0, 0); // center of circle
 		for(GLint i = 0; i <= triangles; i ++) { 
 			glVertex3f(
-		            this->x + (radius * cos(i *  twicePi / triangles)), 
-			    this->y + (radius * sin(i * twicePi / triangles)), 0
+		        0 + (radius * cos(i *  twicePi / triangles)), 
+			    0 + (radius * sin(i * twicePi / triangles)), 0
 			);
 		}
 	glEnd();
@@ -127,25 +127,42 @@ void Robot::moveBackward() {
     y += sin((theta - 90) * M_PI / 180);
 }
 
+void Robot::shoot(list<Bullet>& bullets) {
+    Bullet b = Bullet(0, 0, theta, theta, 0.1, 5);
+    bullets.push_back(b);
+}
+
+void Robot::setScale(GLfloat scale) {
+    this->scale = scale;
+}
+
+void Robot::changeScale(GLfloat i) {
+    this->scale += i;
+
+    if (this->scale < 0) {
+        this->scale *= -1;
+    }
+}
+
 void Robot::draw() {
     glPushMatrix();
-        glTranslatef(0 + i, 0 + i, 0);
+        glTranslatef(0, 0, 0);
             glPushMatrix();
 
                 glTranslatef(x, y, 0);
                 glRotatef(this->theta, 0, 0, 1);
-                glScalef(1, 1, 0);
+                glScalef(scale, scale, 0);
 
                 // Perna direita
                 glPushMatrix();
-                glTranslatef(-this->radius/3, this->radius/5, 0);
-                drawRectangle(this->radius/3, this->radius/2, 0, 0, 0);
+                    glTranslatef(-this->radius/3, this->radius/5, 0);
+                    drawRectangle(this->radius/3, this->radius/2, 0, 0, 0);
                 glPopMatrix();
 
                 // Perna esquerda
                 glPushMatrix();
                     glTranslatef(this->radius/3, -this->radius/1.4, 0);
-                    drawRectangle(this->radius/3, this->radius, 0, 0, 0);                
+                    drawRectangle(this->radius/3, this->radius/2, 0, 0, 0);                
                 glPopMatrix();
 
                 // Braco
@@ -162,9 +179,8 @@ void Robot::draw() {
                 drawEllipseLine(this->radius, this->radius/4, 0, 0, 0);
                 drawEllipse(this->radius, this->radius/4, 0, 1, 0);
 
+                drawCircleLine(this->radius/2, 0, 0, 0);
+                drawCircle(this->radius/2, 0, 1, 0);
             glPopMatrix();
-
-        drawCircleLine(this->radius/2, 0, 0, 0);
-        drawCircle(this->radius/2, 0, 1, 0);
     glPopMatrix();
 }

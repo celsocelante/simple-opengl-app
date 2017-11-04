@@ -14,7 +14,7 @@
 #define CIRCLE_H
 
 class Circle {
-    private:
+    protected:
         GLfloat x, y, z;
         GLfloat radius;
         GLfloat previousRadius;

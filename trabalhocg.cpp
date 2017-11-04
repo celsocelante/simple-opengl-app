@@ -6,6 +6,7 @@
 #include "Circle.h"
 #include "Window.h"
 #include "Robot.h"
+#include "Bullet.h"
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
@@ -34,6 +35,9 @@ list<Circle> obstacles;
 
 // Low Obstacles (black ones)
 list<Circle> lowObstacles;
+
+// Low Obstacles (black ones)
+list<Bullet> bullets;
 
 // Window object
 Window win;
@@ -69,6 +73,11 @@ void display(void) {
         lo.draw();
     }
 
+    // bullets
+    for (Bullet b : bullets) {
+        b.draw();
+    }
+
     // The player
     // player.draw();
 
@@ -93,15 +102,16 @@ void init(void) {
 }
 
 void ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
+    bot.moveForward();
 
     // Center collision
-    if (player.collision(&center, dx, dy)) {
+    if (bot.collision(&center, dx, dy)) {
         return;
     }
 
     // Arena
-    if( (sqrt(pow(arena.getX() - (player.getX() + dx), 2) + pow(arena.getY() - (player.getY() + dy), 2))
-                                                             + player.getRadius()) >= arena.getRadius()) {
+    if( (sqrt(pow(arena.getX() - (bot.getX() + dx), 2) + pow(arena.getY() - (bot.getY() + dy), 2))
+                                                             + bot.getRadius()) >= arena.getRadius()) {
         return;
     }
 
@@ -141,14 +151,20 @@ void ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
 }
 
 void jumpStart(GLint value) {
-    player.setJumping(true);
-    GLfloat radius = player.getRadius();
-    player.changeRadius(radius * (FACTOR/ANIMATION_FRAMES));
+    bot.setJumping(true);
+    GLfloat radius = bot.getRadius();
+    GLfloat scale = bot.getScale();
+
+    bot.changeRadius(radius * (FACTOR/ANIMATION_FRAMES));
+    bot.changeScale(scale * (FACTOR/ANIMATION_FRAMES));
 }
 
 void jumpEnd(GLint value) {
-    GLfloat radius = player.getRadius();
-    player.changeRadius( -(radius * (FACTOR/ANIMATION_FRAMES)) ); 
+    GLfloat radius = bot.getRadius();
+    GLfloat scale = bot.getScale();
+
+    bot.changeRadius( -(radius * (FACTOR/ANIMATION_FRAMES)) ); 
+    bot.changeScale(-(scale * (FACTOR/ANIMATION_FRAMES)));
 }
 
 void onKeyDown(unsigned char key, GLint x, GLint y)
@@ -172,7 +188,7 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
              break;
         case 'p':
         case 'P':
-            if (!player.isJumping()) {
+            if (!bot.isJumping()) {
 
                 for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
                     glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpStart, 0);
@@ -183,7 +199,7 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
                 }
 
                 // Hold on for 2 seconds
-                glutTimerFunc(ANIMATION_TIME, [](GLint val) { player.setJumping(false); player.restoreRadius(); }, 0);
+                glutTimerFunc(ANIMATION_TIME, [](GLint val) { bot.setJumping(false); bot.restoreRadius(); bot.setScale(1); }, 0);
             }
             break;
     }
@@ -213,8 +229,12 @@ void idle(void)
 
     if (keyStatus[ (GLint) ('w') ]) {
         ableToMove(0, - MOVEMENT, 0);
-        bot.moveForward();
     }
+
+    for (Bullet b : bullets) {
+        b.update();
+    }
+
     
     glutPostRedisplay();
 }
@@ -233,6 +253,13 @@ void onPassiveMouseMotion(GLint x, GLint y) {
         }
 
         mouseX = x;
+    }
+}
+
+void onClick(GLint button, GLint state, GLint x, GLint y) {
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
+        cout << "Shoot" << endl;
+        bot.shoot(bullets);
     }
 }
 
@@ -332,6 +359,7 @@ GLint main(GLint argc, char** argv) {
     glutKeyboardFunc(onKeyDown);
     glutKeyboardUpFunc(onKeyUp);
     glutDisplayFunc(display);
+    glutMouseFunc(onClick);
     glutPassiveMotionFunc(onPassiveMouseMotion);
     glutIdleFunc(idle);
 
