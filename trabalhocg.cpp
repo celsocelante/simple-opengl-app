@@ -18,7 +18,6 @@
 #  include <GL/glut.h>
 #endif
 
-#define MOVEMENT 2
 #define ANIMATION_FRAMES 30
 #define ANIMATION_TIME 2000
 #define FACTOR 0.5
@@ -71,15 +70,12 @@ void display(void) {
         lo.draw();
     }
 
+    bot.draw();
+
     // bullets
     for (Bullet b : bullets) {
         b.draw();
     }
-
-    // The player
-    // player.draw();
-
-    bot.draw();
 
     glFlush();
 }
@@ -153,18 +149,22 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
         case 'W':
             keyStatus[(GLint) ('w')] = true;
             break;
+        
         case 's':
         case 'S':
             keyStatus[(GLint) ('s')] = true;
             break;
+        
         case 'a':
         case 'A':
              keyStatus[(GLint) ('a')] = true;
              break;
+        
         case 'd':
         case 'D':
              keyStatus[(GLint) ('d')] = true;
              break;
+        
         case 'p':
         case 'P':
             if (!bot.isJumping()) {
@@ -176,7 +176,7 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
                         GLfloat scale = bot.getScale();
                     
                         bot.changeRadius(radius * (FACTOR/ANIMATION_FRAMES));
-                        bot.changeScale(scale * (FACTOR/ANIMATION_FRAMES));
+                        bot.changeScale(FACTOR/ANIMATION_FRAMES);
                     }, 0);
                 }
 
@@ -186,15 +186,15 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
                         GLfloat scale = bot.getScale();
                     
                         bot.changeRadius( -(radius * (FACTOR/ANIMATION_FRAMES)) ); 
-                        bot.changeScale(-(scale * (FACTOR/ANIMATION_FRAMES)));
+                        bot.changeScale(-((FACTOR/ANIMATION_FRAMES)));
                     }, 0);
                 }
 
                 // Hold on for 2 seconds
                 glutTimerFunc(ANIMATION_TIME, [](GLint v) {
                     bot.setJumping(false);
-                    //bot.restoreRadius();
-                    bot.setScale(1);
+                    bot.restoreRadius();
+                    bot.restoreScale();
                 }, 0);
             }
             break;
@@ -208,6 +208,12 @@ void onKeyUp(unsigned char key, GLint x, GLint y) {
 
 void idle(void)
 {
+    for (Bullet b : bullets) {
+        cout << b.getX() << endl;
+        b.setX(b.getX() + 0.2);
+        b.update();
+    }
+
     if (keyStatus[ (GLint) ('a') ]) {
         bot.rotateLeft();
     }
@@ -217,19 +223,22 @@ void idle(void)
     }
 
     if (keyStatus[ (GLint) ('s') ]) {
-        if (ableToMove(0, MOVEMENT, 0)) {
+        GLfloat newX = bot.getX() + (cos((bot.getTheta() - 90) * M_PI / 180) * bot.getVelocity() * MOVEMENT);
+        GLfloat newY = bot.getY() + (sin((bot.getTheta() - 90) * M_PI / 180) * bot.getVelocity() * MOVEMENT);
+
+        if (ableToMove(newX - bot.getX(), newY - bot.getY(), 0)) {
             bot.moveBackward();
         }
     }
 
     if (keyStatus[ (GLint) ('w') ]) {
-        if (ableToMove(0, - MOVEMENT, 0)) {
+        GLfloat newX = bot.getX() - (cos((bot.getTheta() - 90) * M_PI / 180) * bot.getVelocity() * MOVEMENT);
+        GLfloat newY = bot.getY() - (sin((bot.getTheta() - 90) * M_PI / 180) * bot.getVelocity() * MOVEMENT);
+
+
+        if (ableToMove(newX - bot.getX(), newY - bot.getY(), 0)) {
             bot.moveForward();
         }
-    }
-
-    for (Bullet b : bullets) {
-        b.update();
     }
 
     
@@ -254,8 +263,7 @@ void onPassiveMouseMotion(GLint x, GLint y) {
 }
 
 void onClick(GLint button, GLint state, GLint x, GLint y) {
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
-        cout << "Shoot" << endl;
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && !canMoveFreely && !bot.isJumping()) {
         bot.shoot(bullets);
     }
 }
@@ -296,13 +304,11 @@ void readConfigFile(string fileName) {
 
         // Icone do jogador
         if (fill == "green") {
-            player = Circle(cx, cy, 0, radius);
-            player.setId(id);
-
             // Criar objeto do jogador
-            bot = Robot(cx, cy, 0);
-            bot.setRadius(radius);
+            bot = Robot(cx, cy, 0, radius);
             bot.setId(id);
+            bot.setVelocity(vel);
+            bot.setBulletVelocity(velTiro);
 
         } else if (fill == "blue") {
             arena = Circle(cx, cy, 0, radius);

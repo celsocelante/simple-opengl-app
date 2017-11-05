@@ -1,26 +1,32 @@
 #include "Bullet.h"
+#define SIZE 3.0
 
-
-Bullet::Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat armLength) {
-	this->x = x;
-	this->y = y;
+Bullet::Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat armLength, GLfloat width) {
+	// this->x = x;
+	// this->y = y;
 	this->theta = theta;
     this->thetaRobot = thetaRobot;
 	this->vel = vel;
     this->armLength = armLength;
+    this->radius = SIZE;
+
+    this->x = (x - width) * cos((theta - 90) * M_PI / 180) * vel;
+    this->y = (y + armLength) * sin((theta - 90) * M_PI / 180) * vel;
+
+    cout << this->x << " " << this->y << endl;
 }
 
-void Bullet::drawCircle(GLfloat radius, GLfloat R, GLfloat G, GLfloat B) {
+void Bullet::drawCircle() {
     GLfloat twicePi = 2.0f * M_PI;
-    GLint triangles = 10;
+    GLint triangles = 100;
 
     glBegin(GL_TRIANGLE_FAN);
-    glColor3f(R, G, B);
-		glVertex3f(0, 0, 0);
+    glColor3f(1, 1, 0);
+		glVertex3f(this->x, this->y, 0);
 		for(GLint i = 0; i <= triangles; i ++) { 
 			glVertex3f(
-                0 + (radius * cos(i *  twicePi / triangles)), 
-			    0 + (radius * sin(i * twicePi / triangles)), 0
+                this->x + (radius * cos(i *  twicePi / triangles)), 
+			    this->y + (radius * sin(i * twicePi / triangles)), 0
 			);
 		}
 	glEnd();
@@ -47,7 +53,7 @@ void Bullet::setY(GLfloat y){
 }
 
 GLfloat Bullet::getRadius(){
-	return 4.0;
+	return radius;
 }
 
 GLfloat Bullet::getVel(){
@@ -59,18 +65,12 @@ GLfloat Bullet::getRobotAngle(){
 }
 
 void Bullet::update() {
-    this->x += 2;
-    this->y += 2;
+    this->x = x + cos((this->theta - 90) * M_PI / 180) * this->vel;
+    this->y = y + sin((this->theta - 90) * M_PI / 180) * this->vel;
 }
 
 
 void Bullet::draw(){
-	glPushMatrix();
-		glTranslatef(this->x, this->y, 0);
-		drawCircle(4, 1, 0, 0);
-    glPopMatrix();
+    drawCircle();
     update();
-
-    this->x = this->x + 1;
-    this->y = this->y + 1;
 }

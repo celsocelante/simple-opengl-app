@@ -21,10 +21,11 @@ class Bullet {
         GLfloat thetaRobot;
         GLfloat vel;
         GLfloat armLength;
-        void drawCircle(GLfloat radius, GLfloat R, GLfloat G, GLfloat B);
+        GLfloat radius;
+        void drawCircle();
 
     public:
-        Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat armLength);
+        Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat armLength, GLfloat width);
         GLfloat getAngle();
         GLfloat getX();
         GLfloat getY();

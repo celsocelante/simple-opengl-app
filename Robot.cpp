@@ -1,15 +1,29 @@
 #include "Robot.h"
-#define ARM_MOVEMENT 3
-#define ARM_ANGLE 45
 
 Robot::Robot() {}
 
-Robot::Robot(GLfloat x, GLfloat y, GLfloat z) {
+Robot::Robot(GLfloat x, GLfloat y, GLfloat z, GLfloat radius) {
     this->x = x;
     this->y = y;
     this->z = z;
-    this->radius = 20;
-    this->scale = 1;
+    this->radius = radius;
+    this->previousRadius = radius;
+    this->scale = 1.0;
+    this->previousScale = this->scale;
+    this->stepsCounter = 0;
+    this->legs = true;
+}
+
+void Robot::setVelocity(GLfloat velocity) {
+    this->velocity = velocity;
+}
+
+void Robot::setBulletVelocity(GLfloat bulletVelocity) {
+    this->bulletVelocity = bulletVelocity;
+}
+
+void Robot::restoreScale() {
+    this->scale = this->previousScale;
 }
 
 void Robot::drawRectangle(GLfloat width, GLfloat height, GLfloat R, GLfloat G, GLfloat B) {
@@ -118,20 +132,20 @@ void Robot::rotateLeft() {
 }
 
 void Robot::moveForward() {
-    x -= cos((theta - 90) * M_PI / 180);
-    y -= sin((theta - 90) * M_PI / 180);
+    x -= cos((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
+    y -= sin((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
 }
 
 void Robot::moveBackward() {
-    x += cos((theta - 90) * M_PI / 180);
-    y += sin((theta - 90) * M_PI / 180);
+    x += cos((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
+    y += sin((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
 }
 
 void Robot::shoot(list<Bullet>& bullets) {
-    if (!isJumping()) {
-        Bullet b = Bullet(0, 0, theta, theta, 0.1, 5);
-        bullets.push_back(b);
-    }
+    cout << "angulo do boneco: " << theta << endl;
+    cout << "angulo do braco: " << thetaArm << endl;
+    Bullet b = Bullet(x + 50, y, theta, theta, bulletVelocity, 5, 20);
+    bullets.push_back(b);
 }
 
 void Robot::setScale(GLfloat scale) {
@@ -140,10 +154,13 @@ void Robot::setScale(GLfloat scale) {
 
 void Robot::changeScale(GLfloat i) {
     this->scale += i;
+}
 
-    if (this->scale < 0) {
-        this->scale *= -1;
-    }
+bool Robot::collision(Circle *c, GLfloat dx, GLfloat dy) {
+    GLfloat temp = sqrt(pow(c->getX() - (this->x + dx), 2) + 
+                            pow(c->getY() - (this->y + dy), 2));
+
+	return temp <= (c->getRadius() + this->radius);
 }
 
 void Robot::draw() {
@@ -153,7 +170,10 @@ void Robot::draw() {
 
                 glTranslatef(x, y, 0);
                 glRotatef(this->theta, 0, 0, 1);
-                glScalef(scale, scale, 0);
+
+                glPushMatrix();
+                    glScaled(this->scale, this->scale, 0);
+                glPopMatrix();
 
                 // Perna direita
                 glPushMatrix();
