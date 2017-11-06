@@ -58,6 +58,7 @@ class Circle {
 
         void move(GLfloat x, GLfloat y, GLfloat z);
         bool collision(Circle *c, GLfloat dx, GLfloat dy);
+        bool collisionNoDist(GLfloat x, GLfloat y, GLfloat radius);
         void setJumping(bool value);
         void setId(GLint id);
         void changeRadius(GLfloat i);

@@ -8,7 +8,9 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include "Circle.h"
 using namespace std;
+#define SIZE_BULLET 3.0
 
 #ifndef BULLET_H
 #define BULLET_H
@@ -20,22 +22,26 @@ class Bullet {
         GLfloat theta;
         GLfloat thetaRobot;
         GLfloat vel;
-        GLfloat armLength;
         GLfloat radius;
-        void drawCircle();
+        bool enabled = true;
+        void drawCircle(GLfloat x, GLfloat y, GLfloat radius);
 
     public:
-        Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat armLength, GLfloat width);
-        GLfloat getAngle();
-        GLfloat getX();
-        GLfloat getY();
+        Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat radius);
+        GLfloat getTheta() { return this->theta; }
+        GLfloat getX() { return this->x; }
+        GLfloat getY() { return this->y; }
+        GLfloat getRadius() { return this->radius; }
+        GLfloat getVel() { return this->vel; }
+        GLfloat getThetaRobot() { return this->thetaRobot; }
+        GLfloat getVelocity() { return this->vel; }
+        GLfloat getEnabled() { return this->enabled; }
         void setX(GLfloat x);
         void setY(GLfloat y);
-        GLfloat getRadius();
-        GLfloat getVel();
-        GLfloat getRobotAngle();
+        void setEnabled(bool value);
         void draw();
-        void update();
+        void update(GLfloat time);
+        bool collision(Circle *c, GLfloat dx, GLfloat dy);
 };
 
 #endif

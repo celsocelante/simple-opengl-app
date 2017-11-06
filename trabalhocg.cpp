@@ -37,7 +37,7 @@ list<Circle> obstacles;
 list<Circle> lowObstacles;
 
 // Low Obstacles (black ones)
-list<Bullet> bullets;
+list<Bullet*> bullets;
 
 // Window object
 Window win;
@@ -52,33 +52,7 @@ bool keyStatus[256] = { false };
 bool canMoveFreely = false;
 
 GLfloat mouseX = 0;
-
-void display(void) {
-    glClear(GL_COLOR_BUFFER_BIT);    
-    
-    // Fixed elements
-    arena.draw();
-    center.draw();
-
-    // Tall obstacles
-    for (Circle o : obstacles) {
-        o.draw();
-    }
-
-    // Short obstacles
-    for (Circle lo : lowObstacles) {
-        lo.draw();
-    }
-
-    bot.draw();
-
-    // bullets
-    for (Bullet b : bullets) {
-        b.draw();
-    }
-
-    glFlush();
-}
+GLfloat lastTime = 0;
 
 void init(void) {
     glClearColor(1, 1, 1, 0.0f);
@@ -93,6 +67,27 @@ void init(void) {
         (arena.getY() - arena.getRadius()),
         -1.0, 1.0
     );
+}
+
+void drawBullets() {
+    GLfloat currentTime = glutGet(GLUT_ELAPSED_TIME);
+    GLfloat elapsedTime = currentTime - lastTime;
+    lastTime = currentTime;
+
+    for (Bullet* b: bullets) {
+        b->draw();
+        b->update(elapsedTime);
+
+        for (Circle lo : lowObstacles) {
+            if ((lo.collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
+                (!b->collision(&arena, 10, 10)) ||
+                b->collision(&center, 10, 10)) {
+
+                bullets.remove(b);
+                return;
+            }
+        }
+    }
 }
 
 bool ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
@@ -168,7 +163,6 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
         case 'p':
         case 'P':
             if (!bot.isJumping()) {
-
                 for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
                     glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
                         bot.setJumping(true);
@@ -208,11 +202,6 @@ void onKeyUp(unsigned char key, GLint x, GLint y) {
 
 void idle(void)
 {
-    for (Bullet b : bullets) {
-        cout << b.getX() << endl;
-        b.setX(b.getX() + 0.2);
-        b.update();
-    }
 
     if (keyStatus[ (GLint) ('a') ]) {
         bot.rotateLeft();
@@ -251,11 +240,11 @@ void onPassiveMouseMotion(GLint x, GLint y) {
         GLfloat dx = x - mouseX;
 
         if (dx > 0) {
-            bot.rotateArmRight();
+            bot.rotateArmLeft();
             // cout << "Clockwise: " << dx << endl;
         } else if (dx < 0) {
             // cout << "Anti-Clockwise: " << dx << endl;
-            bot.rotateArmLeft();
+            bot.rotateArmRight();
         }
 
         mouseX = x;
@@ -264,8 +253,34 @@ void onPassiveMouseMotion(GLint x, GLint y) {
 
 void onClick(GLint button, GLint state, GLint x, GLint y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && !canMoveFreely && !bot.isJumping()) {
-        bot.shoot(bullets);
+        bullets.push_back(new Bullet(bot.getX(), bot.getY(), bot.getThetaArm(), 
+            bot.getTheta(), 0.5, bot.getRadius()));
     }
+}
+
+void display(void) {
+    glClear(GL_COLOR_BUFFER_BIT);    
+    
+    // Fixed elements
+    arena.draw();
+    center.draw();
+
+    // Tall obstacles
+    for (Circle o : obstacles) {
+        o.draw();
+    }
+
+    // Short obstacles
+    for (Circle lo : lowObstacles) {
+        lo.draw();
+    }
+
+    bot.draw();
+
+    // bullets
+    drawBullets();
+
+    glFlush();
 }
 
 void readConfigFile(string fileName) {

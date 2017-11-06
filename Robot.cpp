@@ -152,13 +152,6 @@ void Robot::moveBackward() {
     y += sin((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
 }
 
-void Robot::shoot(list<Bullet>& bullets) {
-    cout << "angulo do boneco: " << theta << endl;
-    cout << "angulo do braco: " << thetaArm << endl;
-    Bullet b = Bullet(x + 50, y, theta, theta, bulletVelocity, 5, 20);
-    bullets.push_back(b);
-}
-
 void Robot::setScale(GLfloat scale) {
     this->scale = scale;
 }
@@ -198,7 +191,7 @@ void Robot::draw() {
                 // Braco
                 glPushMatrix();
                     glTranslatef(-(this->radius - 2), 0, 0);
-                    glRotatef(this->thetaArm, 0, 0, 1);
+                    glRotatef(-this->thetaArm, 0, 0, 1);
 
                     drawRectangleLine(this->radius/5, this->radius, 0, 0, 0);
                     drawRectangle(this->radius/5, this->radius, 0, 1, 0);

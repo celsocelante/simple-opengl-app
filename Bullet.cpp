@@ -1,47 +1,29 @@
 #include "Bullet.h"
-#define SIZE 3.0
 
-Bullet::Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat armLength, GLfloat width) {
-	// this->x = x;
-	// this->y = y;
+Bullet::Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat radius) {
+	this->x = x;
+	this->y = y;
 	this->theta = theta;
     this->thetaRobot = thetaRobot;
 	this->vel = vel;
-    this->armLength = armLength;
-    this->radius = SIZE;
-
-    this->x = (x - width) * cos((theta - 90) * M_PI / 180) * vel;
-    this->y = (y + armLength) * sin((theta - 90) * M_PI / 180) * vel;
-
-    cout << this->x << " " << this->y << endl;
+    this->radius = radius;
+    this->enabled = true;
 }
 
-void Bullet::drawCircle() {
+void Bullet::drawCircle(GLfloat x, GLfloat y, GLfloat radius) {
     GLfloat twicePi = 2.0f * M_PI;
-    GLint triangles = 100;
+    GLint triangles = 40;
 
     glBegin(GL_TRIANGLE_FAN);
-    glColor3f(1, 1, 0);
-		glVertex3f(this->x, this->y, 0);
+    glColor3f(0, 0, 0); // yellow
+		glVertex3f(x, y, 0);
 		for(GLint i = 0; i <= triangles; i ++) { 
 			glVertex3f(
-                this->x + (radius * cos(i *  twicePi / triangles)), 
-			    this->y + (radius * sin(i * twicePi / triangles)), 0
+                x + (radius * cos(i *  twicePi / triangles)), 
+			    y + (radius * sin(i * twicePi / triangles)), 0
 			);
 		}
 	glEnd();
-}
-
-GLfloat Bullet::getAngle(){
-	return this->theta;
-}
-
-GLfloat Bullet::getX(){
-    return this->x;
-}
-
-GLfloat Bullet::getY(){
-    return this->y;
 }
 
 void Bullet::setX(GLfloat x){
@@ -52,25 +34,35 @@ void Bullet::setY(GLfloat y){
 	this->y = y;
 }
 
-GLfloat Bullet::getRadius(){
-	return radius;
+void Bullet::setEnabled(bool value) {
+    this->enabled = value;
 }
 
-GLfloat Bullet::getVel(){
-	return this->vel;
+void Bullet::update(GLfloat time) {
+    if (this->enabled) {
+        GLfloat dir = this->thetaRobot - this->theta;
+        
+        this->x = this->x + time/2 * this->vel * cos((dir + 90) * M_PI/180);
+        this->y = this->y + time/2 * this->vel * sin((dir + 90) * M_PI/180);  
+    }  
 }
 
-GLfloat Bullet::getRobotAngle(){
-	return this->thetaRobot;
-}
+bool Bullet::collision(Circle *c, GLfloat dx, GLfloat dy) {
+    GLfloat temp = sqrt(pow(c->getX() - (this->x + dx), 2) + 
+                            pow(c->getY() - (this->y + dy), 2));
 
-void Bullet::update() {
-    this->x = x + cos((this->theta - 90) * M_PI / 180) * this->vel;
-    this->y = y + sin((this->theta - 90) * M_PI / 180) * this->vel;
+	return temp <= (c->getRadius() + this->radius);
 }
-
 
 void Bullet::draw(){
-    drawCircle();
-    update();
+    if (this->enabled) {
+        glPushMatrix();
+            glTranslatef(this->x, this->y, 0);
+            glRotatef(this->thetaRobot, 0, 0, 1);
+            glTranslatef(-(this->radius - 0.6), 0, 0);
+            glRotatef(-this->theta, 0, 0, 1);
+            glTranslatef(0, this->radius, 0);
+            drawCircle(0, 0, SIZE_BULLET);
+        glPopMatrix();
+    }
 }

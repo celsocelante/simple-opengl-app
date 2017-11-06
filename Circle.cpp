@@ -94,6 +94,13 @@ bool Circle::collision(Circle *c, GLfloat dx, GLfloat dy) {
 	return temp <= (c->getRadius() + this->radius);
 }
 
+bool Circle::collisionNoDist(GLfloat x, GLfloat y, GLfloat radius) {
+    GLfloat temp = sqrt(pow(x - this->x, 2) + 
+                            pow(y - this->y, 2));
+
+	return temp <= (radius + this->radius);
+}
+
 void Circle::setJumping(bool value) {
     this->jumping = value;
 }

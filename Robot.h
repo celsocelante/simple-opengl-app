@@ -11,6 +11,7 @@
 #include <math.h>
 #include <iostream>
 #include <string>
+#include <list>
 #include "Bullet.h"
 #include "Circle.h"
 using namespace std;
@@ -33,6 +34,8 @@ class Robot: public Circle {
         GLfloat stepsCounter = 0;
         GLfloat previousScale = 1;
         bool legs;
+        list<Bullet> bullets;
+        
 
         void drawRectangle(GLfloat width, GLfloat height, GLfloat R, GLfloat G, GLfloat B);
         void drawRectangleLine(GLfloat width, GLfloat height, GLfloat R, GLfloat G, GLfloat B);
@@ -56,6 +59,7 @@ class Robot: public Circle {
 
         GLfloat getScale() { return this->scale; }
         GLfloat getTheta() { return this->theta; }
+        GLfloat getThetaArm() { return this->thetaArm; }
         void setScale(GLfloat scale);
         void changeScale(GLfloat i);
         void restoreScale();
