@@ -18,6 +18,7 @@ using namespace std;
 #define ARM_MOVEMENT 3
 #define ARM_ANGLE 45
 #define MOVEMENT 5
+#define SWAP_LEGS_COUNT 20
 
 #ifndef ROBOT_H
 #define ROBOT_H
@@ -51,7 +52,7 @@ class Robot: public Circle {
         void moveBackward();
         void shoot(list<Bullet>& bullets);
         void draw();
-        bool collision(Circle *c, GLfloat dx, GLfloat dy);
+        // bool collision(Circle *c, GLfloat dx, GLfloat dy);
 
         GLfloat getScale() { return this->scale; }
         GLfloat getTheta() { return this->theta; }
@@ -62,6 +63,7 @@ class Robot: public Circle {
         void setBulletVelocity(GLfloat bulletVelocity);
         GLfloat getVelocity() { return this->velocity; }
         GLfloat getBulletVelocity() { return this->bulletVelocity; }
+        void swapLegs();
 
 };
 

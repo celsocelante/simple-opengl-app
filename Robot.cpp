@@ -131,12 +131,23 @@ void Robot::rotateLeft() {
     this->theta -= 1;
 }
 
+void Robot::swapLegs() {
+    this->stepsCounter = this->stepsCounter + 1;
+    if (this->stepsCounter >= SWAP_LEGS_COUNT) {
+        this->legs = !this->legs;
+
+        this->stepsCounter = 0;
+    }
+}
+
 void Robot::moveForward() {
+    swapLegs();
     x -= cos((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
     y -= sin((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
 }
 
 void Robot::moveBackward() {
+    swapLegs();
     x += cos((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
     y += sin((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
 }
@@ -156,13 +167,6 @@ void Robot::changeScale(GLfloat i) {
     this->scale += i;
 }
 
-bool Robot::collision(Circle *c, GLfloat dx, GLfloat dy) {
-    GLfloat temp = sqrt(pow(c->getX() - (this->x + dx), 2) + 
-                            pow(c->getY() - (this->y + dy), 2));
-
-	return temp <= (c->getRadius() + this->radius);
-}
-
 void Robot::draw() {
     glPushMatrix();
         glTranslatef(0, 0, 0);
@@ -176,16 +180,20 @@ void Robot::draw() {
                 glPopMatrix();
 
                 // Perna direita
-                glPushMatrix();
-                    glTranslatef(-this->radius/3, this->radius/5, 0);
-                    drawRectangle(this->radius/3, this->radius/2, 0, 0, 0);
-                glPopMatrix();
+                if (this->legs) {
+                    glPushMatrix();
+                        glTranslatef(-this->radius/3, this->radius/5, 0);
+                        drawRectangle(this->radius/3, this->radius/2, 0, 0, 0);
+                    glPopMatrix();
+                }
 
                 // Perna esquerda
-                glPushMatrix();
-                    glTranslatef(this->radius/3, -this->radius/1.4, 0);
-                    drawRectangle(this->radius/3, this->radius/2, 0, 0, 0);                
-                glPopMatrix();
+                if (!this->legs) {
+                    glPushMatrix();
+                        glTranslatef(this->radius/3, -this->radius/1.4, 0);
+                        drawRectangle(this->radius/3, this->radius/2, 0, 0, 0);                
+                    glPopMatrix();
+                }
 
                 // Braco
                 glPushMatrix();
