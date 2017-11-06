@@ -263,12 +263,16 @@ void display(void) {
     
     // Fixed elements
     arena.draw();
-    center.draw();
+
+    // bullets
+    drawBullets();
 
     // Tall obstacles
     for (Circle o : obstacles) {
         o.draw();
     }
+
+    center.draw();
 
     // Short obstacles
     for (Circle lo : lowObstacles) {
@@ -276,9 +280,6 @@ void display(void) {
     }
 
     bot.draw();
-
-    // bullets
-    drawBullets();
 
     glFlush();
 }
