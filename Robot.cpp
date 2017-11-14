@@ -140,16 +140,24 @@ void Robot::swapLegs() {
     }
 }
 
+GLfloat Robot::newX() {
+    return cos((this->theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
+}
+
+GLfloat Robot::newY() {
+    return sin((this->theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
+}
+
 void Robot::moveForward() {
     swapLegs();
-    x -= cos((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
-    y -= sin((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
+    x -= newX();
+    y -= newY();
 }
 
 void Robot::moveBackward() {
     swapLegs();
-    x += cos((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
-    y += sin((theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
+    x += newX();
+    y += newY();
 }
 
 void Robot::setScale(GLfloat scale) {

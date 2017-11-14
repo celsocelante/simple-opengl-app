@@ -54,6 +54,8 @@ bool canMoveFreely = false;
 GLfloat mouseX = 0;
 GLfloat lastTime = 0;
 
+GLint totalScore = 0;
+
 void init(void) {
     glClearColor(1, 1, 1, 0.0f);
     glViewport (0, 0, win.getWidth(), win.getHeight());
@@ -67,6 +69,20 @@ void init(void) {
         (arena.getY() - arena.getRadius()),
         -1.0, 1.0
     );
+}
+
+void renderText(GLfloat x, GLfloat y) {
+    static char str[2000];
+    char *tmpStr;
+    sprintf(str, "Score: %d", totalScore);
+    glColor3f(0, 0, 0);
+    glRasterPos2f(x, y);
+
+    tmpStr = str;
+    while( *tmpStr ){
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *tmpStr);
+        tmpStr++;
+    }
 }
 
 void drawBullets() {
@@ -212,8 +228,8 @@ void idle(void)
     }
 
     if (keyStatus[ (GLint) ('s') ]) {
-        GLfloat newX = bot.getX() + (cos((bot.getTheta() - 90) * M_PI / 180) * bot.getVelocity() * MOVEMENT);
-        GLfloat newY = bot.getY() + (sin((bot.getTheta() - 90) * M_PI / 180) * bot.getVelocity() * MOVEMENT);
+        GLfloat newX = bot.getX() + bot.newX();
+        GLfloat newY = bot.getY() + bot.newY();
 
         if (ableToMove(newX - bot.getX(), newY - bot.getY(), 0)) {
             bot.moveBackward();
@@ -221,8 +237,8 @@ void idle(void)
     }
 
     if (keyStatus[ (GLint) ('w') ]) {
-        GLfloat newX = bot.getX() - (cos((bot.getTheta() - 90) * M_PI / 180) * bot.getVelocity() * MOVEMENT);
-        GLfloat newY = bot.getY() - (sin((bot.getTheta() - 90) * M_PI / 180) * bot.getVelocity() * MOVEMENT);
+        GLfloat newX = bot.getX() - bot.newX();
+        GLfloat newY = bot.getY() - bot.newY();
 
 
         if (ableToMove(newX - bot.getX(), newY - bot.getY(), 0)) {
@@ -280,6 +296,9 @@ void display(void) {
     }
 
     bot.draw();
+
+    // Score
+    renderText(200, 200);
 
     glFlush();
 }
@@ -341,8 +360,7 @@ void readConfigFile(string fileName) {
             center.setId(id);
 
         } else if (fill == "red") {
-            Circle temp = Circle(cx, cy, 0, radius);
-            temp.setRGB(1, 0, 0);
+            Robot temp = Robot(cx, cy, 0, radius);
             temp.setId(id);
     
             obstacles.push_back(temp);

@@ -60,6 +60,8 @@ class Robot: public Circle {
         GLfloat getScale() { return this->scale; }
         GLfloat getTheta() { return this->theta; }
         GLfloat getThetaArm() { return this->thetaArm; }
+        GLfloat newX();
+        GLfloat newY();
         void setScale(GLfloat scale);
         void changeScale(GLfloat i);
         void restoreScale();
