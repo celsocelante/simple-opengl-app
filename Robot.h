@@ -25,7 +25,7 @@ using namespace std;
 #define ROBOT_H
 
 class Robot: public Circle {
-    private:
+    protected:
         GLfloat thetaArm = 0;
         GLfloat theta = 0;
         GLfloat scale;
@@ -33,8 +33,10 @@ class Robot: public Circle {
         GLfloat bulletVelocity;
         GLfloat stepsCounter = 0;
         GLfloat previousScale = 1;
+        bool moveFreely = false;
         bool legs;
         list<Bullet> bullets;
+        GLfloat red, green, blue;
         
 
         void drawRectangle(GLfloat width, GLfloat height, GLfloat R, GLfloat G, GLfloat B);
@@ -56,6 +58,8 @@ class Robot: public Circle {
         void shoot(list<Bullet>& bullets);
         void draw();
         // bool collision(Circle *c, GLfloat dx, GLfloat dy);
+        bool canMoveFreely() { return this->moveFreely; }
+        void setMoveFreely(bool moveFreely);
 
         GLfloat getScale() { return this->scale; }
         GLfloat getTheta() { return this->theta; }

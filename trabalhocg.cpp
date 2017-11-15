@@ -7,6 +7,7 @@
 #include "Window.h"
 #include "Robot.h"
 #include "Bullet.h"
+#include "Enemy.h"
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
@@ -31,7 +32,7 @@ Circle player;
 Circle disabledLowObstacle;
 
 // Obstacles (red ones)
-list<Circle> obstacles;
+list<Enemy> obstacles;
 
 // Low Obstacles (black ones)
 list<Circle> lowObstacles;
@@ -47,9 +48,6 @@ Robot bot;
 
 // Key status
 bool keyStatus[256] = { false };
-
-// If the player can walk on the low obstacles
-bool canMoveFreely = false;
 
 GLfloat mouseX = 0;
 GLfloat lastTime = 0;
@@ -131,12 +129,12 @@ bool ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
 
     if (!bot.isJumping() && disabledLowObstacle.getId() != -1 && sqrt(pow(disabledLowObstacle.getX() - (bot.getX() + dx), 2) + 
                                     pow(disabledLowObstacle.getY() - (bot.getY() + dy), 2)) > (disabledLowObstacle.getRadius() + bot.getRadius()) ) {
-        canMoveFreely = false;
+        bot.setMoveFreely(false);
     }
 
     for (Circle lo : lowObstacles) {
         if (bot.collision(&lo, dx, dy) && bot.isJumping()) {
-            canMoveFreely = true;
+            bot.setMoveFreely(true);
 
             // Last unlocked lowObstacle info
             disabledLowObstacle.setRadius(lo.getRadius());
@@ -145,7 +143,7 @@ bool ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
             disabledLowObstacle.setId(lo.getId());
         }
 
-        if (bot.collision(&lo, dx, dy) && !bot.isJumping() && !canMoveFreely) {
+        if (bot.collision(&lo, dx, dy) && !bot.isJumping() && !bot.canMoveFreely()) {
             return false;
         }
     }
@@ -268,7 +266,7 @@ void onPassiveMouseMotion(GLint x, GLint y) {
 }
 
 void onClick(GLint button, GLint state, GLint x, GLint y) {
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && !canMoveFreely && !bot.isJumping()) {
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && !bot.canMoveFreely() && !bot.isJumping()) {
         bullets.push_back(new Bullet(bot.getX(), bot.getY(), bot.getThetaArm(), 
             bot.getTheta(), 0.5, bot.getRadius()));
     }
@@ -284,7 +282,7 @@ void display(void) {
     drawBullets();
 
     // Tall obstacles
-    for (Circle o : obstacles) {
+    for (Robot o : obstacles) {
         o.draw();
     }
 
@@ -360,7 +358,9 @@ void readConfigFile(string fileName) {
             center.setId(id);
 
         } else if (fill == "red") {
-            Robot temp = Robot(cx, cy, 0, radius);
+            Enemy temp = Enemy(cx, cy, 0, radius);
+            temp.setVelocity(vel);
+            temp.setBulletVelocity(velTiro);
             temp.setId(id);
     
             obstacles.push_back(temp);

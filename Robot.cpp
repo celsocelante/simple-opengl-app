@@ -12,6 +12,17 @@ Robot::Robot(GLfloat x, GLfloat y, GLfloat z, GLfloat radius) {
     this->previousScale = this->scale;
     this->stepsCounter = 0;
     this->legs = true;
+    this->moveFreely = false;
+
+
+    // Colors
+    this->red = 0;
+    this->green = 1;
+    this->blue = 0;
+}
+
+void Robot::setMoveFreely(bool moveFreely) {
+    this->moveFreely = moveFreely;
 }
 
 void Robot::setVelocity(GLfloat velocity) {
@@ -202,16 +213,16 @@ void Robot::draw() {
                     glRotatef(-this->thetaArm, 0, 0, 1);
 
                     drawRectangleLine(this->radius/5, this->radius, 0, 0, 0);
-                    drawRectangle(this->radius/5, this->radius, 0, 1, 0);
+                    drawRectangle(this->radius/5, this->radius, this->red, this->green, this->blue);
 
                     glTranslatef(0, this->radius, 0);
                 glPopMatrix();
 
                 drawEllipseLine(this->radius, this->radius/4, 0, 0, 0);
-                drawEllipse(this->radius, this->radius/4, 0, 1, 0);
+                drawEllipse(this->radius, this->radius/4, this->red, this->green, this->blue);
 
                 drawCircleLine(this->radius/2, 0, 0, 0);
-                drawCircle(this->radius/2, 0, 1, 0);
+                drawCircle(this->radius/2, this->red, this->green, this->blue);
             glPopMatrix();
     glPopMatrix();
 }
