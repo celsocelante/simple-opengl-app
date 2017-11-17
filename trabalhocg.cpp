@@ -37,8 +37,11 @@ list<Enemy> obstacles;
 // Low Obstacles (black ones)
 list<Circle> lowObstacles;
 
-// Low Obstacles (black ones)
+// Bullets by robot
 list<Bullet*> bullets;
+
+// Bullets by enemies
+list<Bullet*> enemyBullets;
 
 // Window object
 Window win;
@@ -51,7 +54,6 @@ bool keyStatus[256] = { false };
 
 GLfloat mouseX = 0;
 GLfloat lastTime = 0;
-
 GLint totalScore = 0;
 
 void init(void) {
@@ -73,7 +75,7 @@ void renderText(GLfloat x, GLfloat y) {
     static char str[2000];
     char *tmpStr;
     sprintf(str, "Score: %d", totalScore);
-    glColor3f(0, 0, 0);
+    glColor3f(1, 0, 0);
     glRasterPos2f(x, y);
 
     tmpStr = str;
@@ -125,8 +127,6 @@ bool ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
     }
 
     // Black obstacles
-    GLint count = 0;
-
     if (!bot.isJumping() && disabledLowObstacle.getId() != -1 && sqrt(pow(disabledLowObstacle.getX() - (bot.getX() + dx), 2) + 
                                     pow(disabledLowObstacle.getY() - (bot.getY() + dy), 2)) > (disabledLowObstacle.getRadius() + bot.getRadius()) ) {
         bot.setMoveFreely(false);
@@ -282,7 +282,7 @@ void display(void) {
     drawBullets();
 
     // Tall obstacles
-    for (Robot o : obstacles) {
+    for (Enemy o : obstacles) {
         o.draw();
     }
 
@@ -296,7 +296,7 @@ void display(void) {
     bot.draw();
 
     // Score
-    renderText(200, 200);
+    renderText(700, 250);
 
     glFlush();
 }
