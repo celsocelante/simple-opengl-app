@@ -20,7 +20,6 @@ class Enemy: public Robot {
             this->green = 0;
             this->blue = 0;
         }
-    private:
 };
 
 #endif

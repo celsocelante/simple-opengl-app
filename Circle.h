@@ -9,12 +9,15 @@
 #endif
 
 #include <math.h>
+#include "Stuff.h"
 
 #ifndef CIRCLE_H
 #define CIRCLE_H
 
 class Circle {
     protected:
+        Stuff* stuff;
+
         GLfloat x, y, z;
         GLfloat radius;
         GLfloat previousRadius;
@@ -35,6 +38,7 @@ class Circle {
         Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius);
         Circle();
 
+        void setStuff(Stuff* stuff);
         void setX(GLfloat x);
         void setY(GLfloat y);
         void setZ(GLfloat z);

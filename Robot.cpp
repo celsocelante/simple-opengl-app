@@ -179,6 +179,7 @@ void Robot::changeScale(GLfloat i) {
     this->scale += i;
 }
 
+
 void Robot::draw() {
     glPushMatrix();
         glTranslatef(0, 0, 0);

@@ -120,3 +120,7 @@ void Circle::changeRadius(GLfloat i) {
 void Circle::restoreRadius() {
     this->radius = this->previousRadius;
 }
+
+void Circle::setStuff(Stuff* stuff) {
+    this->stuff = stuff;
+}
