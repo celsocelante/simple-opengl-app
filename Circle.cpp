@@ -1,4 +1,4 @@
-#include "Circle.h"
+#include "Stuff.h"
 
 Circle::Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius) {
     setCoord(x, y, z);

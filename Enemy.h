@@ -21,5 +21,4 @@ class Enemy: public Robot {
             this->blue = 0;
         }
 };
-
 #endif

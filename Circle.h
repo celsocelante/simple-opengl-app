@@ -9,10 +9,11 @@
 #endif
 
 #include <math.h>
-#include "Stuff.h"
 
 #ifndef CIRCLE_H
 #define CIRCLE_H
+
+class Stuff;
 
 class Circle {
     protected:
