@@ -2,7 +2,6 @@
 
 Circle::Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius) {
     setCoord(x, y, z);
-    this->displayed = true;
     this->beingDragged = false;
     this->beingResized = false;
     this->jumping = false;
@@ -11,10 +10,10 @@ Circle::Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius) {
 
     this->red = this->green = this->blue = 0;
     this->id = -1;
+    this->type = 1;
 }
 
 Circle::Circle() {
-    this->displayed = false;
     this->beingDragged = false;
     this->beingResized = false;
     this->x = this->y = this->z = 0;

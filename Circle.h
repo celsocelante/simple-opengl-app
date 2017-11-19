@@ -22,8 +22,7 @@ class Circle {
         GLfloat previousRadius;
 
         GLfloat px, py, pz;
-        
-        bool displayed;
+    
         bool beingDragged;
         bool beingResized;
 
@@ -37,6 +36,8 @@ class Circle {
     public:
         Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius);
         Circle();
+
+        bool displayed = true;
 
         void setX(GLfloat x);
         void setY(GLfloat y);
@@ -67,6 +68,8 @@ class Circle {
         void changeRadius(GLfloat i);
         void restoreRadius();
         void setStuff(Stuff* stuff);
+        
+        int type = 1;
 
 };
 #endif

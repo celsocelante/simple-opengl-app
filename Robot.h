@@ -30,9 +30,9 @@ using namespace std;
 class Robot: public Circle {
     protected:
         GLfloat thetaArm = 0;
-        GLfloat theta = 0;
+        GLfloat theta = 180;
         GLfloat scale;
-        GLfloat velocity;
+        GLfloat velocity = 1;
         GLfloat bulletVelocity;
         GLfloat stepsCounter = 0;
         GLfloat previousScale = 1;

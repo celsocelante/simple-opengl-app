@@ -62,7 +62,7 @@ void renderScoreText() {
     char *tmpStr;
     sprintf(str, "Score: %d", stuff->totalScore);
     glColor3f(1, 0, 0);
-    glRasterPos2f(200, 200);
+    glRasterPos2f(stuff->arena->getX() + stuff->arena->getX() * 0.4, stuff->arena->getY() - stuff->arena->getY() * 0.5);
 
     tmpStr = str;
     while( *tmpStr ){
@@ -132,10 +132,40 @@ void drawBullets() {
         b->draw();
         b->update(elapsedTime);
 
+        for (Circle* enemy : stuff->enemies) {
+            if ( enemy->displayed && enemy->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET) ) {
+                stuff->totalScore++;
+                stuff->totalEnemies--;
+                enemy->displayed = false;
+                break;
+            }
+        }
+
         for (Circle* lo : stuff->obstacles) {
             if ((lo->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
-                (!b->collision(stuff->arena, 10, 10)) ||
-                b->collision(stuff->center, 10, 10)) {
+                (!stuff->arena->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
+                    stuff->center->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) {
+
+                stuff->bullets.remove(b);
+                return;
+            }
+        }
+    }
+
+
+    for (Bullet* b: stuff->enemyBullets) {
+        b->draw();
+        b->update(elapsedTime);
+
+        if ( stuff->bot->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET) ) {
+            stuff->bot->displayed = false;
+            break;
+        }
+
+        for (Circle* lo : stuff->obstacles) {
+            if ((lo->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
+                (!stuff->arena->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
+                    stuff->center->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) {
 
                 stuff->bullets.remove(b);
                 return;
@@ -169,7 +199,38 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
         
         case 'p':
         case 'P':
-            stuff->bot->jump();
+            // stuff->bot->jump();
+            
+            if (!stuff->bot->isJumping()) {
+                for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
+                    glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
+                        stuff->bot->setJumping(true);
+                        GLfloat radius = stuff->bot->getRadius();
+                        GLfloat scale = stuff->bot->getScale();
+                    
+                        stuff->bot->changeRadius(radius * (FACTOR/ANIMATION_FRAMES));
+                        stuff->bot->changeScale(FACTOR/ANIMATION_FRAMES);
+                    }, 0);
+                }
+
+                for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
+                    glutTimerFunc(ANIMATION_TIME/2 + ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
+                        GLfloat radius = stuff->bot->getRadius();
+                        GLfloat scale = stuff->bot->getScale();
+                    
+                        stuff->bot->changeRadius( -(radius * (FACTOR/ANIMATION_FRAMES)) ); 
+                        stuff->bot->changeScale(-((FACTOR/ANIMATION_FRAMES)));
+                    }, 0);
+                }
+
+                // Hold on for 2 seconds
+                glutTimerFunc(ANIMATION_TIME, [](GLint v) {
+                    stuff->bot->setJumping(false);
+                    stuff->bot->restoreRadius();
+                    stuff->bot->restoreScale();
+                }, 0);
+            }
+
             break;
     }
 
@@ -233,11 +294,22 @@ void onClick(GLint button, GLint state, GLint x, GLint y) {
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT);
+    GLfloat currentTime = glutGet(GLUT_ELAPSED_TIME);
+    GLfloat elapsedTime = currentTime - lastTime;
 
     if (stuff->totalEnemies == 0) {
         glClearColor(0, 0, 0, 0.0f);
         // render final text
         renderWinText();
+        glFlush();
+
+        return;
+    }
+
+    if (!stuff->bot->displayed) {
+        glClearColor(0, 0, 0, 0.0f);
+        // render final text
+        renderGameOverText();
         glFlush();
 
         return;
@@ -249,11 +321,6 @@ void display(void) {
     // bullets
     drawBullets();
 
-    // Tall obstacles
-    for (Enemy* e : stuff->enemies) {
-        e->draw();
-    }
-
     stuff->center->draw();
 
     // Short obstacles
@@ -261,10 +328,17 @@ void display(void) {
         lo->draw();
     }
 
-    stuff->bot->draw();
-
-    // Score
     renderScoreText();
+
+    // Enemies
+    for (Enemy* e : stuff->enemies) {
+        if (e->displayed) {
+            e->draw();
+            e->update(elapsedTime);
+        }
+    }
+
+    stuff->bot->draw();
 
     glFlush();
 }
@@ -337,8 +411,8 @@ void readConfigFile(string fileName) {
 
         } else if (fill == "red") {
             Enemy* temp = new Enemy(cx, cy, 0, radius);
-            temp->setVelocity(vel);
-            temp->setBulletVelocity(velTiro);
+            temp->setVelocity(velInimigo);
+            temp->setBulletVelocity(velTiroInimigo);
             temp->setId(id);
             temp->setStuff(stuff);
     

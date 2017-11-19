@@ -1,5 +1,3 @@
-#include "Robot.h"
-
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
 #  include <OpenGL/glu.h>
@@ -10,6 +8,8 @@
 #  include <GL/glut.h>
 #endif
 
+#include "Robot.h"
+
 #ifndef ENEMY_H
 #define ENEMY_H
 
@@ -19,6 +19,9 @@ class Enemy: public Robot {
             this->red = 1;
             this->green = 0;
             this->blue = 0;
+
+            this->type = 3;
         }
+        void update(GLfloat time);
 };
 #endif

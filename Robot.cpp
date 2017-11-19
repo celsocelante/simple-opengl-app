@@ -20,6 +20,9 @@ Robot::Robot(GLfloat x, GLfloat y, GLfloat z, GLfloat radius) {
     this->red = 0;
     this->green = 1;
     this->blue = 0;
+
+    // Object type
+    this->type = 2;
 }
 
 void Robot::setMoveFreely(bool moveFreely) {
@@ -136,11 +139,11 @@ void Robot::rotateArmLeft() {
 }
 
 void Robot::rotateRight() {
-    this->theta += 1;
+    this->theta += 3;
 }
 
 void Robot::rotateLeft() {
-    this->theta -= 1;
+    this->theta -= 3;
 }
 
 void Robot::swapLegs() {
@@ -153,21 +156,38 @@ void Robot::swapLegs() {
 }
 
 bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
+
+    if (this->type==3 && collision(stuff->bot, dx, dy)) {
+        return false;
+    }
+
     // Center collision
     if (collision(stuff->center, dx, dy)) {
+
+        if(this->type == 3) {
+            rotateLeft();
+        }
+
         return false;
     }
 
     // Arena
     if( (sqrt(pow(stuff->arena->getX() - (x + dx), 2) + pow(stuff->arena->getY() - (y + dy), 2))
                                                              + radius) >= stuff->arena->getRadius()) {
+
+        if(this->type == 3) {
+            rotateLeft();
+        }
+
         return false;
     }
 
-    // Red obstacles
-    for (Circle* e : stuff->enemies) {
-        if (collision(e, dx, dy)) {
-            return false;
+    if (this->type != 3) {
+        // Red obstacles
+        for (Circle* e : stuff->enemies) {
+            if (e->displayed && collision(e, dx, dy)) {
+                return false;
+            }
         }
     }
 
@@ -205,6 +225,7 @@ GLfloat Robot::newY() {
 }
 
 void Robot::moveForward() {
+
     GLfloat newx = x - newX();
     GLfloat newy = y - newY();
 
@@ -235,8 +256,14 @@ void Robot::changeScale(GLfloat i) {
 }
 
 void Robot::setFire() {
+    Bullet* b = new Bullet(x, y, thetaArm, theta, bulletVelocity, radius);
+
     if (!canMoveFreely() && !isJumping()) {
-        stuff->bullets->push_back(new Bullet(x, y, thetaArm, theta, bulletVelocity, radius));
+        if (this->type == 2) {
+            stuff->bullets.push_back(b);
+        } else if (this->type == 3) {
+            stuff->enemyBullets.push_back(b);
+        }
     }
 
 }

@@ -7,7 +7,7 @@ Bullet::Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat 
     this->thetaRobot = thetaRobot;
 	this->vel = vel;
     this->radius = radius;
-    this->enabled = true;
+    this->displayed = true;
 }
 
 void Bullet::drawCircle(GLfloat x, GLfloat y, GLfloat radius) {
@@ -15,7 +15,7 @@ void Bullet::drawCircle(GLfloat x, GLfloat y, GLfloat radius) {
     GLint triangles = 40;
 
     glBegin(GL_TRIANGLE_FAN);
-    glColor3f(0, 0, 0); // yellow
+    glColor3f(1, 1, 0); // yellow
 		glVertex3f(x, y, 0);
 		for(GLint i = 0; i <= triangles; i ++) { 
 			glVertex3f(
@@ -34,16 +34,12 @@ void Bullet::setY(GLfloat y){
 	this->y = y;
 }
 
-void Bullet::setEnabled(bool value) {
-    this->enabled = value;
-}
-
 void Bullet::update(GLfloat time) {
-    if (this->enabled) {
+    if (this->displayed) {
         GLfloat dir = this->thetaRobot - this->theta;
         
-        this->x = this->x + time/2 * this->vel * cos((dir + 90) * M_PI/180);
-        this->y = this->y + time/2 * this->vel * sin((dir + 90) * M_PI/180);  
+        this->x = this->x + time * this->vel * cos((dir + 90) * M_PI/180);
+        this->y = this->y + time * this->vel * sin((dir + 90) * M_PI/180);  
     }  
 }
 
@@ -55,7 +51,7 @@ bool Bullet::collision(Circle *c, GLfloat dx, GLfloat dy) {
 }
 
 void Bullet::draw(){
-    if (this->enabled) {
+    if (this->displayed) {
         glPushMatrix();
             glTranslatef(this->x, this->y, 0);
             glRotatef(this->thetaRobot, 0, 0, 1);

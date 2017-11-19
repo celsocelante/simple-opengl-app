@@ -27,11 +27,11 @@ class Bullet {
         GLfloat thetaRobot;
         GLfloat vel;
         GLfloat radius;
-        bool enabled = true;
         void drawCircle(GLfloat x, GLfloat y, GLfloat radius);
 
     public:
         Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat radius);
+        bool displayed = true;
         GLfloat getTheta() { return this->theta; }
         GLfloat getX() { return this->x; }
         GLfloat getY() { return this->y; }
@@ -39,10 +39,8 @@ class Bullet {
         GLfloat getVel() { return this->vel; }
         GLfloat getThetaRobot() { return this->thetaRobot; }
         GLfloat getVelocity() { return this->vel; }
-        GLfloat getEnabled() { return this->enabled; }
         void setX(GLfloat x);
         void setY(GLfloat y);
-        void setEnabled(bool value);
         void draw();
         void update(GLfloat time);
         bool collision(Circle *c, GLfloat dx, GLfloat dy);

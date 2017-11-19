@@ -30,9 +30,9 @@ class Stuff {
         Circle* arena;
         Circle* center;
 
-        list<Bullet*>* enemyBullets;
-        list<Bullet*>* bullets;
-        list<Circle*>* obstacles;
+        list<Bullet*> enemyBullets;
+        list<Bullet*> bullets;
+        list<Circle*> obstacles;
 
         list<Enemy*> enemies;
 };
