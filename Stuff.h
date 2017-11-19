@@ -1,6 +1,5 @@
 #include <math.h>
 #include <list>
-#include "Circle.h"
 #include "Robot.h"
 #include "Bullet.h"
 #include "Enemy.h"
@@ -18,6 +17,8 @@
 #ifndef STUFF_H
 #define STUFF_H
 
+class Circle;
+
 class Stuff {
     public:
         Stuff();
@@ -29,9 +30,9 @@ class Stuff {
         Circle* arena;
         Circle* center;
 
-        list<Bullet*> enemyBullets;
-        list<Bullet*> bullets;
-        list<Circle*> obstacles;
+        list<Bullet*>* enemyBullets;
+        list<Bullet*>* bullets;
+        list<Circle*>* obstacles;
 
         list<Enemy*> enemies;
 };

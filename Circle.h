@@ -17,8 +17,6 @@ class Stuff;
 
 class Circle {
     protected:
-        Stuff* stuff;
-
         GLfloat x, y, z;
         GLfloat radius;
         GLfloat previousRadius;
@@ -34,12 +32,12 @@ class Circle {
         GLfloat red, green, blue;
 
         GLint id;
-    
+        
+        Stuff* stuff;
     public:
         Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius);
         Circle();
 
-        void setStuff(Stuff* stuff);
         void setX(GLfloat x);
         void setY(GLfloat y);
         void setZ(GLfloat z);
@@ -68,6 +66,7 @@ class Circle {
         void setId(GLint id);
         void changeRadius(GLfloat i);
         void restoreRadius();
+        void setStuff(Stuff* stuff);
 
 };
 #endif

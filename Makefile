@@ -12,7 +12,7 @@ endif
 all: compile
 
 compile:
-	g++ -std=c++11 $(LDFLAGS) -lm trabalhocg.cpp Circle.cpp Window.cpp Robot.cpp Bullet.cpp Enemy.cpp Stuff.cpp tinyxml2/tinyxml2.cpp -o $(EXE) $(LDFLAGS)
+	g++ -std=c++11 $(LDFLAGS) -lm trabalhocg.cpp Window.cpp Stuff.cpp Circle.cpp Robot.cpp Enemy.cpp Bullet.cpp tinyxml2/tinyxml2.cpp -o $(EXE) $(LDFLAGS)
 
 clean:
 	rm -f trabalhocg

@@ -20,6 +20,9 @@ using namespace std;
 #define ARM_ANGLE 45
 #define MOVEMENT 5
 #define SWAP_LEGS_COUNT 20
+#define ANIMATION_FRAMES 30
+#define ANIMATION_TIME 2000
+#define FACTOR 0.5
 
 #ifndef ROBOT_H
 #define ROBOT_H
@@ -37,6 +40,7 @@ class Robot: public Circle {
         bool legs;
         list<Bullet> bullets;
         GLfloat red, green, blue;
+        Circle disabledLowObstacle;
         
 
         void drawRectangle(GLfloat width, GLfloat height, GLfloat R, GLfloat G, GLfloat B);
@@ -45,6 +49,10 @@ class Robot: public Circle {
         void drawCircleLine(GLfloat radius, GLfloat R, GLfloat G, GLfloat B);
         void drawEllipse(GLfloat xRadius, GLfloat YRadius, GLfloat R, GLfloat G, GLfloat B);
         void drawEllipseLine(GLfloat xRadius, GLfloat YRadius, GLfloat R, GLfloat G, GLfloat B);
+
+        void jumpStart(GLint v);
+        void jumpMiddle(GLint v);
+        void jumpEnd(GLint v);
 
     public:
         Robot();
@@ -74,7 +82,9 @@ class Robot: public Circle {
         GLfloat getVelocity() { return this->velocity; }
         GLfloat getBulletVelocity() { return this->bulletVelocity; }
         void swapLegs();
-
+        bool ableToMove(GLfloat dx, GLfloat dy, GLfloat dz);
+        void setFire();
+        void jump();
 };
 
 #endif

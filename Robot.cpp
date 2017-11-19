@@ -1,4 +1,5 @@
 #include "Robot.h"
+#include "Stuff.h"
 
 Robot::Robot() {}
 
@@ -151,6 +152,50 @@ void Robot::swapLegs() {
     }
 }
 
+bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
+    // Center collision
+    if (collision(stuff->center, dx, dy)) {
+        return false;
+    }
+
+    // Arena
+    if( (sqrt(pow(stuff->arena->getX() - (x + dx), 2) + pow(stuff->arena->getY() - (y + dy), 2))
+                                                             + radius) >= stuff->arena->getRadius()) {
+        return false;
+    }
+
+    // Red obstacles
+    for (Circle* e : stuff->enemies) {
+        if (collision(e, dx, dy)) {
+            return false;
+        }
+    }
+
+    // Black obstacles
+    if (!isJumping() && disabledLowObstacle.getId() != -1 && sqrt(pow(disabledLowObstacle.getX() - (x + dx), 2) + 
+                                    pow(disabledLowObstacle.getY() - (y + dy), 2)) > (disabledLowObstacle.getRadius() + radius) ) {
+        setMoveFreely(false);
+    }
+
+    for (Circle* lo : stuff->obstacles) {
+        if (collision(lo, dx, dy) && isJumping()) {
+            setMoveFreely(true);
+
+            // Last unlocked lowObstacle info
+            disabledLowObstacle.setRadius(lo->getRadius());
+            disabledLowObstacle.setX(lo->getX());
+            disabledLowObstacle.setY(lo->getY());
+            disabledLowObstacle.setId(lo->getId());
+        }
+
+        if (collision(lo, dx, dy) && !isJumping() && !canMoveFreely()) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 GLfloat Robot::newX() {
     return cos((this->theta - 90) * M_PI / 180) * this->velocity * MOVEMENT;
 }
@@ -160,15 +205,25 @@ GLfloat Robot::newY() {
 }
 
 void Robot::moveForward() {
-    swapLegs();
-    x -= newX();
-    y -= newY();
+    GLfloat newx = x - newX();
+    GLfloat newy = y - newY();
+
+    if (ableToMove(newx - x, newy - y, 0)) {
+        x -= newX();
+        y -= newY();
+        swapLegs();
+    }
 }
 
 void Robot::moveBackward() {
-    swapLegs();
-    x += newX();
-    y += newY();
+    GLfloat newx = x + newX();
+    GLfloat newy = y + newY();
+
+    if (ableToMove(newx - x, newy - y, 0)) {
+        x += newX();
+        y += newY();
+        swapLegs();
+    }
 }
 
 void Robot::setScale(GLfloat scale) {
@@ -177,6 +232,49 @@ void Robot::setScale(GLfloat scale) {
 
 void Robot::changeScale(GLfloat i) {
     this->scale += i;
+}
+
+void Robot::setFire() {
+    if (!canMoveFreely() && !isJumping()) {
+        stuff->bullets->push_back(new Bullet(x, y, thetaArm, theta, bulletVelocity, radius));
+    }
+
+}
+
+void Robot::jumpStart(GLint v) {
+    setJumping(true);
+    GLfloat r = radius;
+
+    changeRadius(r * (FACTOR/ANIMATION_FRAMES));
+    changeScale(FACTOR/ANIMATION_FRAMES);
+}
+
+void Robot::jumpMiddle(GLint v) {
+    GLfloat r = radius;
+
+    changeRadius( -(r * (FACTOR/ANIMATION_FRAMES)) ); 
+    changeScale(-((FACTOR/ANIMATION_FRAMES)));
+}
+
+void Robot::jumpEnd(GLint v) {
+    setJumping(false);
+    restoreRadius();
+    restoreScale();
+}
+
+void Robot::jump() {
+    if (!isJumping()) {
+        // for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
+        //     glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpStart, 0);
+        // }
+
+        // for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
+        //     glutTimerFunc(ANIMATION_TIME/2 + ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpMiddle, 0);
+        // }
+
+        // // Hold on for 2 seconds
+        // glutTimerFunc(ANIMATION_TIME, jumpEnd, 0);
+    }
 }
 
 

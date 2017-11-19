@@ -3,7 +3,6 @@
 #include <math.h>
 #include <list>
 #include "tinyxml2/tinyxml2.h"
-#include "Circle.h"
 #include "Window.h"
 #include "Robot.h"
 #include "Bullet.h"
@@ -20,22 +19,13 @@
 #  include <GL/glut.h>
 #endif
 
-#define ANIMATION_FRAMES 30
-#define ANIMATION_TIME 2000
-#define FACTOR 0.5
-
 using namespace std;
 using namespace tinyxml2;
 
 Stuff* stuff; // hold all the shared objects
 
-Circle disabledLowObstacle;
-
 // Window object
 Window win;
-
-// Robot object
-Robot* bot;
 
 // Key status
 bool keyStatus[256] = { false };
@@ -154,50 +144,6 @@ void drawBullets() {
     }
 }
 
-bool ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
-    // Center collision
-    if (stuff->bot->collision(stuff->center, dx, dy)) {
-        return false;
-    }
-
-    // Arena
-    if( (sqrt(pow(stuff->arena->getX() - (stuff->bot->getX() + dx), 2) + pow(stuff->arena->getY() - (stuff->bot->getY() + dy), 2))
-                                                             + stuff->bot->getRadius()) >= stuff->arena->getRadius()) {
-        return false;
-    }
-
-    // Red obstacles
-    for (Circle* o : stuff->enemies) {
-        if (stuff->bot->collision(o, dx, dy)) {
-            return false;
-        }
-    }
-
-    // Black obstacles
-    if (!stuff->bot->isJumping() && disabledLowObstacle.getId() != -1 && sqrt(pow(disabledLowObstacle.getX() - (stuff->bot->getX() + dx), 2) + 
-                                    pow(disabledLowObstacle.getY() - (stuff->bot->getY() + dy), 2)) > (disabledLowObstacle.getRadius() + stuff->bot->getRadius()) ) {
-        stuff->bot->setMoveFreely(false);
-    }
-
-    for (Circle* lo : stuff->obstacles) {
-        if (stuff->bot->collision(lo, dx, dy) && stuff->bot->isJumping()) {
-            stuff->bot->setMoveFreely(true);
-
-            // Last unlocked lowObstacle info
-            disabledLowObstacle.setRadius(lo->getRadius());
-            disabledLowObstacle.setX(lo->getX());
-            disabledLowObstacle.setY(lo->getY());
-            disabledLowObstacle.setId(lo->getId());
-        }
-
-        if (stuff->bot->collision(lo, dx, dy) && !stuff->bot->isJumping() && !stuff->bot->canMoveFreely()) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 void onKeyDown(unsigned char key, GLint x, GLint y)
 {
     switch (key) {
@@ -223,35 +169,7 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
         
         case 'p':
         case 'P':
-            if (!stuff->bot->isJumping()) {
-                for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
-                    glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
-                        stuff->bot->setJumping(true);
-                        GLfloat radius = stuff->bot->getRadius();
-                        GLfloat scale = stuff->bot->getScale();
-                    
-                        stuff->bot->changeRadius(radius * (FACTOR/ANIMATION_FRAMES));
-                        stuff->bot->changeScale(FACTOR/ANIMATION_FRAMES);
-                    }, 0);
-                }
-
-                for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
-                    glutTimerFunc(ANIMATION_TIME/2 + ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
-                        GLfloat radius = stuff->bot->getRadius();
-                        GLfloat scale = stuff->bot->getScale();
-                    
-                        stuff->bot->changeRadius( -(radius * (FACTOR/ANIMATION_FRAMES)) ); 
-                        stuff->bot->changeScale(-((FACTOR/ANIMATION_FRAMES)));
-                    }, 0);
-                }
-
-                // Hold on for 2 seconds
-                glutTimerFunc(ANIMATION_TIME, [](GLint v) {
-                    stuff->bot->setJumping(false);
-                    stuff->bot->restoreRadius();
-                    stuff->bot->restoreScale();
-                }, 0);
-            }
+            stuff->bot->jump();
             break;
     }
 
@@ -277,22 +195,11 @@ void idle(void)
     }
 
     if (keyStatus[ (GLint) ('s') ]) {
-        GLfloat newX = stuff->bot->getX() + stuff->bot->newX();
-        GLfloat newY = stuff->bot->getY() + stuff->bot->newY();
-
-        if (ableToMove(newX - stuff->bot->getX(), newY - stuff->bot->getY(), 0)) {
-            stuff->bot->moveBackward();
-        }
+        stuff->bot->moveBackward();
     }
 
     if (keyStatus[ (GLint) ('w') ]) {
-        GLfloat newX = stuff->bot->getX() - stuff->bot->newX();
-        GLfloat newY = stuff->bot->getY() - stuff->bot->newY();
-
-
-        if (ableToMove(newX - stuff->bot->getX(), newY - stuff->bot->getY(), 0)) {
-            stuff->bot->moveForward();
-        }
+        stuff->bot->moveForward();
     }
 
     
@@ -306,9 +213,7 @@ void onPassiveMouseMotion(GLint x, GLint y) {
 
         if (dx > 0) {
             stuff->bot->rotateArmLeft();
-            // cout << "Clockwise: " << dx << endl;
         } else if (dx < 0) {
-            // cout << "Anti-Clockwise: " << dx << endl;
             stuff->bot->rotateArmRight();
         }
 
@@ -321,9 +226,8 @@ void onClick(GLint button, GLint state, GLint x, GLint y) {
         exitProgram();
     }
 
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP && !stuff->bot->canMoveFreely() && !stuff->bot->isJumping()) {
-        stuff->bullets.push_back(new Bullet(stuff->bot->getX(), stuff->bot->getY(), stuff->bot->getThetaArm(), 
-            stuff->bot->getTheta(), 0.5, stuff->bot->getRadius()));
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
+        stuff->bot->setFire();
     }
 }
 
@@ -381,6 +285,13 @@ void readConfigFile(string fileName) {
 
     GLfloat velTiro = app->FirstChildElement("jogador")->DoubleAttribute("velTiro");
     GLfloat vel = app->FirstChildElement("jogador")->DoubleAttribute("vel");
+
+
+    GLfloat velTiroInimigo = app->FirstChildElement("inimigo")->DoubleAttribute("velTiro");
+    GLfloat velInimigo = app->FirstChildElement("inimigo")->DoubleAttribute("vel");
+    GLfloat freqTiro = app->FirstChildElement("inimigo")->DoubleAttribute("freqTiro");
+
+    GLfloat alturaObstaculo = app->FirstChildElement("obstaculo")->DoubleAttribute("altura");
 
     strcpy(path, "");
     strcpy(path, caminhoArquivo.c_str());
