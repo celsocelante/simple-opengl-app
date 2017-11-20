@@ -113,7 +113,7 @@ void renderGameOverText() {
 
     sprintf(str, "Press any key to exit");
     glColor3f(1, 1, 1);
-    glRasterPos2f(stuff->arena->getX() - stuff->arena->getX() * 0.14, stuff->arena->getY() + stuff->arena->getY() * 0.1);
+    glRasterPos2f(stuff->arena->getX() - stuff->arena->getX() * 0.13, stuff->arena->getY() + stuff->arena->getY() * 0.1);
 
     tmpStr = str;
     while( *tmpStr ){
@@ -142,10 +142,15 @@ void drawBullets() {
             }
         }
 
+        if (!stuff->arena->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET) || 
+            stuff->center->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) {
+
+            stuff->bullets.remove(b);
+            return;
+        }
+
         for (Circle* lo : stuff->obstacles) {
-            if ((lo->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
-                (!stuff->arena->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
-                    stuff->center->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) {
+            if (lo->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) {
 
                 stuff->bullets.remove(b);
                 return;
@@ -163,15 +168,16 @@ void drawBullets() {
             break;
         }
 
-        // for (Circle* lo : stuff->obstacles) {
-        //     if ((lo->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
-        //         (!stuff->arena->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
-        //             stuff->center->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) {
 
-        //         stuff->bullets.remove(b);
-        //         return;
-        //     }
-        // }
+        for (Circle* lo : stuff->obstacles) {
+            if ((lo->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
+                (!stuff->arena->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
+                    stuff->center->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) {
+
+                stuff->enemyBullets.remove(b);
+                return;
+            }
+        }
     }
 }
 
@@ -200,8 +206,6 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
         
         case 'p':
         case 'P':
-            // stuff->bot->jump();
-            
             if (!stuff->bot->isJumping()) {
                 for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
                     glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
@@ -335,7 +339,7 @@ void display(void) {
             e->update();
 
             GLfloat atual = glutGet(GLUT_ELAPSED_TIME);
-            if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > 1 / e->freqTiro){
+            if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > (1 / e->freqTiro)){
                 e->setFire();
                 e->lastTimeShot = atual;
             }

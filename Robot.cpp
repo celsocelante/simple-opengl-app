@@ -226,6 +226,8 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
             } else {
                 rotateRight();
             }
+
+            cout << "Jump, enemy!" << endl;
             return false;
         }
     }
