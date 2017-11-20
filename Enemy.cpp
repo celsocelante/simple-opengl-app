@@ -9,4 +9,5 @@ void Enemy::update() {
     if (secret % 3 == 0) {
         rotateLeft();
     }
+
 }
