@@ -156,8 +156,15 @@ void Robot::swapLegs() {
 }
 
 bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
+    srand (time(NULL));
+    GLint secret = rand() % 10 + 1;
 
     if (this->type==3 && collision(stuff->bot, dx, dy)) {
+        if (secret % 2 == 0) {
+            rotateRight();
+        } else {
+            rotateLeft();
+        }
         return false;
     }
 
@@ -165,7 +172,14 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
     if (collision(stuff->center, dx, dy)) {
 
         if(this->type == 3) {
-            rotateLeft();
+
+            for (int i = 0; i < (int) (secret / 2); i++) {
+                if (secret % 2 == 0) {
+                    rotateRight();
+                } else {
+                    rotateLeft();
+                }
+            }
         }
 
         return false;
@@ -176,19 +190,16 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
                                                              + radius) >= stuff->arena->getRadius()) {
 
         if(this->type == 3) {
-            rotateLeft();
+            for (int i = 0; i < secret; i++) {
+                if (secret % 2 != 0) {
+                    rotateRight();
+                } else {
+                    rotateLeft();
+                }
+            }
         }
 
         return false;
-    }
-
-    if (this->type != 3) {
-        // Red obstacles
-        for (Circle* e : stuff->enemies) {
-            if (e->displayed && collision(e, dx, dy)) {
-                return false;
-            }
-        }
     }
 
     // Black obstacles
@@ -209,6 +220,27 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
         }
 
         if (collision(lo, dx, dy) && !isJumping() && !canMoveFreely()) {
+
+            if(this->type == 3 && secret % 2 == 0) {
+                rotateLeft();
+            } else {
+                rotateRight();
+            }
+            return false;
+        }
+    }
+
+    // Red obstacles
+    for (Circle* e : stuff->enemies) {
+        if (e->displayed && collision(e, dx, dy)) {
+
+            if (this->type == 3) {
+                if (this->id == e->getId()) {
+                    continue;
+                }
+                rotateLeft();
+            }
+
             return false;
         }
     }
@@ -233,6 +265,7 @@ void Robot::moveForward() {
         x -= newX();
         y -= newY();
         swapLegs();
+
     }
 }
 
@@ -256,14 +289,17 @@ void Robot::changeScale(GLfloat i) {
 }
 
 void Robot::setFire() {
-    Bullet* b = new Bullet(x, y, thetaArm, theta, bulletVelocity, radius);
 
-    if (!canMoveFreely() && !isJumping()) {
-        if (this->type == 2) {
-            stuff->bullets.push_back(b);
-        } else if (this->type == 3) {
-            stuff->enemyBullets.push_back(b);
-        }
+    if (!canMoveFreely() && !isJumping() && this->type == 2) {
+        Bullet* b = new Bullet(x, y, thetaArm, theta, bulletVelocity, radius);
+        stuff->bullets.push_back(b);
+
+        return;
+    }
+
+    if (this->type == 3) {
+        Bullet* b = new Bullet(x, y, thetaArm, theta, bulletVelocity, radius);
+        stuff->enemyBullets.push_back(b);
     }
 
 }

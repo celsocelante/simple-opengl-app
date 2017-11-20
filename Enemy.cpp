@@ -1,6 +1,12 @@
 #include "Enemy.h"
 
-void Enemy::update(GLfloat time) {
+void Enemy::update() {
+    srand(time(NULL));
+    GLint secret = rand() % 7 + 1;
+
     moveForward();
-    // setFire();
+
+    if (secret % 3 == 0) {
+        rotateLeft();
+    }
 }

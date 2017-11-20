@@ -22,6 +22,8 @@ class Enemy: public Robot {
 
             this->type = 3;
         }
-        void update(GLfloat time);
+        void update();
+        GLfloat freqTiro = 1;
+        GLfloat lastTimeShot = 0;
 };
 #endif

@@ -32,6 +32,7 @@ bool keyStatus[256] = { false };
 
 GLfloat mouseX = 0;
 GLfloat lastTime = 0;
+GLfloat lastTimeShot = 0;
 
 void init(void) {
     glClearColor(1, 1, 1, 0.0f);
@@ -132,7 +133,7 @@ void drawBullets() {
         b->draw();
         b->update(elapsedTime);
 
-        for (Circle* enemy : stuff->enemies) {
+        for (Enemy* enemy : stuff->enemies) {
             if ( enemy->displayed && enemy->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET) ) {
                 stuff->totalScore++;
                 stuff->totalEnemies--;
@@ -162,15 +163,15 @@ void drawBullets() {
             break;
         }
 
-        for (Circle* lo : stuff->obstacles) {
-            if ((lo->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
-                (!stuff->arena->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
-                    stuff->center->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) {
+        // for (Circle* lo : stuff->obstacles) {
+        //     if ((lo->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
+        //         (!stuff->arena->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
+        //             stuff->center->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) {
 
-                stuff->bullets.remove(b);
-                return;
-            }
-        }
+        //         stuff->bullets.remove(b);
+        //         return;
+        //     }
+        // }
     }
 }
 
@@ -244,8 +245,7 @@ void onKeyUp(unsigned char key, GLint x, GLint y) {
     }
 }
 
-void idle(void)
-{
+void idle(void) {
 
     if (keyStatus[ (GLint) ('a') ]) {
         stuff->bot->rotateLeft();
@@ -294,8 +294,6 @@ void onClick(GLint button, GLint state, GLint x, GLint y) {
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT);
-    GLfloat currentTime = glutGet(GLUT_ELAPSED_TIME);
-    GLfloat elapsedTime = currentTime - lastTime;
 
     if (stuff->totalEnemies == 0) {
         glClearColor(0, 0, 0, 0.0f);
@@ -334,7 +332,13 @@ void display(void) {
     for (Enemy* e : stuff->enemies) {
         if (e->displayed) {
             e->draw();
-            e->update(elapsedTime);
+            e->update();
+
+            GLfloat atual = glutGet(GLUT_ELAPSED_TIME);
+            if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > 1 / e->freqTiro){
+                e->setFire();
+                e->lastTimeShot = atual;
+            }
         }
     }
 
@@ -415,6 +419,7 @@ void readConfigFile(string fileName) {
             temp->setBulletVelocity(velTiroInimigo);
             temp->setId(id);
             temp->setStuff(stuff);
+            temp->freqTiro = freqTiro;
     
             stuff->enemies.push_back(temp);
 

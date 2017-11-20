@@ -12,6 +12,7 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <random>
 #include "Bullet.h"
 #include "Circle.h"
 using namespace std;
@@ -41,6 +42,7 @@ class Robot: public Circle {
         list<Bullet> bullets;
         GLfloat red, green, blue;
         Circle disabledLowObstacle;
+        
         
 
         void drawRectangle(GLfloat width, GLfloat height, GLfloat R, GLfloat G, GLfloat B);
