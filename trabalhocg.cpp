@@ -10,13 +10,9 @@
 #include "Stuff.h"
 
 #ifdef __APPLE__
-#  include <OpenGL/gl.h>
-#  include <OpenGL/glu.h>
-#  include <GLUT/glut.h>
+    #include <GLUT/glut.h>
 #else
-#  include <GL/gl.h>
-#  include <GL/glu.h>
-#  include <GL/glut.h>
+    #include <GL/glut.h>
 #endif
 
 using namespace std;
@@ -252,6 +248,11 @@ void onKeyUp(unsigned char key, GLint x, GLint y) {
 }
 
 void idle(void) {
+    // glEnable(GL_DEPTH_TEST);
+    // glEnable( GL_TEXTURE_2D );
+    // glEnable(GL_LIGHTING);
+    // glShadeModel (GL_SMOOTH);
+    // glDepthFunc(GL_LEQUAL);
 
     if (keyStatus[ (GLint) ('a') ]) {
         stuff->bot->rotateLeft();
@@ -299,10 +300,11 @@ void onClick(GLint button, GLint state, GLint x, GLint y) {
 }
 
 void display(void) {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor (1.0, 1.0, 1.0, 1.0);
 
     if (stuff->totalEnemies == 0) {
-        glClearColor(0, 0, 0, 0.0f);
+        glClearColor (0, 0, 0, 1.0);
         // render final text
         renderWinText();
         glFlush();
@@ -311,7 +313,7 @@ void display(void) {
     }
 
     if (!stuff->bot->displayed) {
-        glClearColor(0, 0, 0, 0.0f);
+        glClearColor (0, 0, 0, 1.0);
         // render final text
         renderGameOverText();
         glFlush();
@@ -446,7 +448,7 @@ GLint main(GLint argc, char** argv) {
     win = Window();
     stuff = new Stuff();
 
-    if(argc == 2) {
+    if (argc == 2) {
         readConfigFile(argv[1]);
     } else {
         cerr << "Numero invalido de argumentos\n";

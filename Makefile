@@ -16,6 +16,6 @@ compile:
 
 clean:
 	rm -f trabalhocg
-
-run: compile
-	./trabalhocg config.xml
+	
+run: all
+	./trabalhocg ./
