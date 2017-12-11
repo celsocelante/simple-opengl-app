@@ -29,6 +29,10 @@ bool keyStatus[256] = { false };
 GLfloat mouseX = 0;
 GLfloat lastTime = 0;
 GLfloat lastTimeShot = 0;
+//Camera controls
+double camDist=50;
+double camXYAngle=0;
+double camXZAngle=0;
 
 void init(void) {
     glClearColor(1, 1, 1, 0.0f);
@@ -299,9 +303,19 @@ void onClick(GLint button, GLint state, GLint x, GLint y) {
     }
 }
 
+int dist = 10;
+
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor (1.0, 1.0, 1.0, 1.0);
+
+    // glLoadIdentity();
+
+    glPushMatrix();
+    glTranslatef(dist,0,0);
+    glPopMatrix();
+    // glRotatef(0,1,0,0);
+    // glRotatef(90,0,1,0);
 
     if (stuff->totalEnemies == 0) {
         glClearColor (0, 0, 0, 1.0);
@@ -352,7 +366,8 @@ void display(void) {
 
     stuff->bot->draw();
 
-    glFlush();
+    // glFlush();
+    glutSwapBuffers();
 }
 
 void readConfigFile(string fileName) {
