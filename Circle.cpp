@@ -53,17 +53,33 @@ void Circle::setDisplayed(bool display) {
 void Circle::draw() {
     GLfloat twicePi = 2.0f * M_PI;
     GLint triangles = 100;
+    GLfloat height = 20;
+    GLint i;
 	
     glBegin(GL_TRIANGLE_FAN);
     glColor3f(red, green, blue);
 		glVertex3f(x, y, 0); // center of circle
 		for(GLint i = 0; i <= triangles; i ++) { 
 			glVertex3f(
-		            x + (radius * cos(i *  twicePi / triangles)), 
-			    y + (radius * sin(i * twicePi / triangles)), 0
+		        x + (radius * cos(i *  twicePi / triangles)), 
+			    y + (radius * sin(i * twicePi / triangles)),
+                0
 			);
 		}
 	glEnd();
+
+    /* middle tube */
+    glBegin(GL_QUAD_STRIP);
+    glColor3f(red, green, blue);
+        for (i = 0; i <= twicePi; i += triangles)
+        {
+            glVertex3f(radius * cos(i), 0, radius * sin(i));
+            glVertex3f(radius * cos(i), height, radius * sin(i));
+        }
+        /* close the loop back to zero degrees */
+        glVertex3f(radius, 0, 0);
+        glVertex3f(radius, height, 0);
+    glEnd();
 }
 
 void Circle::setRGB(GLfloat red, GLfloat green, GLfloat blue) {

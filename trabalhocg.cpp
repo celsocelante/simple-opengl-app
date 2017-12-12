@@ -37,8 +37,12 @@ double camXZAngle=0;
 void init(void) {
     glClearColor(1, 1, 1, 0.0f);
     glViewport (0, 0, win.getWidth(), win.getHeight());
+    // glMatrixMode(GL_PROJECTION);
+    // glMatrixMode (GL_MODELVIEW);
+    // glLoadIdentity();
+
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
+    // gluPerspective(45, win.getWidth() / win.getHeight(), 0.02, 1000);
 
     glOrtho(
         (stuff->arena->getX() - stuff->arena->getRadius()),
@@ -47,6 +51,8 @@ void init(void) {
         (stuff->arena->getY() - stuff->arena->getRadius()),
         -1.0, 1.0
     );
+
+    // gluLookAt(350, 500, 10, 500, 500, 0, 0, 1, 0);
 }
 
 void endGame() {
@@ -303,17 +309,13 @@ void onClick(GLint button, GLint state, GLint x, GLint y) {
     }
 }
 
-int dist = 10;
+int dist = 20;
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor (1.0, 1.0, 1.0, 1.0);
 
-    // glLoadIdentity();
-
-    glPushMatrix();
-    glTranslatef(dist,0,0);
-    glPopMatrix();
+    // glTranslatef(dist,0,0);
     // glRotatef(0,1,0,0);
     // glRotatef(90,0,1,0);
 
