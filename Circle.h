@@ -14,7 +14,7 @@ class Stuff;
 class Circle {
     protected:
         GLfloat x, y, z;
-        GLfloat radius;
+        GLfloat radius, height;
         GLfloat previousRadius;
 
         GLfloat px, py, pz;
@@ -30,7 +30,7 @@ class Circle {
         
         Stuff* stuff;
     public:
-        Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius);
+        Circle(GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLfloat height);
         Circle();
 
         bool displayed = true;

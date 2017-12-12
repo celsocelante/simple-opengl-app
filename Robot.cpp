@@ -139,11 +139,11 @@ void Robot::rotateArmLeft() {
 }
 
 void Robot::rotateRight() {
-    this->theta += 3;
+    this->theta -= this->velocity * 5;
 }
 
 void Robot::rotateLeft() {
-    this->theta -= 3;
+    this->theta +=  this->velocity * 5;
 }
 
 void Robot::swapLegs() {
@@ -340,6 +340,18 @@ void Robot::jump() {
         // // Hold on for 2 seconds
         // glutTimerFunc(ANIMATION_TIME, jumpEnd, 0);
     }
+}
+
+void Robot::getGunPositionX() {
+
+}
+
+void Robot::getGunPositionY() {
+    
+}
+
+void Robot::getGunPositionZ() {
+
 }
 
 
