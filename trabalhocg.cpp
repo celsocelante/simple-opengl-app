@@ -315,60 +315,92 @@ void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor (1.0, 1.0, 1.0, 1.0);
 
-    // glTranslatef(dist,0,0);
-    // glRotatef(0,1,0,0);
-    // glRotatef(90,0,1,0);
+    for (int i = 0; i < 3; i++) {
+        if (i == 0) {
+            glViewport(0, 0, win.getWidth(), win.getHeight());
+            glLoadIdentity();
 
-    if (stuff->totalEnemies == 0) {
-        glClearColor (0, 0, 0, 1.0);
-        // render final text
-        renderWinText();
-        glFlush();
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
 
-        return;
-    }
+            glMatrixMode(GL_MODELVIEW);
+            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, 500, 500, 0, 0, 0, 1);
+        } 
+        else if (i == 1) {
+            glLoadIdentity();
+            glViewport(0, 500, win.getWidth(), 200);
 
-    if (!stuff->bot->displayed) {
-        glClearColor (0, 0, 0, 1.0);
-        // render final text
-        renderGameOverText();
-        glFlush();
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluPerspective(45, win.getWidth() / 200, 2, 2000);
 
-        return;
-    } 
+            glMatrixMode(GL_MODELVIEW);
+            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, 500, 500, 0, 0, 0, 1);
+
+        } else if (i == 2) {
+            // minimapa
+            glLoadIdentity();
+            glViewport(375, 0, win.getWidth()/4, win.getHeight()/4);
+
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(stuff->arena->getX() - stuff->arena->getRadius(),stuff->arena->getX() + stuff->arena->getRadius(),
+                stuff->arena->getY() - stuff->arena->getRadius(),stuff->arena->getY() + stuff->arena->getRadius(),-1.0,1.0);
+        }
+
+
+        if (stuff->totalEnemies == 0) {
+            glClearColor (0, 0, 0, 1.0);
+            // render final text
+            renderWinText();
+            glFlush();
     
-    // Fixed elements
-    stuff->arena->draw();
-
-    // bullets
-    drawBullets();
-
-    stuff->center->draw();
-
-    // Short obstacles
-    for (Circle* lo : stuff->obstacles) {
-        lo->draw();
-    }
-
-    renderScoreText();
-
-    // Enemies
-    for (Enemy* e : stuff->enemies) {
-        if (e->displayed) {
-            e->draw();
-            e->update();
-
-            GLfloat atual = glutGet(GLUT_ELAPSED_TIME);
-            if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > 1 / e->freqTiro){
-                e->setFire();
-                e->lastTimeShot = atual;
+            return;
+        }
+    
+        if (!stuff->bot->displayed) {
+            glClearColor (0, 0, 0, 1.0);
+            // render final text
+            renderGameOverText();
+            glFlush();
+    
+            return;
+        }
+    
+        // Fixed elements
+        stuff->arena->draw();
+    
+        // bullets
+        drawBullets();
+    
+        stuff->center->draw();
+    
+        // Short obstacles
+        for (Circle* lo : stuff->obstacles) {
+            lo->draw();
+        }
+    
+        renderScoreText();
+    
+        // Enemies
+        for (Enemy* e : stuff->enemies) {
+            if (e->displayed) {
+                e->draw();
+                e->update();
+    
+                GLfloat atual = glutGet(GLUT_ELAPSED_TIME);
+                if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > 1 / e->freqTiro){
+                    e->setFire();
+                    e->lastTimeShot = atual;
+                }
             }
         }
+    
+        stuff->bot->draw();
+
     }
 
-    stuff->bot->draw();
-
-    // glFlush();
     glutSwapBuffers();
 }
 
