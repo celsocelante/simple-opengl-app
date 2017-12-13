@@ -375,7 +375,8 @@ void Robot::draw() {
             glDisable(GL_LIGHTING);
             glDisable(GL_TEXTURE_2D);
             glColor3fv(mat_ambient);
-                            
+                           
+            //Perna direita 
             glPushMatrix();
     
                 glTranslatef(this->radius/2, 0, this->radius/2);
@@ -384,6 +385,7 @@ void Robot::draw() {
 
             glPopMatrix();
 
+            //Perna esquerda
             glPushMatrix();
 
                 glTranslatef(-this->radius/2, 0, this->radius/2);
@@ -394,6 +396,7 @@ void Robot::draw() {
 
             glTranslatef(0, 0, this->radius * 1.5);
         
+            //Corpo
             glPushMatrix();
 
                 glScalef(this->radius, this->radius/7, this->radius);
@@ -401,6 +404,7 @@ void Robot::draw() {
 
             glPopMatrix();
 
+            //Braco direito
             glPushMatrix();
 
                 glTranslatef(this->radius/2, this->radius/2, this->radius/2);
@@ -409,6 +413,16 @@ void Robot::draw() {
 
             glPopMatrix();
 
+            //Braco esquerdo
+            glPushMatrix();
+
+                glTranslatef(-this->radius/2, this->radius/2, this->radius/2);
+                glScalef(this->radius/7, this->radius, this->radius/7);
+                glutSolidCube(1.0);
+
+            glPopMatrix();
+
+            //Cabeca
             glPushMatrix();
 
                 glTranslatef(0, 0, this->radius);
