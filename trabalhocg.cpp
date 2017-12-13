@@ -297,43 +297,15 @@ void display(void) {
     for (int i = 0; i < 3; i++) {
         if (i == 0) {
             glViewport(0, 0, win.getWidth(), win.getHeight());
-<<<<<<< .merge_file_lO96WG
-            glLoadIdentity();
-
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
-
-=======
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
->>>>>>> .merge_file_ud4ivR
             glMatrixMode(GL_MODELVIEW);
             gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, 500, 500, 0, 0, 0, 1);
         } 
         else if (i == 1) {
             glLoadIdentity();
             glViewport(0, 500, win.getWidth(), 200);
-<<<<<<< .merge_file_lO96WG
-
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            gluPerspective(45, win.getWidth() / 200, 2, 2000);
-
-            glMatrixMode(GL_MODELVIEW);
-            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, 500, 500, 0, 0, 0, 1);
-
-        } else if (i == 2) {
-            // minimapa
-            glLoadIdentity();
-            glViewport(375, 0, win.getWidth()/4, win.getHeight()/4);
-
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(stuff->arena->getX() - stuff->arena->getRadius(),stuff->arena->getX() + stuff->arena->getRadius(),
-                stuff->arena->getY() - stuff->arena->getRadius(),stuff->arena->getY() + stuff->arena->getRadius(),-1.0,1.0);
-=======
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             gluPerspective(45, win.getWidth() / 200, 2, 2000);
@@ -346,7 +318,6 @@ void display(void) {
             glLoadIdentity();
             glOrtho(stuff->arena->getX() - stuff->arena->getRadius(),stuff->arena->getX() + stuff->arena->getRadius(),
                 stuff->arena->getY() - stuff->arena->getRadius(),stuff->arena->getY() + stuff->arena->getRadius(),-20.0,20.0);
->>>>>>> .merge_file_ud4ivR
         }
 
 
