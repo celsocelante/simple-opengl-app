@@ -310,7 +310,8 @@ void display(void) {
             glLoadIdentity();
             gluPerspective(45, win.getWidth() / 200, 2, 2000);
             glMatrixMode(GL_MODELVIEW);
-            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, 500, 500, 0, 0, 0, 1);
+            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180), stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180), 100, 0, 0, 1);
+            
         } else if (i == 2) {
             glLoadIdentity();
             glViewport(375, 0, win.getWidth()/4, win.getHeight()/4);
