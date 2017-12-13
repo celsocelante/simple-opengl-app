@@ -341,7 +341,9 @@ void display(void) {
                 glLoadIdentity();
                 gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
                 glMatrixMode(GL_MODELVIEW);
-                gluLookAt(stuff->bot->getX() + stuff->bot->getRadius() /2, stuff->bot->getY() , 100, 500, 500, 0, 0, 0, 1);
+                // gluLookAt(stuff->bot->getX() + stuff->bot->getRadius() /2, stuff->bot->getY() , 100, 500, 500, 0, 0, 0, 1);
+                gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 50, stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180),
+                    stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180), 50, 0, 0, 1);
             } else if (currentCamera == 2) {
                 // segunda camera
                 glLoadIdentity();
@@ -360,8 +362,8 @@ void display(void) {
             glLoadIdentity();
             gluPerspective(45, win.getWidth() / 200, 2, 1000);
             glMatrixMode(GL_MODELVIEW);
-            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180),
-                stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180), 100, 0, 0, 1);
+            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 50, stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180),
+                stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180), 50, 0, 0, 1);
             
         } else if (i == 2) {
             // minimapa
@@ -411,7 +413,7 @@ void display(void) {
         for (Enemy* e : stuff->enemies) {
             if (e->displayed) {
                 e->draw();
-                // e->update(); // movimentacao dos inimigos
+                e->update(); // movimentacao dos inimigos
     
                 GLfloat atual = glutGet(GLUT_ELAPSED_TIME);
                 if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > 1 / e->freqTiro){

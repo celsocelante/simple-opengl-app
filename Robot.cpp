@@ -360,51 +360,133 @@ void Robot::getGunPositionZ() {
 
 
 void Robot::draw() {
+
+    GLfloat mat_ambient[] = { this->red, this->green, this->blue, 1.0 };
+    GLfloat mat_ambient_g[] = { 0, 1, 0, 1.0 };
+    GLfloat mat_ambient_b[] = { 0, 0, 1, 1.0 };
+
+
     glPushMatrix();
-        glTranslatef(0, 0, 0);
+        glTranslatef(x, y, z);
+        glRotatef(this->theta, 0, 0 ,1);
+
+        glPushAttrib(GL_ENABLE_BIT);
+
+            glDisable(GL_LIGHTING);
+            glDisable(GL_TEXTURE_2D);
+            glColor3fv(mat_ambient);
+                            
+            glPushMatrix();
+    
+                glTranslatef(this->radius/2, 0, this->radius/2);
+                glScalef(this->radius/7, this->radius/7, this->radius);
+                glutSolidCube(1.0);
+
+            glPopMatrix();
+
             glPushMatrix();
 
-                glTranslatef(x, y, 60);
-                glRotatef(this->theta, 0, 0, 1);
+                glTranslatef(-this->radius/2, 0, this->radius/2);
+                glScalef(this->radius/7, this->radius/7, this->radius);
+                glutSolidCube(1.0);
 
-                glPushMatrix();
-                    glScaled(this->scale, this->scale, 0);
-                glPopMatrix();
-
-                // Perna direita
-                if (this->legs) {
-                    glPushMatrix();
-                        glTranslatef(-this->radius/3, this->radius/5, 0);
-                        drawRectangle(this->radius/3, this->radius/2, 0, 0, 0);
-                    glPopMatrix();
-                }
-
-                // Perna esquerda
-                if (!this->legs) {
-                    glPushMatrix();
-                        glTranslatef(this->radius/3, -this->radius/1.4, 0);
-                        drawRectangle(this->radius/3, this->radius/2, 0, 0, 0);                
-                    glPopMatrix();
-                }
-
-                // Braco
-                glPushMatrix();
-                    glTranslatef(-(this->radius - 2), 0, 0);
-                    glRotatef(-this->thetaArm, 0, 0, 1);
-
-                    drawRectangleLine(this->radius/5, this->radius, 0, 0, 0);
-                    drawRectangle(this->radius/5, this->radius, this->red, this->green, this->blue);
-
-                    glTranslatef(0, this->radius, 0);
-                glPopMatrix();
-
-                drawEllipseLine(this->radius, this->radius/4, 0, 0, 0);
-                drawEllipse(this->radius, this->radius/4, this->red, this->green, this->blue);
-
-
-                glutSolidSphere(this->radius/2, 100, 100);
-                drawCircleLine(this->radius/2, 0, 0, 0);
-                drawCircle(this->radius/2, this->red, this->green, this->blue);
             glPopMatrix();
+
+            glTranslatef(0, 0, this->radius * 1.5);
+        
+            glPushMatrix();
+
+                glScalef(this->radius, this->radius/7, this->radius);
+                glutSolidCube(1.0);
+
+            glPopMatrix();
+
+            glPushMatrix();
+
+                glTranslatef(this->radius/2, this->radius/2, this->radius/2);
+                glScalef(this->radius/7, this->radius, this->radius/7);
+                glutSolidCube(1.0);
+
+            glPopMatrix();
+
+            glPushMatrix();
+
+                glTranslatef(0, 0, this->radius);
+                glScalef(this->radius/2, this->radius/2, this->radius/2);
+                glutSolidSphere(1.0, 360, 360);
+
+            glPopMatrix();
+
+
+
+
+        glPopAttrib();
+
     glPopMatrix();
+
+    // glPushMatrix();
+    //     glTranslatef(0, 0, 0);
+    //         glPushMatrix();
+
+    //             glTranslatef(x, y, 0);
+    //             glRotatef(this->theta, 0, 0, 1);
+
+    //             // Perna direita
+    //             if (this->legs) {
+    //                 glPushAttrib(GL_ENABLE_BIT);
+    //                     glPushMatrix();
+    //                         GLfloat mat_ambient[] = { this->red, this->green, this->blue, 1.0 };
+    //                         glDisable(GL_LIGHTING);
+    //                         glDisable(GL_TEXTURE_2D);
+                     
+    //                         glPushMatrix();
+    //                             glColor3fv(mat_ambient);
+    //                             glTranslatef(0, -this->radius/2, this->radius/6);
+    //                             glScalef(this->radius/7, this->radius/7, this->radius/3);
+    //                             glutSolidCube(1.0);
+    //                         glPopMatrix();
+    //                     glPopAttrib();
+    //                 glPopMatrix();
+    //             }
+
+    //             // Perna esquerda
+    //             if (!this->legs) {
+    //                 glPushMatrix();
+    //                     glPushAttrib(GL_ENABLE_BIT);
+    //                     glPushMatrix();
+    //                         GLfloat mat_ambient[] = { this->red, this->green, this->blue, 1.0 };
+    //                         glDisable(GL_LIGHTING);
+    //                         glDisable(GL_TEXTURE_2D);
+                     
+    //                         //x axis
+    //                         glPushMatrix();
+    //                             glColor3fv(mat_ambient);
+    //                             glTranslatef(0, this->radius/2, this->radius/6);
+    //                             glScalef(this->radius/7, this->radius/7, this->radius/3);
+    //                             glutSolidCube(1.0);
+    //                         glPopMatrix();
+    //                     glPopAttrib();
+    //                 glPopMatrix();
+    //             }
+
+    //             // Braco
+    //             glPushMatrix();
+    //                 glTranslatef(-(this->radius - 2), 0, 0);
+    //                 glRotatef(-this->thetaArm, 0, 0, 1);
+
+    //                 drawRectangleLine(this->radius/5, this->radius, 0, 0, 0);
+    //                 drawRectangle(this->radius/5, this->radius, this->red, this->green, this->blue);
+
+    //                 glTranslatef(0, this->radius, 0);
+    //             glPopMatrix();
+
+    //             drawEllipseLine(this->radius, this->radius/4, 0, 0, 0);
+    //             drawEllipse(this->radius, this->radius/4, this->red, this->green, this->blue);
+
+
+    //             glutSolidSphere(this->radius/2, 100, 100);
+    //             drawCircleLine(this->radius/2, 0, 0, 0);
+    //             drawCircle(this->radius/2, this->red, this->green, this->blue);
+    //         glPopMatrix();
+    // glPopMatrix();
 }
