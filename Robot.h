@@ -15,7 +15,8 @@ using namespace std;
 
 #define ARM_MOVEMENT 3
 #define ARM_ANGLE 45
-#define MOVEMENT 5
+#define ROTATE 1
+#define MOVEMENT 1
 #define SWAP_LEGS_COUNT 20
 #define ANIMATION_FRAMES 30
 #define ANIMATION_TIME 2000
@@ -83,6 +84,9 @@ class Robot: public Circle {
         bool ableToMove(GLfloat dx, GLfloat dy, GLfloat dz);
         void setFire();
         void jump();
+        void getGunPositionX();
+        void getGunPositionY();  
+        void getGunPositionZ();
 };
 
 #endif
