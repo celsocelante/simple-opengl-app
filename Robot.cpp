@@ -364,7 +364,7 @@ void Robot::draw() {
         glTranslatef(0, 0, 0);
             glPushMatrix();
 
-                glTranslatef(x, y, 0);
+                glTranslatef(x, y, 60);
                 glRotatef(this->theta, 0, 0, 1);
 
                 glPushMatrix();
@@ -401,6 +401,8 @@ void Robot::draw() {
                 drawEllipseLine(this->radius, this->radius/4, 0, 0, 0);
                 drawEllipse(this->radius, this->radius/4, this->red, this->green, this->blue);
 
+
+                glutSolidSphere(this->radius/2, 100, 100);
                 drawCircleLine(this->radius/2, 0, 0, 0);
                 drawCircle(this->radius/2, this->red, this->green, this->blue);
             glPopMatrix();

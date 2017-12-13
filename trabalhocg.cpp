@@ -330,6 +330,7 @@ int dist = 20;
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor (1.0, 1.0, 1.0, 1.0);
+    glLoadIdentity();
 
     for (int i = 0; i < 3; i++) {
         if (i == 0) {
@@ -340,9 +341,10 @@ void display(void) {
                 glLoadIdentity();
                 gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
                 glMatrixMode(GL_MODELVIEW);
-                gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, 500, 500, 0, 0, 0, 1);
+                gluLookAt(stuff->bot->getX() + stuff->bot->getRadius() /2, stuff->bot->getY() , 100, 500, 500, 0, 0, 0, 1);
             } else if (currentCamera == 2) {
                 // segunda camera
+                glLoadIdentity();
                 glViewport(0, 0, win.getWidth(), win.getHeight());
                 glMatrixMode(GL_PROJECTION);
                 glLoadIdentity();
@@ -368,7 +370,7 @@ void display(void) {
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             glOrtho(stuff->arena->getX() - stuff->arena->getRadius(),stuff->arena->getX() + stuff->arena->getRadius(),
-                stuff->arena->getY() - stuff->arena->getRadius(),stuff->arena->getY() + stuff->arena->getRadius(),-20.0,20.0);
+                stuff->arena->getY() - stuff->arena->getRadius(),stuff->arena->getY() + stuff->arena->getRadius(),-20.0,100.0);
         }
 
 
@@ -409,7 +411,7 @@ void display(void) {
         for (Enemy* e : stuff->enemies) {
             if (e->displayed) {
                 e->draw();
-                e->update();
+                // e->update(); // movimentacao dos inimigos
     
                 GLfloat atual = glutGet(GLUT_ELAPSED_TIME);
                 if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > 1 / e->freqTiro){

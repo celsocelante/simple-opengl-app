@@ -40,6 +40,10 @@ class Robot: public Circle {
         list<Bullet> bullets;
         GLfloat red, green, blue;
         Circle disabledLowObstacle;
+
+        float angle = 0.0f;
+        float legAngle[2] = {0.0f, 0.0f};
+        float armAngle[2] = {0.0f, 0.0f};
         
         
 
