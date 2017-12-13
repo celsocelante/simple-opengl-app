@@ -27,6 +27,7 @@ Window win;
 bool keyStatus[256] = { false };
 
 GLfloat mouseX = 0;
+GLfloat mouseY = 0;
 GLfloat lastTime = 0;
 GLfloat lastTimeShot = 0;
 
@@ -297,14 +298,24 @@ void onPassiveMouseMotion(GLint x, GLint y) {
     if ((x >= 0 && x <= win.getWidth()) && (y >= 0 && y <= win.getHeight())) {
 
         GLfloat dx = x - mouseX;
+        GLfloat dy = y - mouseY;
 
+        // horizontal movement
         if (dx > 0) {
             stuff->bot->rotateArmLeft();
         } else if (dx < 0) {
             stuff->bot->rotateArmRight();
         }
 
+        // vertical movement
+        if (dy > 0) {
+            // stuff->bot->rotateArmLeft();
+        } else if (dy < 0) {
+            // stuff->bot->rotateArmRight();
+        }
+
         mouseX = x;
+        mouseY = y;
     }
 }
 
