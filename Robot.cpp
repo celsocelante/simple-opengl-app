@@ -139,11 +139,11 @@ void Robot::rotateArmLeft() {
 }
 
 void Robot::rotateRight() {
-    this->theta -= this->velocity * 5;
+    this->theta -= this->velocity * 3 * ROTATE;
 }
 
 void Robot::rotateLeft() {
-    this->theta +=  this->velocity * 5;
+    this->theta +=  this->velocity * 3 * ROTATE;
 }
 
 void Robot::swapLegs() {

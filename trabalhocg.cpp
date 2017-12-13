@@ -29,10 +29,10 @@ bool keyStatus[256] = { false };
 GLfloat mouseX = 0;
 GLfloat lastTime = 0;
 GLfloat lastTimeShot = 0;
+
 //Camera controls
-double camDist=50;
-double camXYAngle=0;
-double camXZAngle=0;
+int currentCamera = 1;
+
 
 void init(void) {
     glClearColor(1, 1, 1, 0.0f);
@@ -64,6 +64,15 @@ void renderScoreText() {
 void renderWinText() {
     static char str[2000];
     char *tmpStr;
+
+    glLoadIdentity();
+    glViewport(0,0 , win.getWidth(), win.getHeight() + 200);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
+        stuff->arena->getY() - stuff->arena->getRadius(),stuff->arena->getY() + stuff->arena->getRadius(), -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+
     sprintf(str, "YOU WIN");
     glColor3f(0, 1, 0);
     glRasterPos2f(stuff->arena->getX() - stuff->arena->getX() * 0.05, stuff->arena->getY());
@@ -90,6 +99,15 @@ void renderWinText() {
 void renderGameOverText() {
     static char str[2000];
     char *tmpStr;
+
+    glLoadIdentity();
+    glViewport(0,0 , win.getWidth(), win.getHeight() + 200);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
+        stuff->arena->getY() - stuff->arena->getRadius(),stuff->arena->getY() + stuff->arena->getRadius(), -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+
     sprintf(str, "GAME OVER");
     glColor3f(1, 0, 0);
     glRasterPos2f(stuff->arena->getX() - stuff->arena->getX() * 0.05, stuff->arena->getY());
@@ -228,6 +246,14 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
             }
 
             break;
+
+            case '1':
+                currentCamera = 1;
+                cout << "camera 1" << endl;
+                break;
+            case '2':
+                currentCamera = 2;
+                cout << "camera 2" << endl;
     }
 
 }
@@ -296,23 +322,36 @@ void display(void) {
 
     for (int i = 0; i < 3; i++) {
         if (i == 0) {
-            glViewport(0, 0, win.getWidth(), win.getHeight());
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
-            glMatrixMode(GL_MODELVIEW);
-            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, 500, 500, 0, 0, 0, 1);
-        } 
+            if (currentCamera == 1) {
+                // primeira camera
+                glViewport(0, 0, win.getWidth(), win.getHeight());
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
+                glMatrixMode(GL_MODELVIEW);
+                gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, 500, 500, 0, 0, 0, 1);
+            } else if (currentCamera == 2) {
+                // segunda camera
+                glViewport(0, 0, win.getWidth(), win.getHeight());
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
+                glMatrixMode(GL_MODELVIEW);
+                gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, 500, 500, 0, 0, 0, 1);
+            }
+        }
         else if (i == 1) {
             glLoadIdentity();
             glViewport(0, 500, win.getWidth(), 200);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            gluPerspective(45, win.getWidth() / 200, 2, 2000);
+            gluPerspective(45, win.getWidth() / 200, 2, 1000);
             glMatrixMode(GL_MODELVIEW);
-            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180), stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180), 100, 0, 0, 1);
+            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180),
+                stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180), 100, 0, 0, 1);
             
         } else if (i == 2) {
+            // minimapa
             glLoadIdentity();
             glViewport(375, 0, win.getWidth()/4, win.getHeight()/4);
             glMatrixMode(GL_PROJECTION);
