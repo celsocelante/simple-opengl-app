@@ -1,10 +1,11 @@
 #include "Bullet.h"
 
-Bullet::Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat radius) {
+Bullet::Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat radius, GLfloat heightRobot) {
 	this->x = x;
 	this->y = y;
 	this->theta = theta;
     this->thetaRobot = thetaRobot;
+    this->heightRobot = heightRobot;
 	this->vel = vel;
     this->radius = radius;
     this->displayed = true;
@@ -53,12 +54,14 @@ bool Bullet::collision(Circle *c, GLfloat dx, GLfloat dy) {
 void Bullet::draw(){
     if (this->displayed) {
         glPushMatrix();
-            glTranslatef(this->x, this->y, 0);
+            glColor3f(1, 1, 0); // yellow
+            glTranslatef(this->x, this->y, heightRobot);
             glRotatef(this->thetaRobot, 0, 0, 1);
             glTranslatef(-(this->radius - 0.6), 0, 0);
             glRotatef(-this->theta, 0, 0, 1);
             glTranslatef(0, this->radius, 0);
-            drawCircle(0, 0, SIZE_BULLET);
+            // drawCircle(0, 0, SIZE_BULLET);
+            glutSolidSphere(SIZE_BULLET, 100, 100);
         glPopMatrix();
     }
 }

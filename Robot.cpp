@@ -41,6 +41,10 @@ void Robot::restoreScale() {
     this->scale = this->previousScale;
 }
 
+void Robot::setHeight(GLfloat height) {
+    this->height = height;
+}
+
 void Robot::drawRectangle(GLfloat width, GLfloat height, GLfloat R, GLfloat G, GLfloat B) {
     glColor3f(R, G, B);
     
@@ -293,14 +297,14 @@ void Robot::changeScale(GLfloat i) {
 void Robot::setFire() {
 
     if (!canMoveFreely() && !isJumping() && this->type == 2) {
-        Bullet* b = new Bullet(x, y, thetaArm, theta, bulletVelocity, radius);
+        Bullet* b = new Bullet(x, y, thetaArm, theta, bulletVelocity, radius, height);
         stuff->bullets.push_back(b);
 
         return;
     }
 
     if (this->type == 3) {
-        Bullet* b = new Bullet(x, y, thetaArm, theta, bulletVelocity, radius);
+        Bullet* b = new Bullet(x, y, thetaArm, theta, bulletVelocity, radius, height);
         stuff->enemyBullets.push_back(b);
     }
 

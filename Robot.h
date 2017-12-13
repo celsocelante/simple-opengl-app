@@ -34,6 +34,7 @@ class Robot: public Circle {
         GLfloat bulletVelocity;
         GLfloat stepsCounter = 0;
         GLfloat previousScale = 1;
+        GLfloat height = 80;
         bool moveFreely = false;
         bool legs;
         list<Bullet> bullets;
@@ -71,6 +72,7 @@ class Robot: public Circle {
         GLfloat getScale() { return this->scale; }
         GLfloat getTheta() { return this->theta; }
         GLfloat getThetaArm() { return this->thetaArm; }
+        GLfloat getHeight() { return this->height; }
         GLfloat newX();
         GLfloat newY();
         void setScale(GLfloat scale);
@@ -78,6 +80,7 @@ class Robot: public Circle {
         void restoreScale();
         void setVelocity(GLfloat velocity);
         void setBulletVelocity(GLfloat bulletVelocity);
+        void setHeight(GLfloat height);
         GLfloat getVelocity() { return this->velocity; }
         GLfloat getBulletVelocity() { return this->bulletVelocity; }
         void swapLegs();

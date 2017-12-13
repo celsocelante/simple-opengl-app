@@ -464,6 +464,7 @@ void readConfigFile(string fileName) {
             stuff->bot->setVelocity(vel);
             stuff->bot->setBulletVelocity(velTiro);
             stuff->bot->setStuff(stuff);
+            stuff->bot->setHeight(80); // altura do robo
 
         } else if (fill == "blue") {
             stuff->arena = new Circle(cx, cy, 0, radius, 2000);
