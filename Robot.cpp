@@ -359,82 +359,82 @@ void Robot::getGunPositionZ() {
 }
 
 
-void Robot::draw() {
+void Robot::draw(bool showHead) {
 
     GLfloat mat_ambient[] = { this->red, this->green, this->blue, 1.0 };
     GLfloat mat_ambient_g[] = { 0, 1, 0, 1.0 };
     GLfloat mat_ambient_b[] = { 0, 0, 1, 1.0 };
 
 
-    // glPushMatrix();
-    //     glTranslatef(x, y, z);
-    //     glRotatef(this->theta, 0, 0 ,1);
+    glPushMatrix();
+        glTranslatef(x, y, z);
+        glRotatef(this->theta, 0, 0 ,1);
 
-    //     glPushAttrib(GL_ENABLE_BIT);
+        glPushAttrib(GL_ENABLE_BIT);
 
-    //         glDisable(GL_LIGHTING);
-    //         glDisable(GL_TEXTURE_2D);
-    //         glColor3fv(mat_ambient);
+            glDisable(GL_LIGHTING);
+            glDisable(GL_TEXTURE_2D);
+            glColor3fv(mat_ambient);
                            
-    //         //Perna direita 
-    //         glPushMatrix();
+            //Perna direita 
+            glPushMatrix();
     
-    //             glTranslatef(this->radius/2, 0, this->radius/2);
-    //             glScalef(this->radius/7, this->radius/7, this->radius);
-    //             glutSolidCube(1.0);
+                glTranslatef(this->radius/2, 0, this->radius/2);
+                glScalef(this->radius/7, this->radius/7, this->radius);
+                glutSolidCube(1.0);
 
-    //         glPopMatrix();
+            glPopMatrix();
 
-    //         //Perna esquerda
-    //         glPushMatrix();
+            //Perna esquerda
+            glPushMatrix();
 
-    //             glTranslatef(-this->radius/2, 0, this->radius/2);
-    //             glScalef(this->radius/7, this->radius/7, this->radius);
-    //             glutSolidCube(1.0);
+                glTranslatef(-this->radius/2, 0, this->radius/2);
+                glScalef(this->radius/7, this->radius/7, this->radius);
+                glutSolidCube(1.0);
 
-    //         glPopMatrix();
+            glPopMatrix();
 
-    //         glTranslatef(0, 0, this->radius * 1.5);
+            glTranslatef(0, 0, this->radius * 1.5);
         
-    //         //Corpo
-    //         glPushMatrix();
+            //Corpo
+            glPushMatrix();
 
-    //             glScalef(this->radius, this->radius/7, this->radius);
-    //             glutSolidCube(1.0);
+                glScalef(this->radius, this->radius/7, this->radius);
+                glutSolidCube(1.0);
 
-    //         glPopMatrix();
+            glPopMatrix();
 
-    //         //Braco direito
-    //         glPushMatrix();
+            //Braco direito
+            glPushMatrix();
 
-    //             glTranslatef(this->radius/2, this->radius/2, this->radius/2);
-    //             glScalef(this->radius/7, this->radius, this->radius/7);
-    //             glutSolidCube(1.0);
+                glTranslatef(this->radius/2, this->radius/2, this->radius/2);
+                glScalef(this->radius/7, this->radius, this->radius/7);
+                glutSolidCube(1.0);
 
-    //         glPopMatrix();
+            glPopMatrix();
 
-    //         //Braco esquerdo
-    //         glPushMatrix();
+            //Braco esquerdo
+            glPushMatrix();
 
-    //             glTranslatef(-this->radius/2, this->radius/2, this->radius/2);
-    //             glScalef(this->radius/7, this->radius, this->radius/7);
-    //             glutSolidCube(1.0);
+                glTranslatef(-this->radius/2, this->radius/2, this->radius/2);
+                glScalef(this->radius/7, this->radius, this->radius/7);
+                glutSolidCube(1.0);
 
-    //         glPopMatrix();
+            glPopMatrix();
 
-    //         //Cabeca
-    //         glPushMatrix();
+            if (showHead) {
+                //Cabeca
+                glPushMatrix();
 
-    //             glTranslatef(0, 0, this->radius);
-    //             glScalef(this->radius/2, this->radius/2, this->radius/2);
-    //             glutSolidSphere(1.0, 360, 360);
+                    glTranslatef(0, 0, this->radius);
+                    glScalef(this->radius/2, this->radius/2, this->radius/2);
+                    glutSolidSphere(1.0, 360, 360);
 
-    //         glPopMatrix();
+                glPopMatrix();
+            }
 
 
+        glPopAttrib();
 
-
-    //     glPopAttrib();
-
-    // glPopMatrix();
+    glPopMatrix();
 }

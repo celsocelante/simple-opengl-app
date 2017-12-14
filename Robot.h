@@ -68,7 +68,7 @@ class Robot: public Circle {
         void moveForward();
         void moveBackward();
         void shoot(list<Bullet>& bullets);
-        void draw();
+        void draw(bool showHead);
         // bool collision(Circle *c, GLfloat dx, GLfloat dy);
         bool canMoveFreely() { return this->moveFreely; }
         void setMoveFreely(bool moveFreely);

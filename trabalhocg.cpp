@@ -352,6 +352,8 @@ void display(void) {
                 gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
                 glMatrixMode(GL_MODELVIEW);
                 gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, 500, 500, 0, 0, 0, 1);
+
+                stuff->bot->draw(true);
             }
         }
         else if (i == 1) {
@@ -365,6 +367,8 @@ void display(void) {
                 stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180),
                 stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180), 50, 0, 0, 1);
             
+            stuff->bot->draw(false);
+            
         } else if (i == 2) {
             // minimapa
             glLoadIdentity();
@@ -373,6 +377,8 @@ void display(void) {
             glLoadIdentity();
             glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
                 stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -1.0, 1.0);
+            
+            stuff->bot->draw(false);
         }
 
 
@@ -423,7 +429,6 @@ void display(void) {
             }
         }
     
-        stuff->bot->draw();
 
     }
 
