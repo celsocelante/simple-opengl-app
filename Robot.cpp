@@ -165,12 +165,13 @@ void Robot::rotateLeft() {
 }
 
 void Robot::swapLegs() {
-    this->stepsCounter = this->stepsCounter + 1;
-    if (this->stepsCounter >= SWAP_LEGS_COUNT) {
-        this->legs = !this->legs;
-
-        this->stepsCounter = 0;
-    }
+    this->legControl += 1 * this->velocity;
+    double sinLegControl = sin(this->legControl);
+    double cosLegControl = cos(this->legControl);
+    this->thetaLeftLeg1 = sinLegControl > 0 ? sinLegControl * 45 : 0;
+    this->thetaLeftLeg2 = cosLegControl > 0 ? -this->thetaLeftLeg1 : -sinLegControl ;
+    this->thetaRightLeg1 = -sinLegControl > 0 ? -sinLegControl * 45 : 0;
+    this->thetaRightLeg2 = -cosLegControl > 0 ? -this->thetaRightLeg1 : sinLegControl ;
 }
 
 bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
@@ -310,17 +311,17 @@ void Robot::changeScale(GLfloat i) {
 
 void Robot::setFire() {
 
-    if (!canMoveFreely() && !isJumping() && this->type == 2) {
-        Bullet* b = new Bullet(x, y, thetaArm, theta, bulletVelocity, radius, height);
-        stuff->bullets.push_back(b);
+    // if (!canMoveFreely() && !isJumping() && this->type == 2) {
+    //     Bullet* b = new Bullet(x, y, thetaArm, theta, bulletVelocity, radius, height);
+    //     stuff->bullets.push_back(b);
 
-        return;
-    }
+    //     return;
+    // }
 
-    if (this->type == 3) {
-        Bullet* b = new Bullet(x, y, thetaArm, theta, bulletVelocity, radius, height);
-        stuff->enemyBullets.push_back(b);
-    }
+    // if (this->type == 3) {
+    //     Bullet* b = new Bullet(x, y, thetaArm, theta, bulletVelocity, radius, height);
+    //     stuff->enemyBullets.push_back(b);
+    // }
 
 }
 
@@ -373,7 +374,7 @@ void Robot::getGunPositionZ() {
 }
 
 
-void Robot::draw() {
+void Robot::draw(int i) {
 
     GLfloat mat_ambient[] = { this->red, this->green, this->blue, 1.0 };
     GLfloat mat_ambient_g[] = { 0, 1, 0, 1.0 };
@@ -393,8 +394,21 @@ void Robot::draw() {
             //Perna direita 
             glPushMatrix();
     
-                glTranslatef(this->radius/2, 0, this->radius/2);
-                glScalef(this->radius/7, this->radius/7, this->radius);
+                glTranslatef(this->radius/2, 0, this->radius);
+                glRotatef(this->thetaRightLeg1, 1, 0, 0);
+                glTranslatef(0, 0, -this->radius/4);
+                
+                glPushMatrix();
+                    glScalef(this->radius/7, this->radius/7, this->radius/2);
+                    glutSolidCube(1.0);
+                glPopMatrix();
+
+
+                glTranslatef(0, 0, -this->radius/4);
+                glRotatef(this->thetaRightLeg2, 1, 0, 0);
+                glTranslatef(0, 0, -this->radius/4);
+
+                glScalef(this->radius/7, this->radius/7, this->radius/2);
                 glutSolidCube(1.0);
 
             glPopMatrix();
@@ -402,8 +416,20 @@ void Robot::draw() {
             //Perna esquerda
             glPushMatrix();
 
-                glTranslatef(-this->radius/2, 0, this->radius/2);
-                glScalef(this->radius/7, this->radius/7, this->radius);
+                glTranslatef(-this->radius/2, 0, this->radius);
+                glRotatef(this->thetaLeftLeg1, 1, 0, 0);
+                glTranslatef(0, 0, -this->radius/4);
+
+                glPushMatrix();
+                    glScalef(this->radius/7, this->radius/7, this->radius/2);
+                    glutSolidCube(1.0);
+                glPopMatrix();
+
+                glTranslatef(0, 0, -this->radius/4);
+                glRotatef(this->thetaLeftLeg2, 1, 0, 0);
+                glTranslatef(0, 0, -this->radius/4);
+
+                glScalef(this->radius/7, this->radius/7, this->radius/2);
                 glutSolidCube(1.0);
 
             glPopMatrix();
@@ -421,7 +447,10 @@ void Robot::draw() {
             //Braco direito
             glPushMatrix();
 
-                glTranslatef(this->radius/2, this->radius/2, this->radius/2);
+                glTranslatef(this->radius/2, this->radius, this->radius/2);
+                glRotatef(this->thetaArm, 0, 0, 1);
+                glRotatef(this->thetaArmZ, 1, 0, 0);
+                glTranslatef(0, this->radius/2, 0);
                 glScalef(this->radius/7, this->radius, this->radius/7);
                 glutSolidCube(1.0);
 
@@ -438,14 +467,16 @@ void Robot::draw() {
             glPopMatrix();
 
 
-            //Cabeca
-            glPushMatrix();
+            if(i != 1){
+                //Cabeca
+                glPushMatrix();
 
-                glTranslatef(0, 0, this->radius);
-                glScalef(this->radius/2, this->radius/2, this->radius/2);
-                glutSolidSphere(1.0, 360, 360);
+                    glTranslatef(0, 0, this->radius);
+                    glScalef(this->radius/2, this->radius/2, this->radius/2);
+                    glutSolidSphere(1.0, 360, 360);
 
-            glPopMatrix();
+                glPopMatrix();
+            }
 
 
         glPopAttrib();

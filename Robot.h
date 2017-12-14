@@ -29,6 +29,11 @@ class Robot: public Circle {
     protected:
         GLfloat thetaArm = 0;
         GLfloat thetaArmZ = 0;
+        GLfloat thetaRightLeg1 = 0;
+        GLfloat thetaLeftLeg1 = 0;
+        GLfloat thetaRightLeg2 = 0;
+        GLfloat thetaLeftLeg2 = 0;
+        GLfloat legControl = 0;
         GLfloat theta = 180;
         GLfloat scale;
         GLfloat velocity = 1;
@@ -71,7 +76,7 @@ class Robot: public Circle {
         void moveForward();
         void moveBackward();
         void shoot(list<Bullet>& bullets);
-        void draw();
+        void draw(int i = 0);
         // bool collision(Circle *c, GLfloat dx, GLfloat dy);
         bool canMoveFreely() { return this->moveFreely; }
         void setMoveFreely(bool moveFreely);

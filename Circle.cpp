@@ -59,7 +59,7 @@ void Circle::draw() {
     GLfloat angle = 0;
     
     /** Draw the tube */
-    glColor3f(red, green, blue);
+    glColor3f(1 - red, 1 - green, 1 - blue);
     glBegin(GL_QUAD_STRIP);
     angle = 0.0;
     for(GLint i = 0; i <= triangles; i ++) {
@@ -89,8 +89,20 @@ void Circle::draw() {
         height
         );
     }
-
     glVertex3f(radius, 0.0, height);
+    glEnd();
+    glBegin(GL_POLYGON);
+    
+    angle = 0.0;
+    for(GLint i = 0; i <= triangles; i ++) {
+        glVertex3f(
+            x + (radius * cos(i *  twicePi / triangles)),
+            y + (radius * sin(i * twicePi / triangles)),
+        0.0
+        );
+    }
+
+    glVertex3f(radius, 0.0, 0.0);
     glEnd();
 }
 

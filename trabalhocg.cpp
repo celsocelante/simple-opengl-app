@@ -40,6 +40,7 @@ int currentCamera = 1;
 
 
 void init(void) {
+    glEnable(GL_DEPTH_TEST);
     glClearColor(1, 1, 1, 0.0f);
 }
 
@@ -272,7 +273,7 @@ void onKeyUp(unsigned char key, GLint x, GLint y) {
 }
 
 void idle(void) {
-    // glEnable(GL_DEPTH_TEST);
+
     // glEnable( GL_TEXTURE_2D );
     // glEnable(GL_LIGHTING);
     // glShadeModel (GL_SMOOTH);
@@ -331,7 +332,7 @@ void onClick(GLint button, GLint state, GLint x, GLint y) {
 
 void displayMinimap() {
     // Fixed elements
-        stuff->arena->drawMinimap();
+    stuff->arena->drawMinimap();
 
 
     // Enemies
@@ -341,21 +342,20 @@ void displayMinimap() {
         }
     }
 
-    stuff->bot->drawMinimap();
-
-
     // Short obstacles
     for (Circle* lo : stuff->obstacles) {
         lo->drawMinimap();
     }
 
     stuff->center->drawMinimap();
+
+    stuff->bot->drawMinimap();
 }
 
 
-void display3d() {
+void display3d(int i) {
     // Fixed elements
-        stuff->arena->draw();
+    stuff->arena->draw();
 
 
     // Enemies
@@ -371,6 +371,8 @@ void display3d() {
             }
         }
     }
+
+    stuff->bot->draw(i);
 
 
     // Short obstacles
@@ -410,12 +412,14 @@ void display(void) {
             glLoadIdentity();
             gluPerspective(45, win.getWidth() / 200, 2, 2000);
             glMatrixMode(GL_MODELVIEW);
-            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 50, 
-                stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180),
-                stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180), 50, 0, 0, 1);
-            
-            // stuff->bot->draw();
-             display3d();
+            gluLookAt(
+                stuff->bot->getX(),
+                stuff->bot->getY(), 60, 
+                stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180.0),
+                stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180.0), 50, 0, 0, 1);
+
+            // do not display the robot
+
         } else if (i == 2) {
             // minimapa
             glLoadIdentity();
@@ -423,11 +427,12 @@ void display(void) {
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
-                stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -1.0, 1.0);
+                stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -60.0, 60.0);
             
-            displayMinimap();
+            // displayMinimap();
         }
 
+            display3d(i);
 
         if (stuff->totalEnemies == 0) {
             glClearColor (0, 0, 0, 1.0);
@@ -517,7 +522,7 @@ void readConfigFile(string fileName) {
             win.setTitle("Arena");
 
         } else if (fill == "white") {
-            stuff->center = new Circle(cx, cy, 0, radius, 2000);
+            stuff->center = new Circle(cx, cy, 0, radius, 59);
             stuff->center->setRGB(0.5, 0.5, 0.5);
             stuff->center->setId(id);
             stuff->center->setStuff(stuff);
@@ -558,7 +563,7 @@ GLint main(GLint argc, char** argv) {
     }
 
     glutInit(&argc, argv);
-    glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+    glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(win.getWidth(), win.getHeight());
     glutInitWindowPosition (100, 100);
 
