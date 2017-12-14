@@ -325,25 +325,24 @@ void onClick(GLint button, GLint state, GLint x, GLint y) {
     }
 }
 
-int dist = 20;
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor (1.0, 1.0, 1.0, 1.0);
     glLoadIdentity();
 
     for (int i = 0; i < 3; i++) {
         if (i == 0) {
             if (currentCamera == 1) {
-                // primeira camera
-                glViewport(0, 0, win.getWidth(), win.getHeight());
-                glMatrixMode(GL_PROJECTION);
-                glLoadIdentity();
-                gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
-                glMatrixMode(GL_MODELVIEW);
-                // gluLookAt(stuff->bot->getX() + stuff->bot->getRadius() /2, stuff->bot->getY() , 100, 500, 500, 0, 0, 0, 1);
-                gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 50, stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180),
-                    stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180), 50, 0, 0, 1);
+                // // primeira camera
+                // glViewport(0, 0, win.getWidth(), win.getHeight());
+                // glMatrixMode(GL_PROJECTION);
+                // glLoadIdentity();
+                // gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
+                // glMatrixMode(GL_MODELVIEW);
+                // // gluLookAt(stuff->bot->getX() + stuff->bot->getRadius() /2, stuff->bot->getY() , 100, 500, 500, 0, 0, 0, 1);
+                // gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 150,
+                //     stuff->bot->getX() * cos((stuff->bot->getTheta() + 90) * M_PI / 180),
+                //     stuff->bot->getY() * sin((stuff->bot->getTheta() + 90) * M_PI / 180), 50, 0, 0, 1);
             } else if (currentCamera == 2) {
                 // segunda camera
                 glLoadIdentity();
@@ -362,7 +361,8 @@ void display(void) {
             glLoadIdentity();
             gluPerspective(45, win.getWidth() / 200, 2, 1000);
             glMatrixMode(GL_MODELVIEW);
-            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 50, stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180),
+            gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 50, 
+                stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180),
                 stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180), 50, 0, 0, 1);
             
         } else if (i == 2) {
@@ -371,8 +371,8 @@ void display(void) {
             glViewport(375, 0, win.getWidth()/4, win.getHeight()/4);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            glOrtho(stuff->arena->getX() - stuff->arena->getRadius(),stuff->arena->getX() + stuff->arena->getRadius(),
-                stuff->arena->getY() - stuff->arena->getRadius(),stuff->arena->getY() + stuff->arena->getRadius(),-20.0,100.0);
+            glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
+                stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -1.0, 1.0);
         }
 
 
