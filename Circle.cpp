@@ -55,59 +55,60 @@ void Circle::draw() {
     GLfloat twicePi = 2.0f * M_PI;
     GLint triangles = 100;
     GLint i;
-
-    if(height > 20){
-        glBegin(GL_TRIANGLE_FAN);
-        glColor3f(red, green, blue);
-    		glVertex3f(x, y, 0); // center of circle
-    		for(GLint i = 0; i <= triangles; i ++) {
-    			glVertex3f(
-    		        x + (radius * cos(i *  twicePi / triangles)),
-    			    y + (radius * sin(i * twicePi / triangles)),
-              0
-    			);
-    		}
-        glEnd();
-    } else {
-
-        GLfloat angle_stepsize = 0.1;
-        GLfloat angle = 0;
-        
-        /** Draw the tube */
-        glColor3ub(red, green, blue);
-        glBegin(GL_QUAD_STRIP);
-        angle = 0.0;
-        for(GLint i = 0; i <= triangles; i ++) {
-            glVertex3f(
-                x + (radius * cos(i *  twicePi / triangles)),
-                y + (radius * sin(i * twicePi / triangles)),
-            0
-            );
-            glVertex3f(
-                x + (radius * cos(i *  twicePi / triangles)),
-                y + (radius * sin(i * twicePi / triangles)),
-            20
-            );
-        }
-        glVertex3f(x + radius, y, 20);
-        glVertex3f(x + radius, y, 0.0);
-        glEnd();
-
-        /** Draw the circle on top of cylinder */
-        glColor3ub(red, green, blue);
-        glBegin(GL_POLYGON);
-        angle = 0.0;
-        for(GLint i = 0; i <= triangles; i ++) {
-            glVertex3f(
-                x + (radius * cos(i *  twicePi / triangles)),
-                y + (radius * sin(i * twicePi / triangles)),
-            20
-            );
-        }
-
-        glVertex3f(radius, 0.0, 20);
-        glEnd();
+    GLfloat angle_stepsize = 0.1;
+    GLfloat angle = 0;
+    
+    /** Draw the tube */
+    glColor3f(red, green, blue);
+    glBegin(GL_QUAD_STRIP);
+    angle = 0.0;
+    for(GLint i = 0; i <= triangles; i ++) {
+        glVertex3f(
+            x + (radius * cos(i *  twicePi / triangles)),
+            y + (radius * sin(i * twicePi / triangles)),
+        0
+        );
+        glVertex3f(
+            x + (radius * cos(i *  twicePi / triangles)),
+            y + (radius * sin(i * twicePi / triangles)),
+        height
+        );
     }
+    glVertex3f(x + radius, y, height);
+    glVertex3f(x + radius, y, 0.0);
+    glEnd();
+
+    /** Draw the circle on top of cylinder */
+    glColor3f(red, green, blue);
+    glBegin(GL_POLYGON);
+    angle = 0.0;
+    for(GLint i = 0; i <= triangles; i ++) {
+        glVertex3f(
+            x + (radius * cos(i *  twicePi / triangles)),
+            y + (radius * sin(i * twicePi / triangles)),
+        height
+        );
+    }
+
+    glVertex3f(radius, 0.0, height);
+    glEnd();
+}
+
+
+void Circle::drawMinimap() {
+    GLfloat twicePi = 2.0f * M_PI;
+    GLint triangles = 100;
+	
+    glBegin(GL_TRIANGLE_FAN);
+    glColor3f(red, green, blue);
+		glVertex3f(x, y, 0); // center of circle
+		for(GLint i = 0; i <= triangles; i ++) { 
+			glVertex3f(
+		            x + (radius * cos(i *  twicePi / triangles)), 
+			    y + (radius * sin(i * twicePi / triangles)), 0
+			);
+		}
+    glEnd();
 }
 
 void Circle::setRGB(GLfloat red, GLfloat green, GLfloat blue) {

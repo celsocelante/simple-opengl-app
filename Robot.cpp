@@ -142,6 +142,20 @@ void Robot::rotateArmLeft() {
     }
 }
 
+
+void Robot::rotateArmUp() {
+    if (this->thetaArmZ < ARM_ANGLE) {
+        this->thetaArmZ += ARM_MOVEMENT;
+    }
+}
+
+void Robot::rotateArmDown() {
+    if (this->thetaArmZ > -ARM_ANGLE) {
+        this->thetaArmZ -= ARM_MOVEMENT;
+    }
+}
+
+
 void Robot::rotateRight() {
     this->theta -= this->velocity * 3 * ROTATE;
 }
@@ -359,7 +373,7 @@ void Robot::getGunPositionZ() {
 }
 
 
-void Robot::draw(bool showHead) {
+void Robot::draw() {
 
     GLfloat mat_ambient[] = { this->red, this->green, this->blue, 1.0 };
     GLfloat mat_ambient_g[] = { 0, 1, 0, 1.0 };
@@ -418,20 +432,20 @@ void Robot::draw(bool showHead) {
 
                 glTranslatef(-this->radius/2, this->radius/2, this->radius/2);
                 glScalef(this->radius/7, this->radius, this->radius/7);
+                glRotatef(-180, 1, 0, 0);
                 glutSolidCube(1.0);
 
             glPopMatrix();
 
-            if (showHead) {
-                //Cabeca
-                glPushMatrix();
 
-                    glTranslatef(0, 0, this->radius);
-                    glScalef(this->radius/2, this->radius/2, this->radius/2);
-                    glutSolidSphere(1.0, 360, 360);
+            //Cabeca
+            glPushMatrix();
 
-                glPopMatrix();
-            }
+                glTranslatef(0, 0, this->radius);
+                glScalef(this->radius/2, this->radius/2, this->radius/2);
+                glutSolidSphere(1.0, 360, 360);
+
+            glPopMatrix();
 
 
         glPopAttrib();

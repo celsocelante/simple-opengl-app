@@ -15,7 +15,7 @@ using namespace std;
 
 #define ARM_MOVEMENT 3
 #define ARM_ANGLE 45
-#define ROTATE 2
+#define ROTATE 3
 #define MOVEMENT 5
 #define SWAP_LEGS_COUNT 20
 #define ANIMATION_FRAMES 30
@@ -28,13 +28,14 @@ using namespace std;
 class Robot: public Circle {
     protected:
         GLfloat thetaArm = 0;
+        GLfloat thetaArmZ = 0;
         GLfloat theta = 180;
         GLfloat scale;
         GLfloat velocity = 1;
         GLfloat bulletVelocity;
         GLfloat stepsCounter = 0;
         GLfloat previousScale = 1;
-        GLfloat height = 80;
+        GLfloat height = 50;
         bool moveFreely = false;
         bool legs;
         list<Bullet> bullets;
@@ -65,10 +66,12 @@ class Robot: public Circle {
         void rotateLeft();
         void rotateArmRight();
         void rotateArmLeft();
+        void rotateArmUp();
+        void rotateArmDown();
         void moveForward();
         void moveBackward();
         void shoot(list<Bullet>& bullets);
-        void draw(bool showHead);
+        void draw();
         // bool collision(Circle *c, GLfloat dx, GLfloat dy);
         bool canMoveFreely() { return this->moveFreely; }
         void setMoveFreely(bool moveFreely);

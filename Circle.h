@@ -45,6 +45,7 @@ class Circle {
         void setResizeState(bool rs);
         void setRGB(GLfloat r, GLfloat g, GLfloat b);
         void draw();
+        void drawMinimap();
 
         GLfloat getX() { return x; }
         GLfloat getY() { return y; }

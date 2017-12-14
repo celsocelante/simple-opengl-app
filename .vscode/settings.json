@@ -32,7 +32,9 @@
         "atomic": "cpp",
         "chrono": "cpp",
         "ratio": "cpp",
-        "system_error": "cpp"
+        "system_error": "cpp",
+        "array": "cpp",
+        "cmath": "cpp"
     },
     "python.pythonPath": "/usr/bin/python"
 }

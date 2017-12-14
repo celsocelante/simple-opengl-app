@@ -31,6 +31,10 @@ GLfloat mouseY = 0;
 GLfloat lastTime = 0;
 GLfloat lastTimeShot = 0;
 
+GLfloat camXYangle = 0;
+GLfloat camZangle = 25;
+GLfloat camDist = 150;
+
 //Camera controls
 int currentCamera = 1;
 
@@ -309,9 +313,9 @@ void onPassiveMouseMotion(GLint x, GLint y) {
 
         // vertical movement
         if (dy > 0) {
-            // stuff->bot->rotateArmLeft();
+            stuff->bot->rotateArmUp();
         } else if (dy < 0) {
-            // stuff->bot->rotateArmRight();
+            stuff->bot->rotateArmDown();
         }
 
         mouseX = x;
@@ -325,6 +329,60 @@ void onClick(GLint button, GLint state, GLint x, GLint y) {
     }
 }
 
+void displayMinimap() {
+    // Fixed elements
+        stuff->arena->drawMinimap();
+
+
+    // Enemies
+    for (Enemy* e : stuff->enemies) {
+        if (e->displayed) {
+            e->drawMinimap();
+        }
+    }
+
+    stuff->bot->drawMinimap();
+
+
+    // Short obstacles
+    for (Circle* lo : stuff->obstacles) {
+        lo->drawMinimap();
+    }
+
+    stuff->center->drawMinimap();
+}
+
+
+void display3d() {
+    // Fixed elements
+        stuff->arena->draw();
+
+
+    // Enemies
+    for (Enemy* e : stuff->enemies) {
+        if (e->displayed) {
+            e->draw();
+            e->update(); // movimentacao dos inimigos
+
+            GLfloat atual = glutGet(GLUT_ELAPSED_TIME);
+            if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > 1 / e->freqTiro){
+                e->setFire();
+                e->lastTimeShot = atual;
+            }
+        }
+    }
+
+
+    // Short obstacles
+    for (Circle* lo : stuff->obstacles) {
+        lo->draw();
+    }
+
+    // bullets
+    drawBullets();
+
+    stuff->center->draw();
+}
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -333,27 +391,16 @@ void display(void) {
     for (int i = 0; i < 3; i++) {
         if (i == 0) {
             if (currentCamera == 1) {
-                // // primeira camera
                 // glViewport(0, 0, win.getWidth(), win.getHeight());
                 // glMatrixMode(GL_PROJECTION);
                 // glLoadIdentity();
-                // gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
+                // gluPerspective(45, win.getWidth() / win.getHeight(), 2, 2000);
                 // glMatrixMode(GL_MODELVIEW);
-                // // gluLookAt(stuff->bot->getX() + stuff->bot->getRadius() /2, stuff->bot->getY() , 100, 500, 500, 0, 0, 0, 1);
-                // gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 150,
-                //     stuff->bot->getX() * cos((stuff->bot->getTheta() + 90) * M_PI / 180),
-                //     stuff->bot->getY() * sin((stuff->bot->getTheta() + 90) * M_PI / 180), 50, 0, 0, 1);
+                // gluLookAt(stuff->bot->getX() + (camDist)*cos((camZangle-90)*M_PI/180)*cos((stuff->bot->getTheta() - 90 + camXYangle)*M_PI/180),
+                //     stuff->bot->getY() +(camDist*cos(camZangle*M_PI/180))*sin((stuff->bot->getTheta()-90 + camXYangle)*M_PI/180),
+                //     camDist*cos((camZangle - 90)*M_PI/180), stuff->bot->getX(), stuff->bot->getY(), 20, 0, 0, 1);
             } else if (currentCamera == 2) {
-                // segunda camera
-                glLoadIdentity();
-                glViewport(0, 0, win.getWidth(), win.getHeight());
-                glMatrixMode(GL_PROJECTION);
-                glLoadIdentity();
-                gluPerspective(45, win.getHeight() / win.getWidth(), 2, 2000);
-                glMatrixMode(GL_MODELVIEW);
-                gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 100, 500, 500, 0, 0, 0, 1);
 
-                stuff->bot->draw(true);
             }
         }
         else if (i == 1) {
@@ -361,14 +408,14 @@ void display(void) {
             glViewport(0, 500, win.getWidth(), 200);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            gluPerspective(45, win.getWidth() / 200, 2, 1000);
+            gluPerspective(45, win.getWidth() / 200, 2, 2000);
             glMatrixMode(GL_MODELVIEW);
             gluLookAt(stuff->bot->getX(), stuff->bot->getY(), 50, 
                 stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180),
                 stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180), 50, 0, 0, 1);
             
-            stuff->bot->draw(false);
-            
+            // stuff->bot->draw();
+             display3d();
         } else if (i == 2) {
             // minimapa
             glLoadIdentity();
@@ -378,7 +425,7 @@ void display(void) {
             glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
                 stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -1.0, 1.0);
             
-            stuff->bot->draw(false);
+            displayMinimap();
         }
 
 
@@ -400,36 +447,8 @@ void display(void) {
             return;
         }
     
-        // Fixed elements
-        stuff->arena->draw();
-    
-        // bullets
-        drawBullets();
-    
-        stuff->center->draw();
-    
-        // Short obstacles
-        for (Circle* lo : stuff->obstacles) {
-            lo->draw();
-        }
-    
-        renderScoreText();
-    
-        // Enemies
-        for (Enemy* e : stuff->enemies) {
-            if (e->displayed) {
-                e->draw();
-                e->update(); // movimentacao dos inimigos
-    
-                GLfloat atual = glutGet(GLUT_ELAPSED_TIME);
-                if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > 1 / e->freqTiro){
-                    e->setFire();
-                    e->lastTimeShot = atual;
-                }
-            }
-        }
-    
-
+        // renderScoreText();
+        
     }
 
     glutSwapBuffers();
@@ -485,6 +504,7 @@ void readConfigFile(string fileName) {
             stuff->bot->setBulletVelocity(velTiro);
             stuff->bot->setStuff(stuff);
             stuff->bot->setHeight(80); // altura do robo
+            stuff->bot->setRGB(0, 1, 0);
 
         } else if (fill == "blue") {
             stuff->arena = new Circle(cx, cy, 0, radius, 2000);
@@ -498,7 +518,7 @@ void readConfigFile(string fileName) {
 
         } else if (fill == "white") {
             stuff->center = new Circle(cx, cy, 0, radius, 2000);
-            stuff->center->setRGB(1, 1, 1);
+            stuff->center->setRGB(0.5, 0.5, 0.5);
             stuff->center->setId(id);
             stuff->center->setStuff(stuff);
 
@@ -509,6 +529,7 @@ void readConfigFile(string fileName) {
             temp->setId(id);
             temp->setStuff(stuff);
             temp->freqTiro = freqTiro;
+            temp->setRGB(1, 0, 0);
 
             stuff->enemies.push_back(temp);
 
