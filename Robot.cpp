@@ -168,9 +168,9 @@ void Robot::swapLegs() {
     this->legControl += 1 * this->velocity;
     double sinLegControl = sin(this->legControl);
     double cosLegControl = cos(this->legControl);
-    this->thetaLeftLeg1 = sinLegControl > 0 ? sinLegControl * 45 : 0;
+    this->thetaLeftLeg1 = sinLegControl > 0 ? sinLegControl * 60 : 0;
     this->thetaLeftLeg2 = cosLegControl > 0 ? -this->thetaLeftLeg1 : -sinLegControl ;
-    this->thetaRightLeg1 = -sinLegControl > 0 ? -sinLegControl * 45 : 0;
+    this->thetaRightLeg1 = -sinLegControl > 0 ? -sinLegControl * 60 : 0;
     this->thetaRightLeg2 = -cosLegControl > 0 ? -this->thetaRightLeg1 : sinLegControl ;
 }
 
@@ -447,7 +447,7 @@ void Robot::draw(int i) {
             //Braco direito
             glPushMatrix();
 
-                glTranslatef(this->radius/2, this->radius, this->radius/2);
+                glTranslatef(this->radius/2, this->radius/2, this->radius/2);
                 glRotatef(this->thetaArm, 0, 0, 1);
                 glRotatef(this->thetaArmZ, 1, 0, 0);
                 glTranslatef(0, this->radius/2, 0);
@@ -461,7 +461,7 @@ void Robot::draw(int i) {
 
                 glTranslatef(-this->radius/2, this->radius/2, this->radius/2);
                 glScalef(this->radius/7, this->radius, this->radius/7);
-                glRotatef(-180, 1, 0, 0);
+                glRotatef(-90, 0, 1, 0);
                 glutSolidCube(1.0);
 
             glPopMatrix();

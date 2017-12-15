@@ -41,7 +41,12 @@ int currentCamera = 1;
 
 void init(void) {
     glEnable(GL_DEPTH_TEST);
+    // glEnable( GL_TEXTURE_2D );
+    // glEnable(GL_LIGHTING);
+    // glShadeModel (GL_FLAT);
+    glShadeModel (GL_SMOOTH);
     glClearColor(1, 1, 1, 0.0f);
+    // glEnable(GL_LIGHT0);
 }
 
 void endGame() {
@@ -162,13 +167,6 @@ void drawBullets() {
             return;
         }
 
-        for (Circle* lo : stuff->obstacles) {
-            if (lo->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) {
-
-                stuff->bullets.remove(b);
-                return;
-            }
-        }
     }
 
 
@@ -179,17 +177,6 @@ void drawBullets() {
         if ( stuff->bot->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET) ) {
             stuff->bot->displayed = false;
             break;
-        }
-
-
-        for (Circle* lo : stuff->obstacles) {
-            if ((lo->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
-                (!stuff->arena->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) ||
-                    stuff->center->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) {
-
-                stuff->enemyBullets.remove(b);
-                return;
-            }
         }
     }
 }
@@ -314,9 +301,9 @@ void onPassiveMouseMotion(GLint x, GLint y) {
 
         // vertical movement
         if (dy > 0) {
-            stuff->bot->rotateArmUp();
-        } else if (dy < 0) {
             stuff->bot->rotateArmDown();
+        } else if (dy < 0) {
+            stuff->bot->rotateArmUp();
         }
 
         mouseX = x;
@@ -328,28 +315,6 @@ void onClick(GLint button, GLint state, GLint x, GLint y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
         stuff->bot->setFire();
     }
-}
-
-void displayMinimap() {
-    // Fixed elements
-    stuff->arena->drawMinimap();
-
-
-    // Enemies
-    for (Enemy* e : stuff->enemies) {
-        if (e->displayed) {
-            e->drawMinimap();
-        }
-    }
-
-    // Short obstacles
-    for (Circle* lo : stuff->obstacles) {
-        lo->drawMinimap();
-    }
-
-    stuff->center->drawMinimap();
-
-    stuff->bot->drawMinimap();
 }
 
 
@@ -388,19 +353,20 @@ void display3d(int i) {
 
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
 
     for (int i = 0; i < 3; i++) {
         if (i == 0) {
             if (currentCamera == 1) {
-                // glViewport(0, 0, win.getWidth(), win.getHeight());
-                // glMatrixMode(GL_PROJECTION);
-                // glLoadIdentity();
-                // gluPerspective(45, win.getWidth() / win.getHeight(), 2, 2000);
-                // glMatrixMode(GL_MODELVIEW);
-                // gluLookAt(stuff->bot->getX() + (camDist)*cos((camZangle-90)*M_PI/180)*cos((stuff->bot->getTheta() - 90 + camXYangle)*M_PI/180),
-                //     stuff->bot->getY() +(camDist*cos(camZangle*M_PI/180))*sin((stuff->bot->getTheta()-90 + camXYangle)*M_PI/180),
-                //     camDist*cos((camZangle - 90)*M_PI/180), stuff->bot->getX(), stuff->bot->getY(), 20, 0, 0, 1);
+
+                glViewport(0, 0, win.getWidth(), win.getHeight() - 100);
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                gluPerspective(45, win.getWidth() / win.getHeight(), 2, 2000);
+                glMatrixMode(GL_MODELVIEW);
+                gluLookAt(stuff->bot->getX() + (camDist)*cos((camZangle-90)*M_PI/180)*cos((stuff->bot->getTheta() - 90 + camXYangle)*M_PI/180),
+                    stuff->bot->getY() +(camDist*cos(camZangle*M_PI/180))*sin((stuff->bot->getTheta()-90 + camXYangle)*M_PI/180),
+                    camDist*cos((camZangle - 90)*M_PI/180), stuff->bot->getX(), stuff->bot->getY(), 20, 0, 0, 1);
+
             } else if (currentCamera == 2) {
 
             }
@@ -414,25 +380,21 @@ void display(void) {
             glMatrixMode(GL_MODELVIEW);
             gluLookAt(
                 stuff->bot->getX(),
-                stuff->bot->getY(), 60, 
+                stuff->bot->getY(), 50, 
                 stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180.0),
                 stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180.0), 50, 0, 0, 1);
-
-            // do not display the robot
 
         } else if (i == 2) {
             // minimapa
             glLoadIdentity();
-            glViewport(375, 0, win.getWidth()/4, win.getHeight()/4);
+            glViewport(440, 10, win.getWidth()/4, win.getHeight()/4);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
-                stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -60.0, 60.0);
-            
-            // displayMinimap();
+                stuff->arena->getY() + stuff->arena->getRadius(), stuff->arena->getY() - stuff->arena->getRadius(), -60.0, 60.0);
         }
 
-            display3d(i);
+        display3d(i);
 
         if (stuff->totalEnemies == 0) {
             glClearColor (0, 0, 0, 1.0);

@@ -104,24 +104,22 @@ void Circle::draw() {
 
     glVertex3f(radius, 0.0, 0.0);
     glEnd();
-}
 
 
-void Circle::drawMinimap() {
-    GLfloat twicePi = 2.0f * M_PI;
-    GLint triangles = 100;
-	
-    glBegin(GL_TRIANGLE_FAN);
-    glColor3f(red, green, blue);
-		glVertex3f(x, y, 0); // center of circle
+
+    glLineWidth(0.5);
+    glBegin(GL_LINE_LOOP);
+    glColor3f(0.5, 0.5, 0.5);
+		glVertex3f(x, y, -5); // center of circle
 		for(GLint i = 0; i <= triangles; i ++) { 
 			glVertex3f(
-		            x + (radius * cos(i *  twicePi / triangles)), 
+		        x + (radius * cos(i *  twicePi / triangles)), 
 			    y + (radius * sin(i * twicePi / triangles)), 0
 			);
 		}
-    glEnd();
+	glEnd();
 }
+
 
 void Circle::setRGB(GLfloat red, GLfloat green, GLfloat blue) {
     this->red = red;
