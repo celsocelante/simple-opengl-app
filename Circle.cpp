@@ -74,7 +74,7 @@ void Circle::draw() {
         height
         );
     }
-    glVertex3f(x + radius, y, height);
+    glVertex3f(x + radius, y, -height);
     glVertex3f(x + radius, y, 0.0);
     glEnd();
 
@@ -89,7 +89,7 @@ void Circle::draw() {
         height
         );
     }
-    glVertex3f(radius, 0.0, height);
+    glVertex3f(radius, 0.0, -height);
     glEnd();
     glBegin(GL_POLYGON);
     
@@ -104,13 +104,16 @@ void Circle::draw() {
 
     glVertex3f(radius, 0.0, 0.0);
     glEnd();
+}
 
+void Circle::drawMinimap() {
+    GLfloat twicePi = 2.0f * M_PI;
+    GLint triangles = 100;
 
-
-    glLineWidth(0.5);
+    glLineWidth(1);
     glBegin(GL_LINE_LOOP);
-    glColor3f(0.5, 0.5, 0.5);
-		glVertex3f(x, y, -5); // center of circle
+    glColor3f(0, 0, 0);
+		glVertex3f(x, y, 0); // center of circle
 		for(GLint i = 0; i <= triangles; i ++) { 
 			glVertex3f(
 		        x + (radius * cos(i *  twicePi / triangles)), 

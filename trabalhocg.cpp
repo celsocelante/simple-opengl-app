@@ -15,6 +15,8 @@
     #include <GL/glut.h>
 #endif
 
+#define ALT_JOGADOR 2.5 * 20
+
 using namespace std;
 using namespace tinyxml2;
 
@@ -319,36 +321,57 @@ void onClick(GLint button, GLint state, GLint x, GLint y) {
 
 
 void display3d(int i) {
-    // Fixed elements
-    stuff->arena->draw();
+    // Minimap
+    if (i == 2) {
+        // Fixed elements
+        stuff->arena->drawMinimap();
 
-
-    // Enemies
-    for (Enemy* e : stuff->enemies) {
-        if (e->displayed) {
-            e->draw();
-            e->update(); // movimentacao dos inimigos
-
-            GLfloat atual = glutGet(GLUT_ELAPSED_TIME);
-            if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > 1 / e->freqTiro){
-                e->setFire();
-                e->lastTimeShot = atual;
+        // Enemies
+        for (Enemy* e : stuff->enemies) {
+            if (e->displayed) {
+                e->drawMinimap();
             }
         }
+
+        stuff->bot->drawMinimap();
+
+        for (Circle* lo : stuff->obstacles) {
+            lo->draw();
+        }
+
+        stuff->center->drawMinimap();
+    } else {
+        // Fixed elements
+        stuff->arena->draw();
+
+
+        // Enemies
+        for (Enemy* e : stuff->enemies) {
+            if (e->displayed) {
+                e->draw();
+                e->update(); // movimentacao dos inimigos
+
+                GLfloat atual = glutGet(GLUT_ELAPSED_TIME);
+                if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > 1 / e->freqTiro){
+                    e->setFire();
+                    e->lastTimeShot = atual;
+                }
+            }
+        }
+
+        stuff->bot->draw(i);
+
+
+        // Short obstacles
+        for (Circle* lo : stuff->obstacles) {
+            lo->draw();
+        }
+
+        // bullets
+        drawBullets();
+
+        stuff->center->draw();
     }
-
-    stuff->bot->draw(i);
-
-
-    // Short obstacles
-    for (Circle* lo : stuff->obstacles) {
-        lo->draw();
-    }
-
-    // bullets
-    drawBullets();
-
-    stuff->center->draw();
 }
 
 void display(void) {
@@ -356,19 +379,21 @@ void display(void) {
 
     for (int i = 0; i < 3; i++) {
         if (i == 0) {
-            if (currentCamera == 1) {
+            glViewport(0, 0, win.getWidth(), win.getHeight() - 100);
+            glMatrixMode(GL_PROJECTION);
 
-                glViewport(0, 0, win.getWidth(), win.getHeight() - 100);
-                glMatrixMode(GL_PROJECTION);
+            if (currentCamera == 1) {
+                glLoadIdentity();
+                // gluLookAt(hx, hy, hz, hx + 100 * cos((stuff->bot->getTheta() + stuff->bot->getThetaArm() + 90)*M_PI/180),
+                //     hy+100*sin((stuff->bot->getTheta() + stuff->bot->getThetaArm()+ 90)*M_PI/180),
+                //     hz+100*cos((stuff->bot->getThetaArmZ() - 90)*M_PI/180),0,0,1);
+            } else if (currentCamera == 2) {
                 glLoadIdentity();
                 gluPerspective(45, win.getWidth() / win.getHeight(), 2, 2000);
                 glMatrixMode(GL_MODELVIEW);
-                gluLookAt(stuff->bot->getX() + (camDist)*cos((camZangle-90)*M_PI/180)*cos((stuff->bot->getTheta() - 90 + camXYangle)*M_PI/180),
-                    stuff->bot->getY() +(camDist*cos(camZangle*M_PI/180))*sin((stuff->bot->getTheta()-90 + camXYangle)*M_PI/180),
-                    camDist*cos((camZangle - 90)*M_PI/180), stuff->bot->getX(), stuff->bot->getY(), 20, 0, 0, 1);
-
-            } else if (currentCamera == 2) {
-
+                gluLookAt(stuff->bot->getX() + (camDist) * cos((camZangle-90) * M_PI/180)*cos((stuff->bot->getTheta() - 90 + camXYangle) * M_PI/180),
+                    stuff->bot->getY() +(camDist*cos(camZangle*M_PI/180)) * sin((stuff->bot->getTheta()-90 + camXYangle) * M_PI/180),
+                    camDist*cos((camZangle - 90) * M_PI/180), stuff->bot->getX(), stuff->bot->getY(), 20, 0, 0, 1);
             }
         }
         else if (i == 1) {
@@ -391,7 +416,7 @@ void display(void) {
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
-                stuff->arena->getY() + stuff->arena->getRadius(), stuff->arena->getY() - stuff->arena->getRadius(), -60.0, 60.0);
+                stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -60.0, 60.0);
         }
 
         display3d(i);
@@ -443,7 +468,7 @@ void readConfigFile(string fileName) {
     GLfloat velInimigo = app->FirstChildElement("inimigo")->DoubleAttribute("vel");
     GLfloat freqTiro = app->FirstChildElement("inimigo")->DoubleAttribute("freqTiro");
 
-    GLfloat alturaObstaculo = app->FirstChildElement("obstaculo")->DoubleAttribute("altura");
+    GLfloat alturaObstaculo = app->FirstChildElement("obstaculo")->DoubleAttribute("altura") / 100;
 
     strcpy(path, "");
     strcpy(path, caminhoArquivo.c_str());
@@ -465,16 +490,16 @@ void readConfigFile(string fileName) {
         // Icone do jogador
         if (fill == "green") {
             // Criar objeto do jogador
-            stuff->bot = new Robot(cx, cy, 0, radius);
+            stuff->bot = new Robot(cx, -cy, 0, radius);
             stuff->bot->setId(id);
             stuff->bot->setVelocity(vel);
             stuff->bot->setBulletVelocity(velTiro);
             stuff->bot->setStuff(stuff);
-            stuff->bot->setHeight(80); // altura do robo
+            stuff->bot->setHeight(radius * 2.5); // altura do robo
             stuff->bot->setRGB(0, 1, 0);
 
         } else if (fill == "blue") {
-            stuff->arena = new Circle(cx, cy, 0, radius, 2000);
+            stuff->arena = new Circle(cx, -cy, 0, radius, 4 * ALT_JOGADOR);
             stuff->arena->setRGB(0, 0, 1);
             stuff->arena->setId(id);
             stuff->arena->setStuff(stuff);
@@ -484,13 +509,13 @@ void readConfigFile(string fileName) {
             win.setTitle("Arena");
 
         } else if (fill == "white") {
-            stuff->center = new Circle(cx, cy, 0, radius, 59);
+            stuff->center = new Circle(cx, -cy, 0, radius, 59);
             stuff->center->setRGB(0.5, 0.5, 0.5);
             stuff->center->setId(id);
             stuff->center->setStuff(stuff);
 
         } else if (fill == "red") {
-            Enemy* temp = new Enemy(cx, cy, 0, radius);
+            Enemy* temp = new Enemy(cx, -cy, 0, radius);
             temp->setVelocity(velInimigo);
             temp->setBulletVelocity(velTiroInimigo);
             temp->setId(id);
@@ -504,7 +529,7 @@ void readConfigFile(string fileName) {
             stuff->totalEnemies++;
 
         } else if (fill == "black") {
-            Circle* temp = new Circle(cx, cy, 0, radius, 20);
+            Circle* temp = new Circle(cx, -cy, 0, radius, alturaObstaculo * ALT_JOGADOR);
             temp->setRGB(0, 0, 0);
             temp->setId(id);
 

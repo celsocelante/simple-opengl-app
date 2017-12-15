@@ -77,6 +77,7 @@ class Robot: public Circle {
         void moveBackward();
         void shoot(list<Bullet>& bullets);
         void draw(int i = 0);
+        void drawMinimap();
         // bool collision(Circle *c, GLfloat dx, GLfloat dy);
         bool canMoveFreely() { return this->moveFreely; }
         void setMoveFreely(bool moveFreely);
@@ -84,6 +85,7 @@ class Robot: public Circle {
         GLfloat getScale() { return this->scale; }
         GLfloat getTheta() { return this->theta; }
         GLfloat getThetaArm() { return this->thetaArm; }
+        GLfloat getThetaArmZ() { return this->thetaArmZ; }
         GLfloat getHeight() { return this->height; }
         GLfloat newX();
         GLfloat newY();

@@ -448,11 +448,17 @@ void Robot::draw(int i) {
             glPushMatrix();
 
                 glTranslatef(this->radius/2, this->radius/2, this->radius/2);
+
+
                 glRotatef(this->thetaArm, 0, 0, 1);
                 glRotatef(this->thetaArmZ, 1, 0, 0);
                 glTranslatef(0, this->radius/2, 0);
+
+
                 glScalef(this->radius/7, this->radius, this->radius/7);
                 glutSolidCube(1.0);
+                
+
 
             glPopMatrix();
 
@@ -482,4 +488,20 @@ void Robot::draw(int i) {
         glPopAttrib();
 
     glPopMatrix();
+}
+
+void Robot::drawMinimap() {
+    GLfloat twicePi = 2.0f * M_PI;
+    GLint triangles = 100;
+	
+    glBegin(GL_TRIANGLE_FAN);
+    glColor3f(red, green, blue);
+		glVertex3f(x, y, 0); // center of circle
+		for(GLint i = 0; i <= triangles; i ++) { 
+			glVertex3f(
+		            x + (radius * cos(i *  twicePi / triangles)), 
+			    y + (radius * sin(i * twicePi / triangles)), 0
+			);
+		}
+	glEnd();
 }
