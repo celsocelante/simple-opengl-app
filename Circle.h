@@ -45,7 +45,11 @@ class Circle {
         void setResizeState(bool rs);
         void setRGB(GLfloat r, GLfloat g, GLfloat b);
         void draw();
+        void drawFloor(GLuint texture);
+        void drawObstacle(GLuint texture);
+        void drawWall(GLuint texture);
         void drawMinimap();
+        void drawObstacle2d();
 
         GLfloat getX() { return x; }
         GLfloat getY() { return y; }

@@ -377,7 +377,7 @@ void render(int i) {
         stuff->bot->drawMinimap();
 
         for (Circle* lo : stuff->obstacles) {
-            lo->draw();
+            lo->drawObstacle2d();
         }
 
         stuff->center->drawMinimap();
@@ -408,7 +408,7 @@ void render(int i) {
 
         // Short obstacles
         for (Circle* lo : stuff->obstacles) {
-            lo->draw();
+            lo->drawObstacle(stuff->obstaclesTexture);
         }
 
         // bullets

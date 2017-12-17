@@ -111,7 +111,7 @@ void Circle::draw() {
         glVertex3f(
             x + (radius * cos(i *  twicePi / triangles)),
             y + (radius * sin(i * twicePi / triangles)),
-        0.0
+            0.0
         );
     }
 
@@ -119,13 +119,31 @@ void Circle::draw() {
     glEnd();
 }
 
+// Contorno
 void Circle::drawMinimap() {
     GLfloat twicePi = 2.0f * M_PI;
     GLint triangles = 300;
 
     glLineWidth(0.5);
     glBegin(GL_LINE_LOOP);
-    glColor3f(0, 0, 0);
+    glColor3f(1, 1, 1);
+		// glVertex3f(x, y, 0); // center of circle
+		for(GLint i = 0; i <= triangles; i ++) { 
+			glVertex3f(
+		        x + (radius * cos(i *  twicePi / triangles)), 
+			    y + (radius * sin(i * twicePi / triangles)), 0
+			);
+		}
+	glEnd();
+}
+
+// Para obstaculos do minimapa
+void Circle::drawObstacle2d() {
+    GLfloat twicePi = 2.0f * M_PI;
+    GLint triangles = 300;
+
+    glBegin(GL_TRIANGLE_FAN);
+    glColor3f(red, green, blue);
 		glVertex3f(x, y, 0); // center of circle
 		for(GLint i = 0; i <= triangles; i ++) { 
 			glVertex3f(
@@ -136,6 +154,83 @@ void Circle::drawMinimap() {
 	glEnd();
 }
 
+void Circle::drawFloor(GLuint texture) {
+    GLfloat twicePi = 2.0f * M_PI;
+    GLint triangles = 300;
+
+    glLineWidth(0.5);
+    glBegin(GL_TRIANGLE_FAN);
+    glColor3f(red, green, blue);
+		glVertex3f(x, y, 0); // center of circle
+		for(GLint i = 0; i <= triangles; i ++) { 
+
+			glVertex3f(
+		        x + (radius * cos(i *  twicePi / triangles)), 
+			    y + (radius * sin(i * twicePi / triangles)), 0
+			);
+		}
+	glEnd();
+}
+
+void Circle::drawObstacle(GLuint texture) {
+    GLfloat twicePi = 2.0f * M_PI;
+    GLint triangles = 100;
+    GLint i;
+    GLfloat angle_stepsize = 0.1;
+    GLfloat angle = 0;
+
+    GLfloat materialEmission[] = { 0, 0, 0, 1.0};
+    GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
+    GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+    GLfloat mat_shininess[] = { 128.0 };
+    GLfloat ambient[] = { 0.2, 0.2, 0.2, 1};
+
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+    glBindTexture (GL_TEXTURE_2D, texture);
+    
+    /** Draw the tube */
+    glBegin(GL_QUAD_STRIP);
+    glColor3f(1 - red, 1 - green, 1 - blue);
+    angle = 0.0;
+    for(GLint i = 0; i <= triangles; i ++) {
+        glVertex3f(
+            x + (radius * cos(i *  twicePi / triangles)),
+            y + (radius * sin(i * twicePi / triangles)),
+        0
+        );
+        glVertex3f(
+            x + (radius * cos(i *  twicePi / triangles)),
+            y + (radius * sin(i * twicePi / triangles)),
+        height
+        );
+    }
+    glVertex3f(x + radius, y, -height);
+    glVertex3f(x + radius, y, 0.0);
+    glEnd();
+
+    /** Draw the circle on top of cylinder */
+    glBegin(GL_POLYGON);
+    glColor3f(red, green, blue);
+    angle = 0.0;
+    for(GLint i = 0; i <= triangles; i ++) {
+        glVertex3f(
+            x + (radius * cos(i *  twicePi / triangles)),
+            y + (radius * sin(i * twicePi / triangles)),
+        height
+        );
+    }
+    glVertex3f(radius, 0.0, -height);
+    glEnd();
+}
+
+void Circle::drawWall(GLuint texture) {
+
+}
 
 void Circle::setRGB(GLfloat red, GLfloat green, GLfloat blue) {
     this->red = red;

@@ -375,6 +375,7 @@ void Robot::getGunPositionZ() {
 
 
 void Robot::draw(int i) {
+    glDisable(GL_TEXTURE_2D);
 
     GLfloat mat_ambient[] = { this->red, this->green, this->blue, 1.0 };
     GLfloat mat_ambient_g[] = { 0, 1, 0, 1.0 };
@@ -488,6 +489,8 @@ void Robot::draw(int i) {
         glPopAttrib();
 
     glPopMatrix();
+
+    glEnable(GL_TEXTURE_2D);
 }
 
 void Robot::drawMinimap() {
