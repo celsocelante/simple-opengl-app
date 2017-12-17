@@ -34,7 +34,9 @@
         "ratio": "cpp",
         "system_error": "cpp",
         "array": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "__tuple": "cpp",
+        "random": "cpp"
     },
     "python.pythonPath": "/usr/bin/python"
 }

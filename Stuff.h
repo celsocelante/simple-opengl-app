@@ -31,6 +31,12 @@ class Stuff {
         list<Circle*> obstacles;
 
         list<Enemy*> enemies;
+
+        // global textures
+        GLuint floorTexture;
+        GLuint wallsTexture;
+        GLuint obstaclesTexture;
+
 };
 
 #endif

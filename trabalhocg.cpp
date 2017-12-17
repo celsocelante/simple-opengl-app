@@ -8,6 +8,7 @@
 #include "Bullet.h"
 #include "Enemy.h"
 #include "Stuff.h"
+#include "TextureLoader.h"
 
 #ifdef __APPLE__
     #include <GLUT/glut.h>
@@ -49,41 +50,40 @@ void init(void) {
 
     glEnable(GL_DEPTH_TEST);
     glEnable( GL_TEXTURE_2D );
-    // glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHTING);
     glShadeModel (GL_SMOOTH);
 
+    GLfloat light_position0[] = { stuff->arena->getX()+stuff->center->getRadius()+((stuff->arena->getRadius() - stuff->center->getRadius())/2),
+        stuff->arena->getY(), 40, 1.0 };
 
-    // GLfloat light_position0[] = { stuff->arena->getX()+stuff->center->getRadius()+((stuff->arena->getRadius() - stuff->center->getRadius())/2),
-    //     stuff->arena->getY(), 40, 1.0 };
+    GLfloat ambientfactor = 0.0;
+    GLfloat diffusefactor = 1.5;
 
-    // GLfloat ambientfactor = 0.0;
-    // GLfloat diffusefactor = 1.5;
+    GLfloat ambientLight[] = { ambientfactor, ambientfactor, ambientfactor, 1.0f };
+    GLfloat diffuseLight[] = { diffusefactor, diffusefactor, diffusefactor, 1.0};
+    GLfloat specularLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION , 0.001f);
+    glEnable(GL_LIGHT0);
 
-    // GLfloat ambientLight[] = { ambientfactor, ambientfactor, ambientfactor, 1.0f };
-    // GLfloat diffuseLight[] = { diffusefactor, diffusefactor, diffusefactor, 1.0};
-    // GLfloat specularLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
-    // glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
-    // glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
-    // glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
-    // glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
-    // glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION , 0.001f);
-    // glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, ambientLight);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, specularLight);
+    glLightfv(GL_LIGHT1, GL_POSITION, light_position0);
+    glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION , 0.001f);
+    glEnable(GL_LIGHT1);
 
-    // glLightfv(GL_LIGHT1, GL_AMBIENT, ambientLight);
-    // glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight);
-    // glLightfv(GL_LIGHT1, GL_SPECULAR, specularLight);
-    // glLightfv(GL_LIGHT1, GL_POSITION, light_position0);
-    // glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION , 0.001f);
-    // glEnable(GL_LIGHT1);
-
-    // glLightfv(GL_LIGHT2, GL_AMBIENT, ambientLight);
-    // glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuseLight);
-    // glLightfv(GL_LIGHT2, GL_POSITION, light_position0);
-    // glLightfv(GL_LIGHT2, GL_SPECULAR, specularLight);
-    // glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 5.0);// set cutoff angle
-    // glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, light_position0);
-    // glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION , 0.001f);
-    // glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 1); // set focusing strength
+    glLightfv(GL_LIGHT2, GL_AMBIENT, ambientLight);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuseLight);
+    glLightfv(GL_LIGHT2, GL_POSITION, light_position0);
+    glLightfv(GL_LIGHT2, GL_SPECULAR, specularLight);
+    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 5.0);// set cutoff angle
+    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, light_position0);
+    glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION , 0.001f);
+    glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 1); // set focusing strength
 }
 
 void endGame() {
@@ -421,9 +421,16 @@ void render(int i) {
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
-    glDisable(GL_LIGHT2);
+    // Night mode sets
+    if (nightMode) {
+        glDisable(GL_LIGHT0);
+        glDisable(GL_LIGHT1);
+        glEnable(GL_LIGHT2);
+    } else {
+        glEnable(GL_LIGHT0);
+        glEnable(GL_LIGHT1);
+        glDisable(GL_LIGHT2);
+    }
 
     for (int i = 0; i < 3; i++) {
         if (i == 0) {
@@ -491,7 +498,44 @@ void display(void) {
         // renderScoreText();
 
         if (i == 1 || i == 0) {
+            GLfloat light_position0[] = { stuff->arena->getX()+stuff->center->getRadius()+((stuff->arena->getRadius() - stuff->center->getRadius())/2), stuff->arena->getY(), 100, 1.0 };
+            glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
+            GLfloat light_position1[] = {stuff->arena->getX()-stuff->center->getRadius()-((stuff->arena->getRadius() - stuff->center->getRadius())/2), stuff->arena->getY(), 100, 1.0 };
+            glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
 
+            GLfloat deslocamento = 1;
+            GLfloat spotdirectionX = deslocamento*cos(((stuff->bot->getThetaArm()+stuff->bot->getTheta()+90))*M_PI/180);
+            GLfloat spotdirectionY = deslocamento*sin(((stuff->bot->getThetaArm()+stuff->bot->getTheta()+90))*M_PI/180);
+            GLfloat spotdirectionZ = deslocamento*sin((stuff->bot->getThetaArmZ())*M_PI/180);
+
+
+            GLfloat spotdirection[] = {spotdirectionX, spotdirectionY, spotdirectionZ};
+
+            GLfloat light_position2[] = {0, 0, 0, 1};
+            glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
+            glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spotdirection);
+            glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 20.0);
+
+            //Desenha as luzes
+            GLfloat materialEmission[] = { 1, 1, 1, 1.0};
+            GLfloat materialColor[] = { 1.0, 1.0, 1.0, 1.0};
+            GLfloat materialColorDark[] = { 0.2, 0.2, 0.2, 1.0};
+            GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+            GLfloat mat_shininess[] = { 128.0 };
+            GLfloat ambient[] = { 1,1,1, 1.0 };
+            GLfloat noambient[] = { 0,0,0, 1.0 };
+
+            if (nightMode) {
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorDark);
+                glMaterialfv(GL_FRONT, GL_AMBIENT, noambient);
+            } else {
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
+                glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+                glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+            }
+
+            glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+            glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
         }
         
     }
@@ -608,6 +652,12 @@ GLint main(GLint argc, char** argv) {
     glutInitWindowPosition (100, 100);
 
     glutCreateWindow(win.getTitle().c_str());
+
+    // Textures loader (into global objects)
+    glEnable(GL_TEXTURE_2D);
+    stuff->floorTexture = LoadTexture("textures/floor.bmp");
+    stuff->wallsTexture = LoadTexture("textures/walls.bmp");
+    stuff->obstaclesTexture = LoadTexture("textures/obstacles.bmp");
 
     init();
 
