@@ -40,15 +40,50 @@ GLfloat camDist = 150;
 //Camera controls
 int currentCamera = 1;
 
+// Night mode
+bool nightMode = false;
+
 
 void init(void) {
-    glEnable(GL_DEPTH_TEST);
-    // glEnable( GL_TEXTURE_2D );
-    // glEnable(GL_LIGHTING);
-    // glShadeModel (GL_FLAT);
-    glShadeModel (GL_SMOOTH);
     glClearColor(1, 1, 1, 0.0f);
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable( GL_TEXTURE_2D );
+    // glEnable(GL_LIGHTING);
+    glShadeModel (GL_SMOOTH);
+
+
+    // GLfloat light_position0[] = { stuff->arena->getX()+stuff->center->getRadius()+((stuff->arena->getRadius() - stuff->center->getRadius())/2),
+    //     stuff->arena->getY(), 40, 1.0 };
+
+    // GLfloat ambientfactor = 0.0;
+    // GLfloat diffusefactor = 1.5;
+
+    // GLfloat ambientLight[] = { ambientfactor, ambientfactor, ambientfactor, 1.0f };
+    // GLfloat diffuseLight[] = { diffusefactor, diffusefactor, diffusefactor, 1.0};
+    // GLfloat specularLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+    // glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+    // glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+    // glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+    // glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
+    // glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION , 0.001f);
     // glEnable(GL_LIGHT0);
+
+    // glLightfv(GL_LIGHT1, GL_AMBIENT, ambientLight);
+    // glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight);
+    // glLightfv(GL_LIGHT1, GL_SPECULAR, specularLight);
+    // glLightfv(GL_LIGHT1, GL_POSITION, light_position0);
+    // glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION , 0.001f);
+    // glEnable(GL_LIGHT1);
+
+    // glLightfv(GL_LIGHT2, GL_AMBIENT, ambientLight);
+    // glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuseLight);
+    // glLightfv(GL_LIGHT2, GL_POSITION, light_position0);
+    // glLightfv(GL_LIGHT2, GL_SPECULAR, specularLight);
+    // glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 5.0);// set cutoff angle
+    // glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, light_position0);
+    // glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION , 0.001f);
+    // glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 1); // set focusing strength
 }
 
 void endGame() {
@@ -205,6 +240,12 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
         case 'D':
              keyStatus[(GLint) ('d')] = true;
              break;
+        
+        case 'n':
+        case 'N':
+            nightMode = !nightMode;
+            cout << "Night mode " << (nightMode ? "on" : "off") << endl;
+            break;
 
         case 'p':
         case 'P':
@@ -245,10 +286,12 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
             case '1':
                 currentCamera = 1;
                 cout << "camera 1" << endl;
-                break;
+            break;
+
             case '2':
                 currentCamera = 2;
                 cout << "camera 2" << endl;
+            break;
     }
 
 }
@@ -262,11 +305,6 @@ void onKeyUp(unsigned char key, GLint x, GLint y) {
 }
 
 void idle(void) {
-
-    // glEnable( GL_TEXTURE_2D );
-    // glEnable(GL_LIGHTING);
-    // glShadeModel (GL_SMOOTH);
-    // glDepthFunc(GL_LEQUAL);
 
     if (keyStatus[ (GLint) ('a') ]) {
         stuff->bot->rotateLeft();
@@ -320,9 +358,12 @@ void onClick(GLint button, GLint state, GLint x, GLint y) {
 }
 
 
-void display3d(int i) {
+void render(int i) {
     // Minimap
     if (i == 2) {
+        glDisable(GL_LIGHTING);
+        glDisable( GL_TEXTURE_2D );
+
         // Fixed elements
         stuff->arena->drawMinimap();
 
@@ -340,6 +381,9 @@ void display3d(int i) {
         }
 
         stuff->center->drawMinimap();
+
+        glEnable(GL_LIGHTING);
+        glEnable(GL_TEXTURE_2D);
     } else {
         // Fixed elements
         stuff->arena->draw();
@@ -377,6 +421,10 @@ void display3d(int i) {
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    glDisable(GL_LIGHT2);
+
     for (int i = 0; i < 3; i++) {
         if (i == 0) {
             glViewport(0, 0, win.getWidth(), win.getHeight() - 100);
@@ -411,15 +459,16 @@ void display(void) {
 
         } else if (i == 2) {
             // minimapa
+            // glDisable(GL_LIGHTING);
             glLoadIdentity();
             glViewport(440, 10, win.getWidth()/4, win.getHeight()/4);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
-                stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -60.0, 60.0);
+                stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -1, 1);
         }
 
-        display3d(i);
+        render(i);
 
         if (stuff->totalEnemies == 0) {
             glClearColor (0, 0, 0, 1.0);
@@ -440,6 +489,10 @@ void display(void) {
         }
     
         // renderScoreText();
+
+        if (i == 1 || i == 0) {
+
+        }
         
     }
 

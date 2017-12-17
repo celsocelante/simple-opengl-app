@@ -59,8 +59,8 @@ void Circle::draw() {
     GLfloat angle = 0;
     
     /** Draw the tube */
-    glColor3f(1 - red, 1 - green, 1 - blue);
     glBegin(GL_QUAD_STRIP);
+    glColor3f(1 - red, 1 - green, 1 - blue);
     angle = 0.0;
     for(GLint i = 0; i <= triangles; i ++) {
         glVertex3f(
@@ -79,8 +79,9 @@ void Circle::draw() {
     glEnd();
 
     /** Draw the circle on top of cylinder */
-    glColor3f(red, green, blue);
+    
     glBegin(GL_POLYGON);
+    glColor3f(red, green, blue);
     angle = 0.0;
     for(GLint i = 0; i <= triangles; i ++) {
         glVertex3f(
@@ -91,8 +92,20 @@ void Circle::draw() {
     }
     glVertex3f(radius, 0.0, -height);
     glEnd();
-    glBegin(GL_POLYGON);
     
+    /** Draw the circle on the bottom of cylinder */
+    GLfloat materialEmission[] = { 0.10, 0.10, 0.10, 1};
+    GLfloat materialColorD[] = { red, green, blue, 1};
+    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1};
+    GLfloat mat_shininess[] = { 128.0 };
+    GLfloat ambient[] = { 0.2, 0.2, 0.2, 1};
+ 
+    glBegin(GL_POLYGON);
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
     angle = 0.0;
     for(GLint i = 0; i <= triangles; i ++) {
         glVertex3f(
@@ -108,9 +121,9 @@ void Circle::draw() {
 
 void Circle::drawMinimap() {
     GLfloat twicePi = 2.0f * M_PI;
-    GLint triangles = 100;
+    GLint triangles = 300;
 
-    glLineWidth(1);
+    glLineWidth(0.5);
     glBegin(GL_LINE_LOOP);
     glColor3f(0, 0, 0);
 		glVertex3f(x, y, 0); // center of circle
