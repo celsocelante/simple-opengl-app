@@ -158,78 +158,71 @@ void Circle::drawFloor(GLuint texture) {
     GLfloat twicePi = 2.0f * M_PI;
     GLint triangles = 300;
 
-    glLineWidth(0.5);
     glBegin(GL_TRIANGLE_FAN);
+    glBindTexture (GL_TEXTURE_2D, texture);
     glColor3f(red, green, blue);
+        glTexCoord2d(0.5, 0.5);
+        glNormal3d(0, 0, 1);
+        // glNormal3d(0, 0, -1);
 		glVertex3f(x, y, 0); // center of circle
-		for(GLint i = 0; i <= triangles; i ++) { 
+		for(GLint i = 0; i <= triangles; i ++) {
+            glNormal3d(0, 0, 1);
+            // glNormal3d(0, 0, -1);
+
+            glTexCoord2f(
+                ((x + (radius * cos(i * twicePi / triangles)))/radius + 1) * 0.5,
+                ((y + (radius * sin(i * twicePi / triangles)))/radius) * 0.5
+            );
 
 			glVertex3f(
 		        x + (radius * cos(i *  twicePi / triangles)), 
-			    y + (radius * sin(i * twicePi / triangles)), 0
+			    y + (radius * sin(i * twicePi / triangles)),
+                0
 			);
 		}
 	glEnd();
 }
 
-void Circle::drawObstacle(GLuint texture) {
-    GLfloat twicePi = 2.0f * M_PI;
-    GLint triangles = 100;
-    GLint i;
-    GLfloat angle_stepsize = 0.1;
-    GLfloat angle = 0;
+void Circle::drawObstacle(GLuint t) {
+    glBindTexture (GL_TEXTURE_2D, t);
 
-    GLfloat materialEmission[] = { 0, 0, 0, 1.0};
-    GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
-    GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
-    GLfloat mat_shininess[] = { 128.0 };
-    GLfloat ambient[] = { 0.2, 0.2, 0.2, 1};
-
-    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-    glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-
-    glBindTexture (GL_TEXTURE_2D, texture);
-    
-    /** Draw the tube */
-    glBegin(GL_QUAD_STRIP);
-    glColor3f(1 - red, 1 - green, 1 - blue);
-    angle = 0.0;
-    for(GLint i = 0; i <= triangles; i ++) {
-        glVertex3f(
-            x + (radius * cos(i *  twicePi / triangles)),
-            y + (radius * sin(i * twicePi / triangles)),
-        0
-        );
-        glVertex3f(
-            x + (radius * cos(i *  twicePi / triangles)),
-            y + (radius * sin(i * twicePi / triangles)),
-        height
-        );
-    }
-    glVertex3f(x + radius, y, -height);
-    glVertex3f(x + radius, y, 0.0);
-    glEnd();
-
-    /** Draw the circle on top of cylinder */
-    glBegin(GL_POLYGON);
-    glColor3f(red, green, blue);
-    angle = 0.0;
-    for(GLint i = 0; i <= triangles; i ++) {
-        glVertex3f(
-            x + (radius * cos(i *  twicePi / triangles)),
-            y + (radius * sin(i * twicePi / triangles)),
-        height
-        );
-    }
-    glVertex3f(radius, 0.0, -height);
-    glEnd();
+    GLUquadricObj *quadratic = gluNewQuadric();
+    glPushMatrix();
+        glTranslatef(x, y, 0);
+        gluQuadricNormals(quadratic, GLU_SMOOTH);
+        gluQuadricOrientation(quadratic, GLU_OUTSIDE);
+        // glScalef(5.0f, 1.0f, 1.0f);
+        gluQuadricTexture(quadratic, GL_TRUE);
+        gluCylinder(quadratic, radius, radius, height, 100, 100);
+        glTranslatef(0, 0, height);
+        gluDisk(quadratic, 0.0, radius, 100, 100);
+    glPopMatrix();
 }
 
-void Circle::drawWall(GLuint texture) {
+void Circle::drawWall(GLuint t) {
+    // GLfloat materialEmission[] = { 0, 0, 0, 1.0};
+    // GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
+    // GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+    // GLfloat mat_shininess[] = { 128.0 };
+    // GLfloat ambient[] = { 0.2, 0.2, 0.2, 1};
 
+    // glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+    // glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+    // glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
+    // glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    // glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+    glBindTexture (GL_TEXTURE_2D, t);
+
+    GLUquadricObj *quadratic = gluNewQuadric();
+    glPushMatrix();
+        glTranslatef(x, y, 0);
+        gluQuadricNormals(quadratic, GLU_SMOOTH);
+        gluQuadricOrientation(quadratic, GLU_OUTSIDE);
+        // glScalef(5.0f, 1.0f, 1.0f);
+        gluQuadricTexture(quadratic, GL_TRUE);
+        gluCylinder(quadratic, radius, radius, 100, 100, 100);
+    glPopMatrix();
 }
 
 void Circle::setRGB(GLfloat red, GLfloat green, GLfloat blue) {

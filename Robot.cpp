@@ -379,9 +379,16 @@ void Robot::getGunPositionZ() {
 void Robot::draw(int i) {
     glDisable(GL_TEXTURE_2D);
 
-    GLfloat mat_ambient[] = { this->red, this->green, this->blue, 1.0 };
-    GLfloat mat_ambient_g[] = { 0, 1, 0, 1.0 };
-    GLfloat mat_ambient_b[] = { 0, 0, 1, 1.0 };
+    GLfloat mat_specular[] = { 1, 1, 1, 1};
+    GLfloat mat_shininess[] = { 10.0 };
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+	glColor3f(red, green, blue);
+	GLfloat diffuse[] = { red, green, blue, 1.0 };
+	GLfloat ambient[] = { red, green, blue, 1.0 };
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
 
 
     glPushMatrix();
@@ -391,8 +398,6 @@ void Robot::draw(int i) {
         glPushAttrib(GL_ENABLE_BIT);
 
             glDisable(GL_LIGHTING);
-            glDisable(GL_TEXTURE_2D);
-            glColor3fv(mat_ambient);
                            
             //Perna direita 
             glPushMatrix();
@@ -450,7 +455,7 @@ void Robot::draw(int i) {
             //Braco direito
             glPushMatrix();
 
-                glTranslatef(this->radius/2, this->radius/2, this->radius/2);
+                glTranslatef(this->radius/2, 0, this->radius/2);
 
 
                 glRotatef(this->thetaArm, 0, 0, 1);

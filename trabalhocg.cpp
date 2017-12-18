@@ -8,7 +8,7 @@
 #include "Bullet.h"
 #include "Enemy.h"
 #include "Stuff.h"
-#include "TextureLoader.h"
+#include "imageloader/imageloader.h"
 
 #ifdef __APPLE__
     #include <GLUT/glut.h>
@@ -393,8 +393,15 @@ void render(int i) {
         glEnable(GL_TEXTURE_2D);
     } else {
         // Fixed elements
-        stuff->arena->draw();
+        // stuff->arena->draw();
+        stuff->arena->drawFloor(stuff->floorTexture);
+        stuff->arena->drawWall(stuff->wallsTexture);
+        stuff->center->drawWall(stuff->wallsTexture);
 
+        // Short obstacles
+        for (Circle* lo : stuff->obstacles) {
+            lo->drawObstacle(stuff->obstaclesTexture);
+        }
 
         // Enemies
         for (Enemy* e : stuff->enemies) {
@@ -413,15 +420,9 @@ void render(int i) {
         stuff->bot->draw(i);
 
 
-        // Short obstacles
-        for (Circle* lo : stuff->obstacles) {
-            lo->drawObstacle(stuff->obstaclesTexture);
-        }
 
         // bullets
         drawBullets();
-
-        stuff->center->draw();
     }
 }
 
@@ -676,10 +677,9 @@ GLint main(GLint argc, char** argv) {
     glutCreateWindow(win.getTitle().c_str());
 
     // Textures loader (into global objects)
-    glEnable(GL_TEXTURE_2D);
-    stuff->floorTexture = LoadTexture("textures/floor.bmp");
-    stuff->wallsTexture = LoadTexture("textures/walls.bmp");
-    stuff->obstaclesTexture = LoadTexture("textures/obstacles.bmp");
+    stuff->floorTexture = LoadTextureRAW("textures/floor.bmp");
+    stuff->wallsTexture = LoadTextureRAW("textures/wall.bmp");
+    stuff->obstaclesTexture = LoadTextureRAW("textures/floor.bmp");
 
     init();
 
