@@ -299,14 +299,14 @@ void Robot::changeScale(GLfloat i) {
 void Robot::setFire() {
 
     if (!canMoveFreely() && !isJumping() && this->type == 2) {
-        Bullet* b = new Bullet(x, y, height, -thetaArm, theta, thetaArmZ, bulletVelocity, radius);
+        Bullet* b = new Bullet(getGunPositionX(), getGunPositionY(), getGunPositionZ(), thetaArm, theta, thetaArmZ, bulletVelocity, radius);
         stuff->bullets.push_back(b);
 
         return;
     }
 
     if (this->type == 3) {
-        Bullet* b = new Bullet(x, y, height, -thetaArm, theta, thetaArmZ, bulletVelocity, radius);
+        Bullet* b = new Bullet(getGunPositionX(), getGunPositionY(), getGunPositionZ(), thetaArm, theta, thetaArmZ, bulletVelocity, radius);
         stuff->enemyBullets.push_back(b);
 
         return;

@@ -42,11 +42,11 @@ void Bullet::setZ(GLfloat z){
 
 void Bullet::update(GLfloat time) {
     if (this->displayed) {
-        GLfloat dir = this->thetaRobot - this->theta;
-        
-        this->x = this->x + time * this->vel * cos((dir + 90) * M_PI/180);
-        this->y = this->y + time * this->vel * sin((dir + 90) * M_PI/180);  
-        this->z = this->z + time * this->vel * sin((thetaZ) * M_PI/180);  
+        GLfloat dir = this->thetaRobot + this->theta;
+
+        this->x = this->x + time * this->vel * cos((dir + 90) * M_PI/180) * sin((90 - thetaZ) * M_PI/180);
+        this->y = this->y + time * this->vel * sin((dir + 90) * M_PI/180) * sin((90 - thetaZ) * M_PI/180);  
+        this->z = this->z + time * this->vel * cos((90 - thetaZ) * M_PI/180);  
     }  
 }
 
@@ -74,10 +74,10 @@ void Bullet::draw(){
             glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
             glTranslatef(this->x, this->y, this->z);
-            glRotatef(this->thetaRobot, 0, 0, 1);
-            glTranslatef(-(this->radius - 0.6), 0, 0);
-            glRotatef(-this->theta, 0, 0, 1);
-            glTranslatef(0, this->radius, 0);
+            // glRotatef(this->thetaRobot, 0, 0, 1);
+            // glTranslatef(-(this->radius - 0.6), 0, 0);
+            // glRotatef(this->theta, 0, 0, 1);
+            // glTranslatef(0, this->radius, 0);
             // drawCircle(0, 0, SIZE_BULLET);
             glutSolidSphere(SIZE_BULLET, 100, 100);
 
