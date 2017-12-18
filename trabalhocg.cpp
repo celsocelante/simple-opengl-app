@@ -557,9 +557,9 @@ void display(void) {
                 glMatrixMode(GL_MODELVIEW);
                 gluLookAt(
                     stuff->bot->getGunPositionX(), stuff->bot->getGunPositionY(), stuff->bot->getGunPositionZ(),
-                    stuff->bot->getGunPositionX() + cos((stuff->bot->getThetaArm() + 90) * M_PI / 180) * sin((stuff->bot->getThetaArmZ() + 90) * M_PI / 180),
-                    stuff->bot->getGunPositionY() + sin((stuff->bot->getThetaArm() + 90) * M_PI / 180) * sin((stuff->bot->getThetaArmZ() + 90) * M_PI / 180),
-                    stuff->bot->getGunPositionZ() + cos(-(stuff->bot->getThetaArmZ() + 90) * M_PI / 180),
+                    stuff->bot->getGunPositionX() + cos((stuff->bot->getTheta() + stuff->bot->getThetaArm() + 90) * M_PI / 180) * sin((90 - stuff->bot->getThetaArmZ()) * M_PI / 180),
+                    stuff->bot->getGunPositionY() + sin((stuff->bot->getTheta() + stuff->bot->getThetaArm() + 90) * M_PI / 180) * sin((90 - stuff->bot->getThetaArmZ()) * M_PI / 180),
+                    stuff->bot->getGunPositionZ() + cos((90 - stuff->bot->getThetaArmZ()) * M_PI / 180),
                     0,0,1);
             } else if (currentCamera == 2) {
                 glLoadIdentity();
