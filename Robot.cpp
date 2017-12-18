@@ -169,9 +169,9 @@ void Robot::swapLegs() {
     double sinLegControl = sin(this->legControl);
     double cosLegControl = cos(this->legControl);
     this->thetaLeftLeg1 = sinLegControl > 0 ? sinLegControl * 60 : 0;
-    this->thetaLeftLeg2 = cosLegControl > 0 ? -this->thetaLeftLeg1 : -sinLegControl * 0.5;
+    this->thetaLeftLeg2 = cosLegControl > 0 ? -this->thetaLeftLeg1 : -sinLegControl * 0.005;
     this->thetaRightLeg1 = -sinLegControl > 0 ? -sinLegControl * 60 : 0;
-    this->thetaRightLeg2 = -cosLegControl > 0 ? -this->thetaRightLeg1 : sinLegControl * 0.5 ;
+    this->thetaRightLeg2 = -cosLegControl > 0 ? -this->thetaRightLeg1 : sinLegControl * 0.005 ;
 }
 
 bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
@@ -360,17 +360,17 @@ void Robot::jumpUpdate(GLfloat time) {
 }
 
 GLfloat Robot::getGunPositionX() {
-    return (x + radius/2) + (radius) * cos((thetaArm+90) * M_PI/180) * sin((thetaArmZ + 90) * M_PI / 180);
+    return (x + (radius/2) * sin((90 - this->theta) * M_PI / 180)) + (radius) * cos((this->theta + thetaArm + 90) * M_PI/180) * sin((90 - thetaArmZ) * M_PI / 180);
                
 }
 
 GLfloat Robot::getGunPositionY() {
-    return y + (radius) * sin((thetaArm+90) * M_PI/180) * sin((thetaArmZ + 90) * M_PI / 180);
+    return (y + (radius/2) * cos((90 - this->theta) * M_PI / 180)) + (radius) * sin((this->theta + thetaArm + 90) * M_PI/180) * sin((90 - thetaArmZ) * M_PI / 180);
                     
 }
 
 GLfloat Robot::getGunPositionZ() {
-    return (z + 2 * radius) + (radius) * cos((thetaArm + 90) * M_PI/180);
+    return (z + 2 * radius) + (radius) * cos((90 - thetaArmZ) * M_PI/180);
 }
 
 void Robot::draw(int i) {
