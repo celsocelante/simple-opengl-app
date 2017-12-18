@@ -761,7 +761,7 @@ GLint main(GLint argc, char** argv) {
     glutCreateWindow(win.getTitle().c_str());
 
     // Textures loader (into global objects)
-    stuff->floorTexture = LoadTextureRAW("textures/tiles.bmp");
+    stuff->floorTexture = LoadTextureRAW("textures/sand.bmp");
     stuff->wallsTexture = LoadTextureRAW("textures/wall.bmp");
     stuff->obstaclesTexture = LoadTextureRAW("textures/floor.bmp");
 
