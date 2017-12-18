@@ -51,7 +51,7 @@ void init(void) {
     glEnable(GL_DEPTH_TEST);
     glEnable( GL_TEXTURE_2D );
     glEnable(GL_LIGHTING);
-    glShadeModel (GL_SMOOTH);
+    glShadeModel(GL_SMOOTH);
 
     GLfloat light_position0[] = { stuff->arena->getX()+stuff->center->getRadius()+((stuff->arena->getRadius() - stuff->center->getRadius())/2),
         stuff->arena->getY(), 40, 1.0 };
@@ -80,48 +80,10 @@ void init(void) {
     glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuseLight);
     glLightfv(GL_LIGHT2, GL_POSITION, light_position0);
     glLightfv(GL_LIGHT2, GL_SPECULAR, specularLight);
-    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 5.0);// set cutoff angle
+    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 5.0);
     glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, light_position0);
     glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION , 0.001f);
-    glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 1); // set focusing strength
-}
-
-
-void RasterChars(GLfloat x, GLfloat y, GLfloat z, const char * text, double r, double g, double b)
-{
-    //Push to recover original attributes
-    glPushAttrib(GL_ENABLE_BIT);
-        glDisable(GL_LIGHTING);
-        glDisable(GL_TEXTURE_2D);
-        //Draw text in the x, y, z position
-        glColor3f(r, g, b);
-        glRasterPos3f(x, y, z);
-        const char* tmpStr;
-        tmpStr = text;
-        while( *tmpStr ){
-            glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *tmpStr);
-            tmpStr++;
-        }
-    glPopAttrib();
-}
-
-void PrintText(GLfloat x, GLfloat y, const char * text, double r, double g, double b)
-{
-    //Draw text considering a 2D space (disable all 3d features)
-    glMatrixMode (GL_PROJECTION);
-    //Push to recover original PROJECTION MATRIX
-    glPushMatrix();
-        glLoadIdentity ();
-        glOrtho(
-        (stuff->arena->getX() - stuff->arena->getRadius()),
-        (stuff->arena->getX() + stuff->arena->getRadius()),
-        (stuff->arena->getY() + stuff->arena->getRadius()),
-        (stuff->arena->getY() - stuff->arena->getRadius()),
-        -1.0, 1.0
-        );
-        RasterChars(x, y, 0, text, r, g, b);    
-    glPopMatrix();
-    glMatrixMode (GL_MODELVIEW);
+    glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 1);
 }
 
 void endGame() {
@@ -139,17 +101,14 @@ void renderScoreText() {
     sprintf(str, "Score: %d", stuff->totalScore);
     glColor3f(1, 0, 0);
 
-    glPushAttrib(GL_ENABLE_BIT);
-        glDisable(GL_LIGHTING);
-        glDisable(GL_TEXTURE_2D);
-        glRasterPos2f(stuff->arena->getX() + stuff->arena->getX() * 0.4, stuff->arena->getY() - stuff->arena->getY() * 0.5);
 
-        tmpStr = str;
-        while( *tmpStr ){
-            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *tmpStr);
-            tmpStr++;
-        }
-    glPopAttrib();
+    glRasterPos2f(stuff->arena->getX() + stuff->arena->getX() * 0.4, stuff->arena->getY() - stuff->arena->getY() * 0.5);
+
+    tmpStr = str;
+    while( *tmpStr ){
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *tmpStr);
+        tmpStr++;
+    }
 }
 
 void renderWinText() {
@@ -469,8 +428,6 @@ void render(int i) {
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    PrintText(0, 0, "Movable Camera", 0, 1, 0);
-
     // Night mode sets
     if (nightMode) {
         glDisable(GL_LIGHT0);
@@ -483,7 +440,43 @@ void display(void) {
     }
 
     for (int i = 0; i < 4; i++) {
-        if (i == 0) {
+        if (i == 3) {
+            // Score and final texts
+            glDisable(GL_LIGHTING);
+            glDisable(GL_TEXTURE_2D);
+
+            glLoadIdentity();
+            glViewport(0, 0, win.getWidth(), win.getHeight());
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
+                stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -1, 1);
+            
+
+            if (stuff->totalEnemies == 0) {
+                glClearColor (0, 0, 0, 1.0);
+
+                // render final text
+                renderWinText();
+                glFlush();
+        
+                return;
+            }
+    
+            if (!stuff->bot->displayed) {
+                glClearColor (0, 0, 0, 1.0);
+                // render final text
+                renderGameOverText();
+                glFlush();
+        
+                return;
+            }
+
+            renderScoreText();
+
+            glEnable(GL_LIGHTING);
+            glEnable(GL_TEXTURE_2D);
+        } else if (i == 0) {
             glViewport(0, 0, win.getWidth(), win.getHeight() - 100);
             glMatrixMode(GL_PROJECTION);
 
@@ -523,41 +516,9 @@ void display(void) {
             glLoadIdentity();
             glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
                 stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -1, 1);
-        } else if (i == 3) {
-            // minimapa
-            glDisable(GL_LIGHTING);
-            glLoadIdentity();
-            glViewport(0, 0, win.getWidth(), win.getHeight());
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
-                stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -1, 1);
-            
-            renderScoreText();
-            glEnable(GL_LIGHTING);
         }
 
         render(i);
-
-        if (stuff->totalEnemies == 0) {
-            glClearColor (0, 0, 0, 1.0);
-            // render final text
-            renderWinText();
-            glFlush();
-    
-            return;
-        }
-    
-        if (!stuff->bot->displayed) {
-            glClearColor (0, 0, 0, 1.0);
-            // render final text
-            renderGameOverText();
-            glFlush();
-    
-            return;
-        }
-    
-        // renderScoreText();
 
         if (i == 1 || i == 0) {
             GLfloat light_position0[] = { stuff->arena->getX()+stuff->center->getRadius()+((stuff->arena->getRadius() - stuff->center->getRadius())/2), stuff->arena->getY(), 100, 1.0 };
