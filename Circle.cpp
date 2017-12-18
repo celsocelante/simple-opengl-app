@@ -154,40 +154,25 @@ void Circle::drawObstacle2d() {
 	glEnd();
 }
 
-void Circle::drawFloor(GLuint texture) {
-    GLfloat twicePi = 2.0f * M_PI;
-    GLint triangles = 300;
-
-    glBegin(GL_TRIANGLE_FAN);
-    glBindTexture (GL_TEXTURE_2D, texture);
-    glColor3f(red, green, blue);
-        glTexCoord2d(0.5, 0.5);
-        glNormal3d(0, 0, 1);
-        // glNormal3d(0, 0, -1);
-		glVertex3f(x, y, 0); // center of circle
-		for(GLint i = 0; i <= triangles; i ++) {
-            glNormal3d(0, 0, 1);
-            // glNormal3d(0, 0, -1);
-
-            glTexCoord2f(
-                ((x + (radius * cos(i * twicePi / triangles)))/radius + 1) * 0.5,
-                ((y + (radius * sin(i * twicePi / triangles)))/radius) * 0.5
-            );
-
-			glVertex3f(
-		        x + (radius * cos(i *  twicePi / triangles)), 
-			    y + (radius * sin(i * twicePi / triangles)),
-                0
-			);
-		}
-	glEnd();
+void Circle::drawFloor(GLuint t) {
+    glEnable(GL_TEXTURE_2D);
+    GLUquadricObj *quadratic = gluNewQuadric();
+    glPushMatrix();
+        glBindTexture (GL_TEXTURE_2D, t);
+        glTranslatef(x, y, 0);
+        gluQuadricNormals(quadratic, GLU_SMOOTH);
+        gluQuadricOrientation(quadratic, GLU_OUTSIDE);
+        gluQuadricTexture(quadratic, GL_TRUE);
+        gluDisk(quadratic, 0.0, radius, 100, 100);
+    glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
 }
 
 void Circle::drawObstacle(GLuint t) {
-    glBindTexture (GL_TEXTURE_2D, t);
-
+    glEnable(GL_TEXTURE_2D);
     GLUquadricObj *quadratic = gluNewQuadric();
     glPushMatrix();
+        glBindTexture (GL_TEXTURE_2D, t);
         glTranslatef(x, y, 0);
         gluQuadricNormals(quadratic, GLU_SMOOTH);
         gluQuadricOrientation(quadratic, GLU_OUTSIDE);
@@ -197,6 +182,7 @@ void Circle::drawObstacle(GLuint t) {
         glTranslatef(0, 0, height);
         gluDisk(quadratic, 0.0, radius, 100, 100);
     glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
 }
 
 void Circle::drawWall(GLuint t) {
@@ -212,17 +198,48 @@ void Circle::drawWall(GLuint t) {
     // glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     // glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-    glBindTexture (GL_TEXTURE_2D, t);
-
+    glEnable(GL_TEXTURE_2D);
     GLUquadricObj *quadratic = gluNewQuadric();
+    glBindTexture (GL_TEXTURE_2D, t);
     glPushMatrix();
         glTranslatef(x, y, 0);
         gluQuadricNormals(quadratic, GLU_SMOOTH);
         gluQuadricOrientation(quadratic, GLU_OUTSIDE);
         // glScalef(5.0f, 1.0f, 1.0f);
         gluQuadricTexture(quadratic, GL_TRUE);
-        gluCylinder(quadratic, radius, radius, 100, 100, 100);
+        gluCylinder(quadratic, radius, radius, height, 100, 100);
     glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
+}
+
+
+void Circle::drawWallArena(GLuint t) {
+    // GLfloat materialEmission[] = { 0, 0, 0, 1.0};
+    // GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
+    // GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+    // GLfloat mat_shininess[] = { 128.0 };
+    // GLfloat ambient[] = { 0.2, 0.2, 0.2, 1};
+
+    // glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+    // glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+    // glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
+    // glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    // glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+    glEnable(GL_TEXTURE_2D);
+    GLUquadricObj *quadratic = gluNewQuadric();
+    glPushMatrix();
+        glBindTexture (GL_TEXTURE_2D, t);
+        glTranslatef(x, y, 0);
+        gluQuadricNormals(quadratic, GLU_SMOOTH);
+        gluQuadricOrientation(quadratic, GLU_OUTSIDE);
+        // glScalef(5.0f, 1.0f, 1.0f);
+        gluQuadricTexture(quadratic, GL_TRUE);
+        gluCylinder(quadratic, radius, radius, height, 100, 100);
+        glTranslatef(0, 0, height);
+        gluDisk(quadratic, 0.0, radius, 100, 100);
+    glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
 }
 
 void Circle::setRGB(GLfloat red, GLfloat green, GLfloat blue) {
@@ -245,20 +262,23 @@ void Circle::move(GLfloat x, GLfloat y, GLfloat z) {
     this->z += z;
 }
 
-bool Circle::collision(Circle *c, GLfloat dx, GLfloat dy, GLfloat dz) {
+bool Circle::collision(Circle *c, GLfloat dx, GLfloat dy, GLfloat dz,
+    GLfloat minHeight, GLfloat maxHeight) {
+
     GLfloat temp = sqrt(pow(c->getX() - (this->x + dx), 2) +
                             pow(c->getY() - (this->y + dy), 2) +
                             pow(c->getZ() - (this->z + dz), 2));
 
-	return temp <= (c->getRadius() + this->radius);
+	return temp <= (c->getRadius() + this->radius) && z >= minHeight && z <= maxHeight;
 }
 
-bool Circle::collisionNoDist(GLfloat x, GLfloat y, GLfloat z, GLfloat radius) {
+bool Circle::collisionNoDist(GLfloat x, GLfloat y, GLfloat z, GLfloat radius,
+    GLfloat minHeight, GLfloat maxHeight) {
+    
     GLfloat temp = sqrt(pow(x - this->x, 2) +
-                            pow(y - this->y, 2) +
-                            pow(z - this->z, 2));
+                            pow(y - this->y, 2));
 
-	return temp <= (radius + this->radius);
+	return temp <= (radius + this->radius) && z >= minHeight && z <= maxHeight;
 }
 
 void Circle::setJumping(bool value) {

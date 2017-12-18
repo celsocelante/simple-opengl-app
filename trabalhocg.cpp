@@ -17,7 +17,7 @@
 #endif
 
 #define ALT_JOGADOR 2.5 * 20
-#define ANGLE_I 3
+#define ANGLE_I 1
 
 using namespace std;
 using namespace tinyxml2;
@@ -35,8 +35,8 @@ GLfloat mouseY = 0;
 GLfloat lastTime = 0;
 GLfloat lastTimeShot = 0;
 
-GLfloat camXYangle = 0;
-GLfloat camZangle = 0;
+GLfloat camXYangle = -25;
+GLfloat camZangle = -25;
 
 GLfloat camDist = 150;
 
@@ -193,7 +193,9 @@ void drawBullets() {
         b->update(elapsedTime);
 
         for (Enemy* enemy : stuff->enemies) {
-            if ( enemy->displayed && enemy->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET) ) {
+            if ( enemy->displayed && enemy->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET, 0 + enemy->getZ(),
+                enemy->getHeight() + enemy->getZ()) ) {
+
                 stuff->totalScore++;
                 stuff->totalEnemies--;
                 enemy->displayed = false;
@@ -201,8 +203,8 @@ void drawBullets() {
             }
         }
 
-        if (!stuff->arena->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET) ||
-            stuff->center->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET)) {
+        if (!stuff->arena->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET, 0, stuff->arena->getHeight()) ||
+            stuff->center->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET,  0, stuff->arena->getHeight())) {
 
             stuff->bullets.remove(b);
             return;
@@ -215,7 +217,8 @@ void drawBullets() {
         b->draw();
         b->update(elapsedTime);
 
-        if ( stuff->bot->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET) ) {
+        if ( stuff->bot->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET,
+            0 + stuff->bot->getZ(), stuff->bot->getHeight() + stuff->bot->getZ()) ) {
             stuff->bot->displayed = false;
             break;
         }
@@ -300,28 +303,36 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
             /* horizontal movement of third person camera */
             case 'G':
             case 'g':
-                camXYangle -= ANGLE_I;
-                cout << "XY: " << camXYangle << endl;
+                if (camXYangle > -179) {
+                    camXYangle -= ANGLE_I;
+                    // cout << "XY: " << camXYangle << endl;
+                }
             break;
 
             case 'H':
             case 'h':
-                camXYangle += ANGLE_I;
-                cout << "XY: " << camXYangle << endl;
+                if (camXYangle < 179) {
+                    camXYangle += ANGLE_I;
+                    // cout << "XY: " << camXYangle << endl;
+                }
             break;
 
 
             /* vertical movement of third person camera */
             case 'Y':
             case 'y':
-                camZangle += ANGLE_I;
-                cout << "Z: " << camZangle << endl;
+                if (camZangle > -89) {
+                    camZangle -= ANGLE_I;
+                    // cout << "Z: " << camZangle << endl;
+                }
             break;
 
             case 'B':
             case 'b':
-                camZangle -= ANGLE_I;
-                cout << "Z: " << camZangle << endl;
+                if (camZangle < 89) {
+                    camZangle += ANGLE_I;
+                    // cout << "Z: " << camZangle << endl;
+                }
             break;
     }
 
@@ -388,6 +399,31 @@ void onPassiveMouseMotion(GLint x, GLint y) {
     }
 }
 
+void onMouseMotion(GLint x, GLint y) {
+    if ((x >= 0 && x <= win.getWidth()) && (y >= 0 && y <= win.getHeight())) {
+
+        GLfloat dx = x - mouseX;
+        GLfloat dy = y - mouseY;
+
+        // horizontal movement
+        if (dx > 0) {
+            stuff->bot->rotateArmLeft();
+        } else if (dx < 0) {
+            stuff->bot->rotateArmRight();
+        }
+
+        // vertical movement
+        if (dy > 0) {
+            stuff->bot->rotateArmDown();
+        } else if (dy < 0) {
+            stuff->bot->rotateArmUp();
+        }
+
+        mouseX = x;
+        mouseY = y;
+    }
+}
+
 void onClick(GLint button, GLint state, GLint x, GLint y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
         stuff->bot->setFire();
@@ -430,7 +466,7 @@ void render(int i) {
         // Fixed elements
         // stuff->arena->draw();
         stuff->arena->drawFloor(stuff->floorTexture);
-        stuff->arena->drawWall(stuff->wallsTexture);
+        stuff->arena->drawWallArena(stuff->wallsTexture);
         stuff->center->drawWall(stuff->wallsTexture);
 
         // Short obstacles
@@ -446,7 +482,7 @@ void render(int i) {
 
                 GLfloat atual = glutGet(GLUT_ELAPSED_TIME);
                 if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > 1 / e->freqTiro){
-                    e->setFire();
+                    // e->setFire(); // tiro do inimigo
                     e->lastTimeShot = atual;
                 }
             }
@@ -725,7 +761,7 @@ GLint main(GLint argc, char** argv) {
     glutCreateWindow(win.getTitle().c_str());
 
     // Textures loader (into global objects)
-    stuff->floorTexture = LoadTextureRAW("textures/floor.bmp");
+    stuff->floorTexture = LoadTextureRAW("textures/tiles.bmp");
     stuff->wallsTexture = LoadTextureRAW("textures/wall.bmp");
     stuff->obstaclesTexture = LoadTextureRAW("textures/floor.bmp");
 
@@ -736,6 +772,7 @@ GLint main(GLint argc, char** argv) {
     glutDisplayFunc(display);
     glutMouseFunc(onClick);
     glutPassiveMotionFunc(onPassiveMouseMotion);
+    glutMotionFunc(onMouseMotion);
     glutIdleFunc(idle);
 
     glutMainLoop();

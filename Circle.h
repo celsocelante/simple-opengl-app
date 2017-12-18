@@ -48,6 +48,7 @@ class Circle {
         void drawFloor(GLuint texture);
         void drawObstacle(GLuint texture);
         void drawWall(GLuint texture);
+        void drawWallArena(GLuint texture);
         void drawMinimap();
         void drawObstacle2d();
 
@@ -60,10 +61,11 @@ class Circle {
         bool getResizeState() { return beingResized; }
         bool isJumping() { return jumping; }
         GLint getId() { return id; }
+        GLfloat getHeight() { return height; }
 
         void move(GLfloat x, GLfloat y, GLfloat z);
-        bool collision(Circle *c, GLfloat dx, GLfloat dy, GLfloat dz);
-        bool collisionNoDist(GLfloat x, GLfloat y, GLfloat z, GLfloat radius);
+        bool collision(Circle *c, GLfloat dx, GLfloat dy, GLfloat dz, GLfloat minHeight, GLfloat maxHeight);
+        bool collisionNoDist(GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLfloat minHeight, GLfloat maxHeight);
         void setJumping(bool value);
         void setId(GLint id);
         void changeRadius(GLfloat i);

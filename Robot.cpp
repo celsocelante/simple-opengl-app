@@ -178,7 +178,7 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
     srand (time(NULL));
     GLint secret = rand() % 15 + 1;
 
-    if (this->type==3 && collision(stuff->bot, dx, dy, dz)) {
+    if (this->type==3 && collision(stuff->bot, dx, dy, dz, 0, stuff->bot->getHeight())) {
         if (!(secret % 2 == 0)) {
             rotateRight();
         }
@@ -186,7 +186,7 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
     }
 
     // Center collision
-    if (collision(stuff->center, dx, dy, dz)) {
+    if (collision(stuff->center, dx, dy, dz, 0, stuff->center->getHeight())) {
 
         if(this->type == 3) {
             for (int i = 0; i < (int) (secret / 2); i++) {
@@ -226,7 +226,7 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
 
     for (Circle* lo : stuff->obstacles) {
 
-        if (collision(lo, dx, dy, dz) && !isJumping()) {
+        if (collision(lo, dx, dy, dz, 0, lo->getHeight())) {
 
             if(this->type == 3 && !(secret % 2 == 0)) {
                 rotateRight();
@@ -240,7 +240,7 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
 
     // Red obstacles
     for (Circle* e : stuff->enemies) {
-        if (e->displayed && collision(e, dx, dy, dz)) {
+        if (e->displayed && collision(e, dx, dy, dz, 0, e->getHeight())) {
 
             if (this->type == 3) {
                 if (this->id == e->getId()) {
@@ -314,26 +314,26 @@ void Robot::setFire() {
 
 }
 
-void Robot::jumpStart(GLint v) {
-    setJumping(true);
-    GLfloat r = radius;
+// void Robot::jumpStart(GLint v) {
+//     setJumping(true);
+//     GLfloat r = radius;
 
-    changeRadius(r * (FACTOR/ANIMATION_FRAMES));
-    changeScale(FACTOR/ANIMATION_FRAMES);
-}
+//     changeRadius(r * (FACTOR/ANIMATION_FRAMES));
+//     changeScale(FACTOR/ANIMATION_FRAMES);
+// }
 
-void Robot::jumpMiddle(GLint v) {
-    GLfloat r = radius;
+// void Robot::jumpMiddle(GLint v) {
+//     GLfloat r = radius;
 
-    changeRadius( -(r * (FACTOR/ANIMATION_FRAMES)) ); 
-    changeScale(-((FACTOR/ANIMATION_FRAMES)));
-}
+//     changeRadius( -(r * (FACTOR/ANIMATION_FRAMES)) ); 
+//     changeScale(-((FACTOR/ANIMATION_FRAMES)));
+// }
 
-void Robot::jumpEnd(GLint v) {
-    setJumping(false);
-    restoreRadius();
-    restoreScale();
-}
+// void Robot::jumpEnd(GLint v) {
+//     setJumping(false);
+//     restoreRadius();
+//     restoreScale();
+// }
 
 void Robot::jump() {
     if (!isJumping()) {
@@ -348,10 +348,10 @@ void Robot::jumpUpdate(GLfloat time) {
 
         if (diff >= 0 && diff <= 1000) {
             // cout << "1st part" << endl;
-            z += 1.2;
+            z += 2;
         } else if (diff > 1000 && diff < 2000) {
             // cout << "2nd part" << endl;
-            z -= 1.2;
+            z -= 2;
         } else if (diff >= 2000) {
             setJumping(false);
             z = 0;
