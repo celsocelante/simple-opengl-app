@@ -160,7 +160,7 @@ void renderGameOverText() {
 
     sprintf(str, "GAME OVER");
     glColor3f(1, 0, 0);
-    glRasterPos2f(stuff->arena->getX() - stuff->arena->getX() * 0.05, stuff->arena->getY());
+    glRasterPos2f(stuff->arena->getX() - stuff->arena->getX() * 0.07, stuff->arena->getY());
 
     tmpStr = str;
     while( *tmpStr ){
@@ -441,6 +441,8 @@ void display(void) {
 
     for (int i = 0; i < 4; i++) {
         if (i == 3) {
+            glClearColor (0, 0, 0, 1.0);
+
             // Score and final texts
             glDisable(GL_LIGHTING);
             glDisable(GL_TEXTURE_2D);
@@ -454,8 +456,6 @@ void display(void) {
             
 
             if (stuff->totalEnemies == 0) {
-                glClearColor (0, 0, 0, 1.0);
-
                 // render final text
                 renderWinText();
                 glFlush();
@@ -464,7 +464,6 @@ void display(void) {
             }
     
             if (!stuff->bot->displayed) {
-                glClearColor (0, 0, 0, 1.0);
                 // render final text
                 renderGameOverText();
                 glFlush();
