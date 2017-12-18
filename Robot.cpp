@@ -351,7 +351,15 @@ void Robot::jumpUpdate(GLfloat time) {
             z += 2;
         } else if (diff > 1000 && diff < 2000) {
             // cout << "2nd part" << endl;
-            z -= 2;
+            
+
+            for (Circle* lo : stuff->obstacles) {
+                if (collision(lo, 0, 0, 0, 0, lo->getHeight())) {
+                    return;
+                } else {
+                    z -= 2;
+                }
+            }
         } else if (diff >= 2000) {
             setJumping(false);
             z = 0;
