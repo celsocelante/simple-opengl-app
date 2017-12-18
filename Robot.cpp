@@ -371,7 +371,6 @@ void Robot::getGunPositionZ() {
 
 }
 
-
 void Robot::draw(int i) {
     glDisable(GL_TEXTURE_2D);
 

@@ -35,7 +35,7 @@ GLfloat lastTime = 0;
 GLfloat lastTimeShot = 0;
 
 GLfloat camXYangle = 0;
-GLfloat camZangle = 25;
+GLfloat camZangle = 0;
 GLfloat camDist = 150;
 
 //Camera controls
@@ -491,13 +491,20 @@ void display(void) {
                 // gluLookAt(hx, hy, hz, hx + 100 * cos((stuff->bot->getTheta() + stuff->bot->getThetaArm() + 90)*M_PI/180),
                 //     hy+100*sin((stuff->bot->getTheta() + stuff->bot->getThetaArm()+ 90)*M_PI/180),
                 //     hz+100*cos((stuff->bot->getThetaArmZ() - 90)*M_PI/180),0,0,1);
+
+                //*cos((stuff->bot->getTheta() - 90 + camXYangle) * M_PI/180)
+                // * sin((stuff->bot->getTheta()-90 + camXYangle) * M_PI/180)
             } else if (currentCamera == 2) {
                 glLoadIdentity();
                 gluPerspective(45, win.getWidth() / win.getHeight(), 2, 2000);
                 glMatrixMode(GL_MODELVIEW);
-                gluLookAt(stuff->bot->getX() + (camDist) * cos((camZangle-90) * M_PI/180)*cos((stuff->bot->getTheta() - 90 + camXYangle) * M_PI/180),
-                    stuff->bot->getY() +(camDist*cos(camZangle*M_PI/180)) * sin((stuff->bot->getTheta()-90 + camXYangle) * M_PI/180),
-                    camDist*cos((camZangle - 90) * M_PI/180), stuff->bot->getX(), stuff->bot->getY(), 20, 0, 0, 1);
+                gluLookAt(stuff->bot->getX() + (camDist) * cos((camXYangle+90) * M_PI/180) * sin((camZangle + 90) * M_PI / 180),
+                    stuff->bot->getY() + (camDist) * sin((camXYangle+90) * M_PI/180) * sin((camZangle + 90) * M_PI / 180),
+                    stuff->bot->getZ() + (camDist) * cos((camZangle + 90) * M_PI/180), 
+                    stuff->bot->getX(), 
+                    stuff->bot->getY(),
+                    stuff->bot->getZ() + stuff->bot->getRadius()*2.5,
+                    0, 0, 1);
             }
         }
         else if (i == 1) {
@@ -509,9 +516,9 @@ void display(void) {
             glMatrixMode(GL_MODELVIEW);
             gluLookAt(
                 stuff->bot->getX(),
-                stuff->bot->getY(), 50, 
+                stuff->bot->getY(), stuff->bot->getZ() + stuff->bot->getRadius()*2.5, 
                 stuff->bot->getX() + cos((stuff->bot->getTheta() + 90) * M_PI / 180.0),
-                stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180.0), 50, 0, 0, 1);
+                stuff->bot->getY() + sin((stuff->bot->getTheta() + 90) * M_PI / 180.0), stuff->bot->getZ() + stuff->bot->getRadius()*2.5, 0, 0, 1);
 
         } else if (i == 2) {
             // minimapa
