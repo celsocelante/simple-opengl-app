@@ -17,6 +17,7 @@
 #endif
 
 #define ALT_JOGADOR 2.5 * 20
+#define ANGLE_I 3
 
 using namespace std;
 using namespace tinyxml2;
@@ -36,6 +37,7 @@ GLfloat lastTimeShot = 0;
 
 GLfloat camXYangle = 0;
 GLfloat camZangle = 0;
+
 GLfloat camDist = 150;
 
 //Camera controls
@@ -293,6 +295,33 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
             case '2':
                 currentCamera = 2;
                 cout << "camera 2" << endl;
+            break;
+
+            /* horizontal movement of third person camera */
+            case 'G':
+            case 'g':
+                camXYangle -= ANGLE_I;
+                cout << "XY: " << camXYangle << endl;
+            break;
+
+            case 'H':
+            case 'h':
+                camXYangle += ANGLE_I;
+                cout << "XY: " << camXYangle << endl;
+            break;
+
+
+            /* vertical movement of third person camera */
+            case 'Y':
+            case 'y':
+                camZangle += ANGLE_I;
+                cout << "Z: " << camZangle << endl;
+            break;
+
+            case 'B':
+            case 'b':
+                camZangle -= ANGLE_I;
+                cout << "Z: " << camZangle << endl;
             break;
     }
 
