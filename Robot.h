@@ -98,9 +98,9 @@ class Robot: public Circle {
         void setFire();
         void jump();
         void jumpUpdate(GLfloat time);
-        void getGunPositionX();
-        void getGunPositionY();  
-        void getGunPositionZ();
+        GLfloat getGunPositionX();
+        GLfloat getGunPositionY();  
+        GLfloat getGunPositionZ();
 };
 
 #endif

@@ -359,16 +359,18 @@ void Robot::jumpUpdate(GLfloat time) {
     }
 }
 
-void Robot::getGunPositionX() {
-
+GLfloat Robot::getGunPositionX() {
+    return (x + radius/2) + (radius) * cos((thetaArm+90) * M_PI/180) * sin((thetaArmZ + 90) * M_PI / 180);
+               
 }
 
-void Robot::getGunPositionY() {
-    
+GLfloat Robot::getGunPositionY() {
+    return y + (radius) * sin((thetaArm+90) * M_PI/180) * sin((thetaArmZ + 90) * M_PI / 180);
+                    
 }
 
-void Robot::getGunPositionZ() {
-
+GLfloat Robot::getGunPositionZ() {
+    return (z + 2 * radius) + (radius) * cos((thetaArm + 90) * M_PI/180);
 }
 
 void Robot::draw(int i) {
