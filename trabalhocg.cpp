@@ -124,7 +124,7 @@ void renderWinText() {
     glMatrixMode(GL_MODELVIEW);
 
     sprintf(str, "YOU WIN");
-    glColor3f(0, 1, 0);
+    glColor3f(0, 0.8, 0);
     glRasterPos2f(stuff->arena->getX() - stuff->arena->getX() * 0.05, stuff->arena->getY());
 
     tmpStr = str;

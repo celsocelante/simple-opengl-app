@@ -36,7 +36,9 @@
         "array": "cpp",
         "cmath": "cpp",
         "__tuple": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "__split_buffer": "cpp",
+        "vector": "cpp"
     },
     "python.pythonPath": "/usr/bin/python"
 }

@@ -27,13 +27,13 @@ class Bullet {
 
         GLfloat theta;
         GLfloat thetaRobot;
-        GLfloat heightRobot;
+        GLfloat thetaZ;
         GLfloat vel;
         GLfloat radius;
         void drawCircle(GLfloat x, GLfloat y, GLfloat radius);
 
     public:
-        Bullet(GLfloat x, GLfloat y, GLfloat z, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat radius);
+        Bullet(GLfloat x, GLfloat y, GLfloat z, GLfloat theta, GLfloat thetaRobot, GLfloat thetaZ, GLfloat vel, GLfloat radius);
         bool displayed = true;
         GLfloat getTheta() { return this->theta; }
         GLfloat getX() { return this->x; }
