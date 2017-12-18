@@ -1,11 +1,11 @@
 #include "Bullet.h"
 
-Bullet::Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat radius, GLfloat heightRobot) {
+Bullet::Bullet(GLfloat x, GLfloat y, GLfloat z, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat radius) {
 	this->x = x;
 	this->y = y;
+    this->z = z;
 	this->theta = theta;
     this->thetaRobot = thetaRobot;
-    this->heightRobot = heightRobot;
 	this->vel = vel;
     this->radius = radius;
     this->displayed = true;
@@ -35,6 +35,10 @@ void Bullet::setY(GLfloat y){
 	this->y = y;
 }
 
+void Bullet::setZ(GLfloat z){
+	this->z = z;
+}
+
 void Bullet::update(GLfloat time) {
     if (this->displayed) {
         GLfloat dir = this->thetaRobot - this->theta;
@@ -44,9 +48,10 @@ void Bullet::update(GLfloat time) {
     }  
 }
 
-bool Bullet::collision(Circle *c, GLfloat dx, GLfloat dy) {
+bool Bullet::collision(Circle *c, GLfloat dx, GLfloat dy, GLfloat dz) {
     GLfloat temp = sqrt(pow(c->getX() - (this->x + dx), 2) + 
-                            pow(c->getY() - (this->y + dy), 2));
+                            pow(c->getY() - (this->y + dy), 2) +
+                            pow(c->getZ() - (this->z + dz), 2));
 
 	return temp <= (c->getRadius() + this->radius);
 }

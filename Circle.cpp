@@ -66,7 +66,7 @@ void Circle::draw() {
         glVertex3f(
             x + (radius * cos(i *  twicePi / triangles)),
             y + (radius * sin(i * twicePi / triangles)),
-        0
+            0
         );
         glVertex3f(
             x + (radius * cos(i *  twicePi / triangles)),
@@ -252,16 +252,18 @@ void Circle::move(GLfloat x, GLfloat y, GLfloat z) {
     this->z += z;
 }
 
-bool Circle::collision(Circle *c, GLfloat dx, GLfloat dy) {
+bool Circle::collision(Circle *c, GLfloat dx, GLfloat dy, GLfloat dz) {
     GLfloat temp = sqrt(pow(c->getX() - (this->x + dx), 2) +
-                            pow(c->getY() - (this->y + dy), 2));
+                            pow(c->getY() - (this->y + dy), 2) +
+                            pow(c->getZ() - (this->z + dz), 2));
 
 	return temp <= (c->getRadius() + this->radius);
 }
 
-bool Circle::collisionNoDist(GLfloat x, GLfloat y, GLfloat radius) {
+bool Circle::collisionNoDist(GLfloat x, GLfloat y, GLfloat z, GLfloat radius) {
     GLfloat temp = sqrt(pow(x - this->x, 2) +
-                            pow(y - this->y, 2));
+                            pow(y - this->y, 2) +
+                            pow(z - this->z, 2));
 
 	return temp <= (radius + this->radius);
 }

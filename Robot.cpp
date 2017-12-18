@@ -178,7 +178,7 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
     srand (time(NULL));
     GLint secret = rand() % 10 + 1;
 
-    if (this->type==3 && collision(stuff->bot, dx, dy)) {
+    if (this->type==3 && collision(stuff->bot, dx, dy, dz)) {
         if (secret % 2 == 0) {
             rotateRight();
         } else {
@@ -188,7 +188,7 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
     }
 
     // Center collision
-    if (collision(stuff->center, dx, dy)) {
+    if (collision(stuff->center, dx, dy, dz)) {
 
         if(this->type == 3) {
 
@@ -228,7 +228,7 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
     }
 
     for (Circle* lo : stuff->obstacles) {
-        if (collision(lo, dx, dy) && isJumping()) {
+        if (collision(lo, dx, dy, dz) && isJumping()) {
             setMoveFreely(true);
 
             // Last unlocked lowObstacle info
@@ -238,7 +238,7 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
             disabledLowObstacle.setId(lo->getId());
         }
 
-        if (collision(lo, dx, dy) && !isJumping() && !canMoveFreely()) {
+        if (collision(lo, dx, dy, dz) && !isJumping() && !canMoveFreely()) {
 
             if(this->type == 3 && secret % 2 == 0) {
                 rotateLeft();
@@ -253,7 +253,7 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
 
     // Red obstacles
     for (Circle* e : stuff->enemies) {
-        if (e->displayed && collision(e, dx, dy)) {
+        if (e->displayed && collision(e, dx, dy, dz)) {
 
             if (this->type == 3) {
                 if (this->id == e->getId()) {

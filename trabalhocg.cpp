@@ -191,7 +191,7 @@ void drawBullets() {
         b->update(elapsedTime);
 
         for (Enemy* enemy : stuff->enemies) {
-            if ( enemy->displayed && enemy->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET) ) {
+            if ( enemy->displayed && enemy->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET) ) {
                 stuff->totalScore++;
                 stuff->totalEnemies--;
                 enemy->displayed = false;
@@ -199,8 +199,8 @@ void drawBullets() {
             }
         }
 
-        if (!stuff->arena->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET) ||
-            stuff->center->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET)) {
+        if (!stuff->arena->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET) ||
+            stuff->center->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET)) {
 
             stuff->bullets.remove(b);
             return;
@@ -213,7 +213,7 @@ void drawBullets() {
         b->draw();
         b->update(elapsedTime);
 
-        if ( stuff->bot->collisionNoDist(b->getX(), b->getY(), SIZE_BULLET) ) {
+        if ( stuff->bot->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET) ) {
             stuff->bot->displayed = false;
             break;
         }

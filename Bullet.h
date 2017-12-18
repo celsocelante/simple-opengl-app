@@ -21,8 +21,10 @@ using namespace std;
 
 class Bullet {
     private:
-        GLint x;
-        GLint y;
+        GLfloat x;
+        GLfloat y;
+        GLfloat z;
+
         GLfloat theta;
         GLfloat thetaRobot;
         GLfloat heightRobot;
@@ -31,20 +33,22 @@ class Bullet {
         void drawCircle(GLfloat x, GLfloat y, GLfloat radius);
 
     public:
-        Bullet(GLfloat x, GLfloat y, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat radius, GLfloat heightRobot);
+        Bullet(GLfloat x, GLfloat y, GLfloat z, GLfloat theta, GLfloat thetaRobot, GLfloat vel, GLfloat radius);
         bool displayed = true;
         GLfloat getTheta() { return this->theta; }
         GLfloat getX() { return this->x; }
         GLfloat getY() { return this->y; }
+        GLfloat getZ() { return this->z; }
         GLfloat getRadius() { return this->radius; }
         GLfloat getVel() { return this->vel; }
         GLfloat getThetaRobot() { return this->thetaRobot; }
         GLfloat getVelocity() { return this->vel; }
         void setX(GLfloat x);
         void setY(GLfloat y);
+        void setZ(GLfloat z);
         void draw();
         void update(GLfloat time);
-        bool collision(Circle *c, GLfloat dx, GLfloat dy);
+        bool collision(Circle *c, GLfloat dx, GLfloat dy, GLfloat dz);
 };
 
 #endif
