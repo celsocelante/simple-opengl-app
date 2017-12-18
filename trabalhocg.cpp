@@ -527,7 +527,7 @@ void display(void) {
             // minimapa
             glDisable(GL_LIGHTING);
             glLoadIdentity();
-            glViewport(0, 0, win.getWidth()/4, win.getHeight()/4);
+            glViewport(0, 0, win.getWidth(), win.getHeight());
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
