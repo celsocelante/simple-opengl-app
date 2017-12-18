@@ -62,8 +62,7 @@ void Bullet::draw(){
     if (this->displayed) {
         glPushMatrix();
             glColor3f(1, 1, 0); // yellow
-            glDisable( GL_TEXTURE_2D );
-            
+
             GLfloat materialColorD[] = { 1, 1, 0, 1};
             GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1};
             GLfloat mat_shininess[] = { 70.0 };
@@ -81,7 +80,7 @@ void Bullet::draw(){
             glTranslatef(0, this->radius, 0);
             // drawCircle(0, 0, SIZE_BULLET);
             glutSolidSphere(SIZE_BULLET, 100, 100);
-            glEnable( GL_TEXTURE_2D );
+
         glPopMatrix();
     }
 }

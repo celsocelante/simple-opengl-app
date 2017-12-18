@@ -13,10 +13,10 @@
 #include "Circle.h"
 using namespace std;
 
-#define ARM_MOVEMENT 3
+#define ARM_MOVEMENT 5
 #define ARM_ANGLE 45
 #define ROTATE 3
-#define MOVEMENT 5
+#define MOVEMENT 6
 #define SWAP_LEGS_COUNT 20
 #define ANIMATION_FRAMES 30
 #define ANIMATION_TIME 2000
@@ -47,11 +47,7 @@ class Robot: public Circle {
         GLfloat red, green, blue;
         Circle disabledLowObstacle;
 
-        float angle = 0.0f;
-        float legAngle[2] = {0.0f, 0.0f};
-        float armAngle[2] = {0.0f, 0.0f};
-        
-        
+        double startTime;
 
         void drawRectangle(GLfloat width, GLfloat height, GLfloat R, GLfloat G, GLfloat B);
         void drawRectangleLine(GLfloat width, GLfloat height, GLfloat R, GLfloat G, GLfloat B);
@@ -101,6 +97,7 @@ class Robot: public Circle {
         bool ableToMove(GLfloat dx, GLfloat dy, GLfloat dz);
         void setFire();
         void jump();
+        void jumpUpdate(GLfloat time);
         void getGunPositionX();
         void getGunPositionY();  
         void getGunPositionZ();

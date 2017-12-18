@@ -251,37 +251,37 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
 
         case 'p':
         case 'P':
-            // stuff->bot->jump();
+            stuff->bot->jump();
 
-            if (!stuff->bot->isJumping()) {
-                for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
-                    glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
-                        stuff->bot->setJumping(true);
-                        GLfloat radius = stuff->bot->getRadius();
-                        GLfloat scale = stuff->bot->getScale();
+            // if (!stuff->bot->isJumping()) {
+            //     for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
+            //         glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
+            //             stuff->bot->setJumping(true);
+            //             GLfloat radius = stuff->bot->getRadius();
+            //             GLfloat scale = stuff->bot->getScale();
 
-                        stuff->bot->changeRadius(radius * (FACTOR/ANIMATION_FRAMES));
-                        stuff->bot->changeScale(FACTOR/ANIMATION_FRAMES);
-                    }, 0);
-                }
+            //             stuff->bot->changeRadius(radius * (FACTOR/ANIMATION_FRAMES));
+            //             stuff->bot->changeScale(FACTOR/ANIMATION_FRAMES);
+            //         }, 0);
+            //     }
 
-                for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
-                    glutTimerFunc(ANIMATION_TIME/2 + ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
-                        GLfloat radius = stuff->bot->getRadius();
-                        GLfloat scale = stuff->bot->getScale();
+            //     for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
+            //         glutTimerFunc(ANIMATION_TIME/2 + ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
+            //             GLfloat radius = stuff->bot->getRadius();
+            //             GLfloat scale = stuff->bot->getScale();
 
-                        stuff->bot->changeRadius( -(radius * (FACTOR/ANIMATION_FRAMES)) );
-                        stuff->bot->changeScale(-((FACTOR/ANIMATION_FRAMES)));
-                    }, 0);
-                }
+            //             stuff->bot->changeRadius( -(radius * (FACTOR/ANIMATION_FRAMES)) );
+            //             stuff->bot->changeScale(-((FACTOR/ANIMATION_FRAMES)));
+            //         }, 0);
+            //     }
 
-                // Hold on for 2 seconds
-                glutTimerFunc(ANIMATION_TIME, [](GLint v) {
-                    stuff->bot->setJumping(false);
-                    stuff->bot->restoreRadius();
-                    stuff->bot->restoreScale();
-                }, 0);
-            }
+            //     // Hold on for 2 seconds
+            //     glutTimerFunc(ANIMATION_TIME, [](GLint v) {
+            //         stuff->bot->setJumping(false);
+            //         stuff->bot->restoreRadius();
+            //         stuff->bot->restoreScale();
+            //     }, 0);
+            // }
 
             break;
 
@@ -324,6 +324,12 @@ void idle(void) {
         stuff->bot->moveForward();
     }
 
+    // update jump
+    stuff->bot->jumpUpdate(glutGet(GLUT_ELAPSED_TIME));
+
+    for (Enemy* e : stuff->enemies) {
+        e->jumpUpdate(glutGet(GLUT_ELAPSED_TIME));
+    }
 
     glutPostRedisplay();
 }
@@ -629,7 +635,7 @@ void readConfigFile(string fileName) {
             win.setTitle("Arena");
 
         } else if (fill == "white") {
-            stuff->center = new Circle(cx, -cy, 0, radius, 59);
+            stuff->center = new Circle(cx, -cy, 0, radius, 4 * ALT_JOGADOR);
             stuff->center->setRGB(0.5, 0.5, 0.5);
             stuff->center->setId(id);
             stuff->center->setStuff(stuff);

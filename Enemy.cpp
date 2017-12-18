@@ -6,8 +6,10 @@ void Enemy::update() {
 
     moveForward();
 
-    if (secret % 3 == 0) {
-        rotateLeft();
-    }
+    // if (secret % 2 == 0) {
+    //     rotateLeft();
+    // } else if (secret % 7 == 0) {
+    //     rotateRight();
+    // }
 
 }

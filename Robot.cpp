@@ -176,13 +176,11 @@ void Robot::swapLegs() {
 
 bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
     srand (time(NULL));
-    GLint secret = rand() % 10 + 1;
+    GLint secret = rand() % 15 + 1;
 
     if (this->type==3 && collision(stuff->bot, dx, dy, dz)) {
-        if (secret % 2 == 0) {
+        if (!(secret % 2 == 0)) {
             rotateRight();
-        } else {
-            rotateLeft();
         }
         return false;
     }
@@ -191,9 +189,8 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
     if (collision(stuff->center, dx, dy, dz)) {
 
         if(this->type == 3) {
-
             for (int i = 0; i < (int) (secret / 2); i++) {
-                if (secret % 2 == 0) {
+                if (!(secret % 2 == 0)) {
                     rotateRight();
                 } else {
                     rotateLeft();
@@ -210,7 +207,7 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
 
         if(this->type == 3) {
             for (int i = 0; i < secret; i++) {
-                if (secret % 2 != 0) {
+                if (secret % 7 != 0) {
                     rotateRight();
                 } else {
                     rotateLeft();
@@ -221,29 +218,19 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
         return false;
     }
 
-    // Black obstacles
-    if (!isJumping() && disabledLowObstacle.getId() != -1 && sqrt(pow(disabledLowObstacle.getX() - (x + dx), 2) + 
-                                    pow(disabledLowObstacle.getY() - (y + dy), 2)) > (disabledLowObstacle.getRadius() + radius) ) {
-        setMoveFreely(false);
-    }
+    // // Black obstacles
+    // if (!isJumping() && disabledLowObstacle.getId() != -1 && sqrt(pow(disabledLowObstacle.getX() - (x + dx), 2) + 
+    //                                 pow(disabledLowObstacle.getY() - (y + dy), 2)) > (disabledLowObstacle.getRadius() + radius) ) {
+    //     setMoveFreely(false);
+    // }
 
     for (Circle* lo : stuff->obstacles) {
-        if (collision(lo, dx, dy, dz) && isJumping()) {
-            setMoveFreely(true);
 
-            // Last unlocked lowObstacle info
-            disabledLowObstacle.setRadius(lo->getRadius());
-            disabledLowObstacle.setX(lo->getX());
-            disabledLowObstacle.setY(lo->getY());
-            disabledLowObstacle.setId(lo->getId());
-        }
+        if (collision(lo, dx, dy, dz) && !isJumping()) {
 
-        if (collision(lo, dx, dy, dz) && !isJumping() && !canMoveFreely()) {
-
-            if(this->type == 3 && secret % 2 == 0) {
-                rotateLeft();
-            } else {
+            if(this->type == 3 && !(secret % 2 == 0)) {
                 rotateRight();
+                jump();
             }
 
             // cout << "Jump, enemy!" << endl;
@@ -259,7 +246,7 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
                 if (this->id == e->getId()) {
                     continue;
                 }
-                rotateLeft();
+                rotateRight();
             }
 
             return false;
@@ -350,16 +337,25 @@ void Robot::jumpEnd(GLint v) {
 
 void Robot::jump() {
     if (!isJumping()) {
-        // for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
-        //     glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpStart, 0);
-        // }
+        startTime = glutGet(GLUT_ELAPSED_TIME);
+        setJumping(true);
+    }
+}
 
-        // for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
-        //     glutTimerFunc(ANIMATION_TIME/2 + ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, jumpMiddle, 0);
-        // }
+void Robot::jumpUpdate(GLfloat time) {
+    if (isJumping()) {
+        double diff = time - startTime;
 
-        // // Hold on for 2 seconds
-        // glutTimerFunc(ANIMATION_TIME, jumpEnd, 0);
+        if (diff >= 0 && diff <= 1000) {
+            // cout << "1st part" << endl;
+            z += 1.2;
+        } else if (diff > 1000 && diff < 2000) {
+            // cout << "2nd part" << endl;
+            z -= 1.2;
+        } else if (diff >= 2000) {
+            setJumping(false);
+            z = 0;
+        }
     }
 }
 
