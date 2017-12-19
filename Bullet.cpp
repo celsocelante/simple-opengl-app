@@ -50,28 +50,20 @@ void Bullet::update(GLfloat time) {
     }  
 }
 
-bool Bullet::collision(Circle *c, GLfloat dx, GLfloat dy, GLfloat dz) {
-    GLfloat temp = sqrt(pow(c->getX() - (this->x + dx), 2) + 
-                            pow(c->getY() - (this->y + dy), 2) +
-                            pow(c->getZ() - (this->z + dz), 2));
-
-	return temp <= (c->getRadius() + this->radius);
-}
-
 void Bullet::draw(){
     if (this->displayed) {
         glPushMatrix();
             glColor3f(1, 1, 0); // yellow
 
-            GLfloat materialColorD[] = { 1, 1, 0, 1};
-            GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1};
-            GLfloat mat_shininess[] = { 70.0 };
+            GLfloat d[] = { 0.8, 0.8, 0, 1};
+            GLfloat s[] = { 1.0, 1.0, 1.0, 1};
+            GLfloat sh[] = { 120.0 };
             GLfloat ambient[] = { 0.2, 0.2, 0.2, 1};
 
             glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
-            glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-            glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, d);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, s);
+            glMaterialfv(GL_FRONT, GL_SHININESS, sh);
 
             glTranslatef(this->x, this->y, this->z);
             // glRotatef(this->thetaRobot, 0, 0, 1);

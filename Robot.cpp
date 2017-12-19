@@ -178,22 +178,24 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
     srand (time(NULL));
     GLint secret = rand() % 15 + 1;
 
-    if (this->type==3 && collision(stuff->bot, dx, dy, dz, 0, stuff->bot->getHeight())) {
+    if (this->type==3 && collision(stuff->bot, dx, dy, dz, 0, stuff->bot->getHeight() * 2)) {
         if (!(secret % 2 == 0)) {
             rotateRight();
+        } else {
+            rotateLeft();
         }
         return false;
     }
 
     // Center collision
-    if (collision(stuff->center, dx, dy, dz, 0, stuff->center->getHeight())) {
+    if (collision(stuff->center, dx, dy, dz, 0, stuff->center->getHeight() * 2)) {
 
         if(this->type == 3) {
             for (int i = 0; i < (int) (secret / 2); i++) {
                 if (!(secret % 2 == 0)) {
-                    rotateRight();
-                } else {
                     rotateLeft();
+                } else {
+                    rotateRight();
                 }
             }
         }
@@ -228,12 +230,10 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
 
         if (collision(lo, dx, dy, dz, 0, lo->getHeight())) {
 
-            if(this->type == 3 && !(secret % 2 == 0)) {
-                rotateRight();
+            if(this->type == 3) {
                 jump();
             }
 
-            // cout << "Jump, enemy!" << endl;
             return false;
         }
     }
@@ -246,7 +246,12 @@ bool Robot::ableToMove(GLfloat dx, GLfloat dy, GLfloat dz) {
                 if (this->id == e->getId()) {
                     continue;
                 }
-                rotateRight();
+
+                if (!(secret % 2 == 0)) {
+                    rotateRight();
+                } else {
+                    rotateLeft();
+                }
             }
 
             return false;
@@ -265,7 +270,6 @@ GLfloat Robot::newY() {
 }
 
 void Robot::moveForward() {
-
     GLfloat newx = x - newX();
     GLfloat newy = y - newY();
 
@@ -314,27 +318,6 @@ void Robot::setFire() {
 
 }
 
-// void Robot::jumpStart(GLint v) {
-//     setJumping(true);
-//     GLfloat r = radius;
-
-//     changeRadius(r * (FACTOR/ANIMATION_FRAMES));
-//     changeScale(FACTOR/ANIMATION_FRAMES);
-// }
-
-// void Robot::jumpMiddle(GLint v) {
-//     GLfloat r = radius;
-
-//     changeRadius( -(r * (FACTOR/ANIMATION_FRAMES)) ); 
-//     changeScale(-((FACTOR/ANIMATION_FRAMES)));
-// }
-
-// void Robot::jumpEnd(GLint v) {
-//     setJumping(false);
-//     restoreRadius();
-//     restoreScale();
-// }
-
 void Robot::jump() {
     if (!isJumping()) {
         startTime = glutGet(GLUT_ELAPSED_TIME);
@@ -348,18 +331,18 @@ void Robot::jumpUpdate(GLfloat time) {
 
         if (diff >= 0 && diff <= 1000) {
             // cout << "1st part" << endl;
-            z += 2;
+            z += 1.8;
         } else if (diff > 1000 && diff < 2000) {
             // cout << "2nd part" << endl;
-            
 
-            for (Circle* lo : stuff->obstacles) {
-                if (collision(lo, 0, 0, 0, 0, lo->getHeight())) {
-                    return;
-                } else {
-                    z -= 2;
-                }
-            }
+            // for (Circle* lo : stuff->obstacles) {
+            //     if (collision(lo, 0, 0, 0, 0, 0)) {
+            //         cout << "obstaculo" << endl;
+            //         z = lo->getHeight();
+            //     }
+            // }
+
+            z -= 1.8;
         } else if (diff >= 2000) {
             setJumping(false);
             z = 0;
@@ -382,27 +365,30 @@ GLfloat Robot::getGunPositionZ() {
 }
 
 void Robot::draw(int i) {
-    glDisable(GL_TEXTURE_2D);
-
-    GLfloat mat_specular[] = { 1, 1, 1, 1};
-    GLfloat mat_shininess[] = { 10.0 };
-    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+    glEnable(GL_TEXTURE_2D);
+    GLfloat s[] = { 1, 1, 1, 1};
+    GLfloat sh[] = { 50 };
+    glMaterialfv(GL_FRONT, GL_SPECULAR, s);
+    glMaterialfv(GL_FRONT, GL_SHININESS, sh);
 
 	glColor3f(red, green, blue);
-	GLfloat diffuse[] = { red, green, blue, 1.0 };
-	GLfloat ambient[] = { red, green, blue, 1.0 };
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+    float rd = red * 0.8;
+    float gd = green * 0.8;
+    float bd = blue * 0.8;
 
+	GLfloat d[] = { rd, gd, bd, 1.0 };
+	GLfloat a[] = { red, green, blue, 1.0 };
+
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, d);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, a);
 
     glPushMatrix();
+        glEnable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
+        glEnable(GL_TEXTURE_GEN_T);
+        glBindTexture (GL_TEXTURE_2D, stuff->robotTexture);
+
         glTranslatef(x, y, z);
         glRotatef(this->theta, 0, 0 ,1);
-
-        glPushAttrib(GL_ENABLE_BIT);
-
-            glDisable(GL_LIGHTING);
                            
             //Perna direita 
             glPushMatrix();
@@ -496,13 +482,10 @@ void Robot::draw(int i) {
 
                 glPopMatrix();
             }
-
-
-        glPopAttrib();
-
+        glDisable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
+        glDisable(GL_TEXTURE_GEN_T);
     glPopMatrix();
-
-    glEnable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D);
 }
 
 void Robot::drawMinimap() {

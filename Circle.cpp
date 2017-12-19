@@ -155,6 +155,18 @@ void Circle::drawObstacle2d() {
 }
 
 void Circle::drawFloor(GLuint t) {
+    GLfloat materialEmission[] = { 0, 0, 0, 1.0};
+    GLfloat materialColor[] = { red, green, blue, 1.0};
+    GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+    GLfloat mat_shininess[] = { 10.0 };
+    GLfloat ambient[] = { 0.2, 0.2, 0.2, 1};
+
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
     glEnable(GL_TEXTURE_2D);
     GLUquadricObj *quadratic = gluNewQuadric();
     glPushMatrix();
@@ -169,7 +181,19 @@ void Circle::drawFloor(GLuint t) {
 }
 
 void Circle::drawObstacle(GLuint t) {
+
     glEnable(GL_TEXTURE_2D);
+    GLfloat materialEmission[] = { 0, 0, 0, 1.0};
+    GLfloat materialColor[] = { red, green, blue, 1.0};
+    GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+    GLfloat mat_shininess[] = { 128.0 };
+    GLfloat ambient[] = { 0.2, 0.2, 0.2, 1};
+
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
     GLUquadricObj *quadratic = gluNewQuadric();
     glPushMatrix();
         glBindTexture (GL_TEXTURE_2D, t);
@@ -186,17 +210,17 @@ void Circle::drawObstacle(GLuint t) {
 }
 
 void Circle::drawWall(GLuint t) {
-    // GLfloat materialEmission[] = { 0, 0, 0, 1.0};
-    // GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
-    // GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
-    // GLfloat mat_shininess[] = { 128.0 };
-    // GLfloat ambient[] = { 0.2, 0.2, 0.2, 1};
+    GLfloat materialEmission[] = { 0, 0, 0, 1.0};
+    GLfloat materialColor[] = { red, green, blue, 1.0};
+    GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
+    GLfloat mat_shininess[] = { 128.0 };
+    GLfloat ambient[] = { 0.2, 0.2, 0.2, 1};
 
-    // glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-    // glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
-    // glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
-    // glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    // glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+    glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
     glEnable(GL_TEXTURE_2D);
     GLUquadricObj *quadratic = gluNewQuadric();
@@ -214,17 +238,18 @@ void Circle::drawWall(GLuint t) {
 
 
 void Circle::drawWallArena(GLuint t) {
-    // GLfloat materialEmission[] = { 0, 0, 0, 1.0};
-    // GLfloat materialColor[] = { 0.4, 0.4, 0.4, 1.0};
-    // GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
-    // GLfloat mat_shininess[] = { 128.0 };
-    // GLfloat ambient[] = { 0.2, 0.2, 0.2, 1};
+    // GLfloat materialEmission[] = { 1.0, 1.0, 1.0, 1};
+    GLfloat materialColorA[] = { 0.2, 0.2, 0.2, 1};
+    GLfloat materialColorD[] = { 1.0, 1.0, 1.0, 1};
+    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1};
+    GLfloat mat_shininess[] = { 80.0 };
+    glColor3f(1,1,1);
 
     // glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-    // glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
-    // glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
-    // glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    // glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, materialColorA);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorD);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
     glEnable(GL_TEXTURE_2D);
     GLUquadricObj *quadratic = gluNewQuadric();
@@ -266,11 +291,19 @@ bool Circle::collision(Circle *c, GLfloat dx, GLfloat dy, GLfloat dz,
     GLfloat minHeight, GLfloat maxHeight) {
 
     GLfloat temp = sqrt(pow(c->getX() - (this->x + dx), 2) +
-                            pow(c->getY() - (this->y + dy), 2) +
-                            pow(c->getZ() - (this->z + dz), 2));
+                            pow(c->getY() - (this->y + dy), 2));
 
 	return temp <= (c->getRadius() + this->radius) && z >= minHeight && z <= maxHeight;
 }
+
+// bool Circle::collisionXY(Circle *c, GLfloat dx, GLfloat dy) {
+
+//     GLfloat temp = sqrt(pow(c->getX() - (this->x + dx), 2) +
+//                             pow(c->getY() - (this->y + dy), 2) +
+//                             pow(c->getZ() - (this->z + dz), 2));
+
+// 	return temp <= (c->getRadius() + this->radius) && z >= minHeight && z <= maxHeight;
+// }
 
 bool Circle::collisionNoDist(GLfloat x, GLfloat y, GLfloat z, GLfloat radius,
     GLfloat minHeight, GLfloat maxHeight) {

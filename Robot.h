@@ -16,7 +16,7 @@ using namespace std;
 #define ARM_MOVEMENT 5
 #define ARM_ANGLE 45
 #define ROTATE 3
-#define MOVEMENT 6
+#define MOVEMENT 10
 #define SWAP_LEGS_COUNT 20
 #define ANIMATION_FRAMES 30
 #define ANIMATION_TIME 2000

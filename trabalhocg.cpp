@@ -17,7 +17,7 @@
 #endif
 
 #define ALT_JOGADOR 2.5 * 20
-#define ANGLE_I 1
+#define ANGLE_I 5
 
 using namespace std;
 using namespace tinyxml2;
@@ -32,6 +32,12 @@ bool keyStatus[256] = { false };
 
 GLfloat mouseX = 0;
 GLfloat mouseY = 0;
+
+GLfloat pmouseX = 0;
+GLfloat pmouseY = 0;
+GLfloat pmouseZ = 0;
+
+
 GLfloat lastTime = 0;
 GLfloat lastTimeShot = 0;
 
@@ -46,46 +52,50 @@ int currentCamera = 1;
 // Night mode
 bool nightMode = false;
 
+bool rightButton = false;
+
 
 void init(void) {
     glClearColor(1, 1, 1, 0.0f);
 
     glEnable(GL_DEPTH_TEST);
-    glEnable( GL_TEXTURE_2D );
+    glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
     glShadeModel(GL_SMOOTH);
 
-    GLfloat light_position0[] = { stuff->arena->getX()+stuff->center->getRadius()+((stuff->arena->getRadius() - stuff->center->getRadius())/2),
-        stuff->arena->getY(), 40, 1.0 };
+    GLfloat light_position0[] = {
+        stuff->arena->getX() + stuff->center->getRadius() + ((stuff->arena->getRadius() - stuff->center->getRadius()) / 2),
+        stuff->arena->getY(),
+        ALT_JOGADOR, 1.0
+    };
+
+    GLfloat light_position1[] = {
+        stuff->arena->getX() - (stuff->arena->getRadius() / 2),
+        stuff->arena->getY() + (stuff->center->getRadius() / 2),
+        4 * ALT_JOGADOR, 1.0
+    };
 
     GLfloat ambientfactor = 0.0;
     GLfloat diffusefactor = 1.5;
 
-    GLfloat ambientLight[] = { ambientfactor, ambientfactor, ambientfactor, 1.0f };
+    GLfloat ambientLight[] = { ambientfactor, ambientfactor, ambientfactor, 1.0};
     GLfloat diffuseLight[] = { diffusefactor, diffusefactor, diffusefactor, 1.0};
-    GLfloat specularLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+    GLfloat specularLight[] = { 0.2, 0.2, 0.2, 1.0 };
+
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
     glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
-    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION , 0.001f);
+    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION , 0.001);
     glEnable(GL_LIGHT0);
 
     glLightfv(GL_LIGHT1, GL_AMBIENT, ambientLight);
     glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuseLight);
     glLightfv(GL_LIGHT1, GL_SPECULAR, specularLight);
-    glLightfv(GL_LIGHT1, GL_POSITION, light_position0);
-    glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION , 0.001f);
+    glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+    glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION , 0.001);
     glEnable(GL_LIGHT1);
 
-    glLightfv(GL_LIGHT2, GL_AMBIENT, ambientLight);
-    glLightfv(GL_LIGHT2, GL_DIFFUSE, diffuseLight);
-    glLightfv(GL_LIGHT2, GL_POSITION, light_position0);
-    glLightfv(GL_LIGHT2, GL_SPECULAR, specularLight);
-    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 5.0);
-    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, light_position0);
-    glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION , 0.001f);
-    glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 1);
 }
 
 void endGame() {
@@ -204,7 +214,7 @@ void drawBullets() {
         }
 
         if (!stuff->arena->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET, 0, stuff->arena->getHeight()) ||
-            stuff->center->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET,  0, stuff->arena->getHeight())) {
+            stuff->center->collisionNoDist(b->getX(), b->getY(), b->getZ(), SIZE_BULLET, 0, stuff->arena->getHeight())) {
 
             stuff->bullets.remove(b);
             return;
@@ -257,37 +267,6 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
         case 'p':
         case 'P':
             stuff->bot->jump();
-
-            // if (!stuff->bot->isJumping()) {
-            //     for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
-            //         glutTimerFunc( ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
-            //             stuff->bot->setJumping(true);
-            //             GLfloat radius = stuff->bot->getRadius();
-            //             GLfloat scale = stuff->bot->getScale();
-
-            //             stuff->bot->changeRadius(radius * (FACTOR/ANIMATION_FRAMES));
-            //             stuff->bot->changeScale(FACTOR/ANIMATION_FRAMES);
-            //         }, 0);
-            //     }
-
-            //     for (GLint i = 1; i <= ANIMATION_FRAMES; i++) {
-            //         glutTimerFunc(ANIMATION_TIME/2 + ((ANIMATION_TIME/2) / ANIMATION_FRAMES) * i, [](GLint v) {
-            //             GLfloat radius = stuff->bot->getRadius();
-            //             GLfloat scale = stuff->bot->getScale();
-
-            //             stuff->bot->changeRadius( -(radius * (FACTOR/ANIMATION_FRAMES)) );
-            //             stuff->bot->changeScale(-((FACTOR/ANIMATION_FRAMES)));
-            //         }, 0);
-            //     }
-
-            //     // Hold on for 2 seconds
-            //     glutTimerFunc(ANIMATION_TIME, [](GLint v) {
-            //         stuff->bot->setJumping(false);
-            //         stuff->bot->restoreRadius();
-            //         stuff->bot->restoreScale();
-            //     }, 0);
-            // }
-
             break;
 
             case '1':
@@ -298,41 +277,6 @@ void onKeyDown(unsigned char key, GLint x, GLint y)
             case '2':
                 currentCamera = 2;
                 cout << "camera 2" << endl;
-            break;
-
-            /* horizontal movement of third person camera */
-            case 'G':
-            case 'g':
-                if (camXYangle > -179) {
-                    camXYangle -= ANGLE_I;
-                    // cout << "XY: " << camXYangle << endl;
-                }
-            break;
-
-            case 'H':
-            case 'h':
-                if (camXYangle < 179) {
-                    camXYangle += ANGLE_I;
-                    // cout << "XY: " << camXYangle << endl;
-                }
-            break;
-
-
-            /* vertical movement of third person camera */
-            case 'Y':
-            case 'y':
-                if (camZangle > -89) {
-                    camZangle -= ANGLE_I;
-                    // cout << "Z: " << camZangle << endl;
-                }
-            break;
-
-            case 'B':
-            case 'b':
-                if (camZangle < 89) {
-                    camZangle += ANGLE_I;
-                    // cout << "Z: " << camZangle << endl;
-                }
             break;
     }
 
@@ -400,33 +344,57 @@ void onPassiveMouseMotion(GLint x, GLint y) {
 }
 
 void onMouseMotion(GLint x, GLint y) {
-    if ((x >= 0 && x <= win.getWidth()) && (y >= 0 && y <= win.getHeight())) {
+    if ((x >= 0 && x <= win.getWidth()) && (y >= 0 && y <= win.getHeight()) && rightButton) {
 
-        GLfloat dx = x - mouseX;
-        GLfloat dy = y - mouseY;
+        GLfloat dx = x - pmouseX;
+        GLfloat dy = y - pmouseY;
 
         // horizontal movement
         if (dx > 0) {
-            stuff->bot->rotateArmLeft();
+            if (camXYangle < (180 - ANGLE_I)) {
+                camXYangle += ANGLE_I;
+                // cout << "XY: " << camXYangle << endl;
+            }
         } else if (dx < 0) {
-            stuff->bot->rotateArmRight();
+            if (camXYangle > -(180 - ANGLE_I)) {
+                camXYangle -= ANGLE_I;
+                // cout << "XY: " << camXYangle << endl;
+            }
         }
 
         // vertical movement
         if (dy > 0) {
-            stuff->bot->rotateArmDown();
+            if (camZangle > -(90 - ANGLE_I)) {
+                camZangle -= ANGLE_I;
+                // cout << "Z: " << camZangle << endl;
+            }
         } else if (dy < 0) {
-            stuff->bot->rotateArmUp();
+            if (camZangle < (90 - ANGLE_I)) {
+                camZangle += ANGLE_I;
+                // cout << "Z: " << camZangle << endl;
+            }
         }
 
-        mouseX = x;
-        mouseY = y;
+        pmouseX = x;
+        pmouseY = y;
     }
 }
 
 void onClick(GLint button, GLint state, GLint x, GLint y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
         stuff->bot->setFire();
+    }
+
+    if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+        rightButton = true;
+
+        // cout << "right button pressed" << endl;
+    }
+
+    if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP) {
+        rightButton = false;
+
+        // cout << "right button released" << endl;
     }
 }
 
@@ -482,7 +450,7 @@ void render(int i) {
 
                 GLfloat atual = glutGet(GLUT_ELAPSED_TIME);
                 if (e->lastTimeShot == 0 || (atual - e->lastTimeShot) / 1000 > 1 / e->freqTiro){
-                    // e->setFire(); // tiro do inimigo
+                    e->setFire(); // tiro do inimigo
                     e->lastTimeShot = atual;
                 }
             }
@@ -504,11 +472,11 @@ void display(void) {
     if (nightMode) {
         glDisable(GL_LIGHT0);
         glDisable(GL_LIGHT1);
-        glEnable(GL_LIGHT2);
+        // glEnable(GL_LIGHT2);
     } else {
         glEnable(GL_LIGHT0);
         glEnable(GL_LIGHT1);
-        glDisable(GL_LIGHT2);
+        // glDisable(GL_LIGHT2);
     }
 
     for (int i = 0; i < 4; i++) {
@@ -517,7 +485,7 @@ void display(void) {
 
             // Score and final texts
             glDisable(GL_LIGHTING);
-            glDisable(GL_TEXTURE_2D);
+            // glDisable(GL_TEXTURE_2D);
 
             glLoadIdentity();
             glViewport(0, 0, win.getWidth(), win.getHeight());
@@ -593,56 +561,31 @@ void display(void) {
 
         } else if (i == 2) {
             // minimapa
-            // glDisable(GL_LIGHTING);
+            glDisable(GL_LIGHTING);
             glLoadIdentity();
             glViewport(440, 10, win.getWidth()/4, win.getHeight()/4);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
             glOrtho(stuff->arena->getX() - stuff->arena->getRadius(), stuff->arena->getX() + stuff->arena->getRadius(),
                 stuff->arena->getY() - stuff->arena->getRadius(), stuff->arena->getY() + stuff->arena->getRadius(), -1, 1);
+            glEnable(GL_LIGHTING);
         }
 
         render(i);
 
         if (i == 1 || i == 0) {
-            GLfloat light_position0[] = { stuff->arena->getX()+stuff->center->getRadius()+((stuff->arena->getRadius() - stuff->center->getRadius())/2), stuff->arena->getY(), 100, 1.0 };
-            glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
-            GLfloat light_position1[] = {stuff->arena->getX()-stuff->center->getRadius()-((stuff->arena->getRadius() - stuff->center->getRadius())/2), stuff->arena->getY(), 100, 1.0 };
-            glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
-
-            GLfloat deslocamento = 1;
-            GLfloat spotdirectionX = deslocamento*cos(((stuff->bot->getThetaArm()+stuff->bot->getTheta()+90))*M_PI/180);
-            GLfloat spotdirectionY = deslocamento*sin(((stuff->bot->getThetaArm()+stuff->bot->getTheta()+90))*M_PI/180);
-            GLfloat spotdirectionZ = deslocamento*sin((stuff->bot->getThetaArmZ())*M_PI/180);
-
-
-            GLfloat spotdirection[] = {spotdirectionX, spotdirectionY, spotdirectionZ};
-
-            GLfloat light_position2[] = {0, 0, 0, 1};
-            glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
-            glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spotdirection);
-            glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 20.0);
-
-            //Desenha as luzes
-            GLfloat materialEmission[] = { 1, 1, 1, 1.0};
-            GLfloat materialColor[] = { 1.0, 1.0, 1.0, 1.0};
-            GLfloat materialColorDark[] = { 0.2, 0.2, 0.2, 1.0};
-            GLfloat mat_specular[] = { 0.0, 0.0, 0.0, 1};
-            GLfloat mat_shininess[] = { 128.0 };
-            GLfloat ambient[] = { 1,1,1, 1.0 };
-            GLfloat noambient[] = { 0,0,0, 1.0 };
 
             if (nightMode) {
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorDark);
-                glMaterialfv(GL_FRONT, GL_AMBIENT, noambient);
-            } else {
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColor);
-                glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
-                glMaterialfv(GL_FRONT, GL_EMISSION, materialEmission);
-            }
+                // GLfloat materialColorDark[] = { 0.2, 0.2, 0.2, 1.0};
+                // GLfloat noambient[] = { 0,0,0, 1.0 };
 
-            glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-            glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+                // glLightfv(GL_LIGHT2, GL_POSITION, spotlight_location);
+                // glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spotlight_position);
+                // glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 20.0);
+
+                // glMaterialfv(GL_FRONT, GL_DIFFUSE, materialColorDark);
+                // glMaterialfv(GL_FRONT, GL_AMBIENT, noambient);
+            }
         }
         
     }
@@ -670,7 +613,7 @@ void readConfigFile(string fileName) {
 
     GLfloat velTiroInimigo = app->FirstChildElement("inimigo")->DoubleAttribute("velTiro");
     GLfloat velInimigo = app->FirstChildElement("inimigo")->DoubleAttribute("vel");
-    GLfloat freqTiro = app->FirstChildElement("inimigo")->DoubleAttribute("freqTiro");
+    GLfloat freqTiro = app->FirstChildElement("inimigo")->DoubleAttribute("freqTiro") * 2;
 
     GLfloat alturaObstaculo = app->FirstChildElement("obstaculo")->DoubleAttribute("altura") / 100;
 
@@ -697,7 +640,7 @@ void readConfigFile(string fileName) {
             stuff->bot = new Robot(cx, -cy, 0, radius);
             stuff->bot->setId(id);
             stuff->bot->setVelocity(vel);
-            stuff->bot->setBulletVelocity(velTiro);
+            stuff->bot->setBulletVelocity(velTiro * 2);
             stuff->bot->setStuff(stuff);
             stuff->bot->setHeight(radius * 2.5); // altura do robo
             stuff->bot->setRGB(0, 1, 0);
@@ -764,6 +707,7 @@ GLint main(GLint argc, char** argv) {
     stuff->floorTexture = LoadTextureRAW("textures/sand.bmp");
     stuff->wallsTexture = LoadTextureRAW("textures/wall.bmp");
     stuff->obstaclesTexture = LoadTextureRAW("textures/floor.bmp");
+    stuff->robotTexture = LoadTextureRAW("textures/grass.bmp");
 
     init();
 

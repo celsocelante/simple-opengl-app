@@ -36,6 +36,7 @@ class Stuff {
         GLuint floorTexture;
         GLuint wallsTexture;
         GLuint obstaclesTexture;
+        GLuint robotTexture;
 
 };
 
